@@ -327,6 +327,117 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
         }
 
+        [DataTestMethod]
+        [DataRow(EstadoIncidencia.Pendiente, EstadoIncidencia.Pendiente, true, EstadoIncidencia.Pendiente)]
+        [DataRow(EstadoIncidencia.Pendiente, EstadoIncidencia.EnProceso, true, EstadoIncidencia.EnProceso)]
+        [DataRow(EstadoIncidencia.Pendiente, EstadoIncidencia.Resuelta, false, EstadoIncidencia.Pendiente)]
+        [DataRow(EstadoIncidencia.EnProceso, EstadoIncidencia.Pendiente, false, EstadoIncidencia.EnProceso)]
+        [DataRow(EstadoIncidencia.EnProceso, EstadoIncidencia.EnProceso, true, EstadoIncidencia.EnProceso)]
+        [DataRow(EstadoIncidencia.EnProceso, EstadoIncidencia.Resuelta, true, EstadoIncidencia.Resuelta)]
+        [DataRow(EstadoIncidencia.Resuelta, EstadoIncidencia.Pendiente, false, EstadoIncidencia.Resuelta)]
+        [DataRow(EstadoIncidencia.Resuelta, EstadoIncidencia.EnProceso, true, EstadoIncidencia.EnProceso)]
+        [DataRow(EstadoIncidencia.Resuelta, EstadoIncidencia.Resuelta, true, EstadoIncidencia.Resuelta)]
+        public void CambiarEstadoRespetaTransicionesYConservaDatos(
+            EstadoIncidencia estadoInicial,
+            EstadoIncidencia estadoSolicitado,
+            bool exitoEsperado,
+            EstadoIncidencia estadoFinalEsperado)
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var fechaSecundaria = new DateTime(2026, 10, 21, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 11,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = estadoInicial,
+                FechaCreacion = fechaOriginal
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 12,
+                Titulo = "Incidencia secundaria",
+                Descripcion = "Descripción secundaria válida.",
+                Responsable = "Luis",
+                Prioridad = Prioridad.Alta,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaSecundaria
+            });
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(11, estadoSolicitado);
+
+            Assert.AreEqual(exitoEsperado, resultado.Exito);
+            Assert.AreEqual(2, repositorio.Registros.Count);
+            Assert.AreEqual(11, repositorio.Registros[0].Identificador);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
+            Assert.AreEqual("Descripción inicial válida.", repositorio.Registros[0].Descripcion);
+            Assert.AreEqual("Ana", repositorio.Registros[0].Responsable);
+            Assert.AreEqual(Prioridad.Media, repositorio.Registros[0].Prioridad);
+            Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
+            Assert.AreEqual(estadoFinalEsperado, repositorio.Registros[0].Estado);
+
+            Assert.AreEqual(12, repositorio.Registros[1].Identificador);
+            Assert.AreEqual("Incidencia secundaria", repositorio.Registros[1].Titulo);
+            Assert.AreEqual("Descripción secundaria válida.", repositorio.Registros[1].Descripcion);
+            Assert.AreEqual("Luis", repositorio.Registros[1].Responsable);
+            Assert.AreEqual(Prioridad.Alta, repositorio.Registros[1].Prioridad);
+            Assert.AreEqual(EstadoIncidencia.Pendiente, repositorio.Registros[1].Estado);
+            Assert.AreEqual(fechaSecundaria, repositorio.Registros[1].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void CambiarEstadoConIdInexistenteRechazaYNoAlteraDatos()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 3,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(99, EstadoIncidencia.EnProceso);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(1, repositorio.Registros.Count);
+            Assert.AreEqual(EstadoIncidencia.Pendiente, repositorio.Registros[0].Estado);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
+            Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void CambiarEstadoConValorFueraDeEnumRechazaYNoAlteraDatos()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 4,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(4, (EstadoIncidencia)99);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(1, repositorio.Registros.Count);
+            Assert.AreEqual(EstadoIncidencia.EnProceso, repositorio.Registros[0].Estado);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
+            Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
+        }
+
         private static IncidenciaController CrearControlador(IncidenciaRepositoryDoble repositorio)
         {
             return new IncidenciaController(repositorio);

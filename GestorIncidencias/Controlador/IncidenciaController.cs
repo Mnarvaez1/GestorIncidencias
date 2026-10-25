@@ -160,6 +160,13 @@ namespace GestorIncidencias.Controlador
             };
         }
 
+        public ResultadoOperacion<Incidencia> CambiarEstado(
+            int identificador,
+            EstadoIncidencia estadoSolicitado)
+        {
+            return Error("Cambio de estado no implementado.");
+        }
+
         private static ResultadoOperacion<Incidencia> Error(string mensaje)
         {
             return new ResultadoOperacion<Incidencia>
