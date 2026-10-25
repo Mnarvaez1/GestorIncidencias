@@ -230,14 +230,14 @@ propiedades inmutables.
 
 **Objetivo**: persistir `ReportadoPor` sin perder compatibilidad con XML legado de siete campos.
 
-- [ ] T059 [US6] Añadir pruebas en
+- [x] T059 [US6] Añadir pruebas en
   `GestorIncidencias.Tests/Controlador/XmlIncidenciaRepositoryTests.cs` para carga de XML
   antiguo sin `ReportadoPor`, guardado/recuperación en esquema ampliado y preservación de
   identificadores/datos (RF-027, RF-028, RF-029, RF-030).
-- [ ] T060 [US6] Ajustar `Controlador/XmlIncidenciaRepository.cs` para leer ambos esquemas
+- [x] T060 [US6] Ajustar `Controlador/XmlIncidenciaRepository.cs` para leer ambos esquemas
   (legacy y ampliado), conservar datos históricos y persistir `ReportadoPor` en nuevos guardados
   sin sobrescribir información válida previa.
-- [ ] T061 [US6] Ejecutar regresión de persistencia y controlador con TRX, verificando que
+- [x] T061 [US6] Ejecutar regresión de persistencia y controlador con TRX, verificando que
   RF-020 permanece en cobertura parcial hasta la validación funcional de interfaz.
 
 ## Fase 13: Ampliación — Controlador y casos de uso (P1)

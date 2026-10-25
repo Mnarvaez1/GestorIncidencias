@@ -11,6 +11,7 @@ namespace GestorIncidencias.Controlador
     public class XmlIncidenciaRepository : IIncidenciaRepository
     {
         private const int VersionFormatoActual = 1;
+        private const string ReportadoPorLegacyPlaceholder = "No informado (registro legado)";
         private readonly string rutaArchivo;
         private bool puedeGuardar = true;
 
@@ -207,6 +208,7 @@ namespace GestorIncidencias.Controlador
                 Identificador = incidencia.Identificador,
                 Titulo = incidencia.Titulo,
                 Descripcion = incidencia.Descripcion,
+                ReportadoPor = incidencia.ReportadoPor,
                 Responsable = incidencia.Responsable,
                 Prioridad = incidencia.Prioridad,
                 Estado = incidencia.Estado,
@@ -226,6 +228,7 @@ namespace GestorIncidencias.Controlador
                     Identificador = incidencia.Identificador,
                     Titulo = incidencia.Titulo,
                     Descripcion = incidencia.Descripcion,
+                    ReportadoPor = NormalizarReportadoPorParaPersistencia(incidencia.ReportadoPor),
                     Responsable = incidencia.Responsable,
                     Prioridad = (int)incidencia.Prioridad,
                     Estado = (int)incidencia.Estado,
@@ -248,6 +251,7 @@ namespace GestorIncidencias.Controlador
                     Identificador = incidencia.Identificador,
                     Titulo = incidencia.Titulo,
                     Descripcion = incidencia.Descripcion,
+                    ReportadoPor = incidencia.ReportadoPor,
                     Responsable = incidencia.Responsable,
                     Prioridad = (Prioridad)incidencia.Prioridad,
                     Estado = (EstadoIncidencia)incidencia.Estado,
@@ -256,6 +260,23 @@ namespace GestorIncidencias.Controlador
             }
 
             return resultado;
+        }
+
+        private static string NormalizarReportadoPorParaPersistencia(string reportadoPor)
+        {
+            if (string.IsNullOrWhiteSpace(reportadoPor))
+            {
+                return null;
+            }
+
+            var recortado = reportadoPor.Trim();
+
+            if (string.Equals(recortado, ReportadoPorLegacyPlaceholder, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            return recortado;
         }
 
         private static void ValidarDatosXml(IncidenciasXmlData datos)
@@ -340,16 +361,19 @@ namespace GestorIncidencias.Controlador
             [DataMember(Order = 3, IsRequired = true)]
             public string Descripcion { get; set; }
 
-            [DataMember(Order = 4, IsRequired = true)]
-            public string Responsable { get; set; }
+            [DataMember(Order = 4, IsRequired = false, EmitDefaultValue = false)]
+            public string ReportadoPor { get; set; }
 
             [DataMember(Order = 5, IsRequired = true)]
-            public int Prioridad { get; set; }
+            public string Responsable { get; set; }
 
             [DataMember(Order = 6, IsRequired = true)]
-            public int Estado { get; set; }
+            public int Prioridad { get; set; }
 
             [DataMember(Order = 7, IsRequired = true)]
+            public int Estado { get; set; }
+
+            [DataMember(Order = 8, IsRequired = true)]
             public DateTime FechaCreacion { get; set; }
         }
     }

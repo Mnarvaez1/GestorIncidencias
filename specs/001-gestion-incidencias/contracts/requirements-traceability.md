@@ -75,9 +75,22 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Fase roja T057: `T057-rojo-reportadopor.trx` (7 pruebas, 2 correctas, 5 fallidas por ausencia de validación de `ReportadoPor`) y `T057-rojo.trx` (86 pruebas, 81 correctas, 5 fallidas).
 - Fase verde T058: `T058-verde-reportadopor.trx` (7 pruebas, 7 correctas) y `T058-verde.trx` (86 pruebas, 86 correctas).
 
+## Evidencia del bloque de persistencia XML compatible (US6 / T059-T060)
+
+- Fase roja T059: `T059-targeted.trx` (2 pruebas, 1 correcta, 1 fallida por ausencia de persistencia de `ReportadoPor`) y `T059-suite-completa.trx` (88 pruebas, 87 correctas, 1 fallida).
+- Fase verde T060: `T060-targeted.trx` (2 pruebas, 2 correctas) y `T060-verde.trx` (88 pruebas, 88 correctas).
+- Cobertura añadida RF-027 a RF-030 en `XmlIncidenciaRepositoryTests`: carga de XML legacy sin `ReportadoPor`, persistencia/recuperación del esquema ampliado y preservación de identificadores/datos sin migración silenciosa.
+
+## Evidencia de regresión persistencia + controlador (US6 / T061)
+
+- Regresión dirigida T061: `T061-regresion-persistencia-controlador.trx` (57 pruebas, 57 correctas) ejecutando `XmlIncidenciaRepositoryTests` e `IncidenciaControllerTests`.
+- Suite completa T061: `T061-suite-completa.trx` (88 pruebas, 88 correctas).
+- Resultado de control: la ampliación `ReportadoPor` no introduce regresiones en persistencia ni en comportamiento existente del controlador; RF-020 permanece en cobertura parcial hasta validación funcional de interfaz.
+
 ## Cobertura pendiente de la ampliación aprobada (RF-024 a RF-038)
 
 - RF-024 y RF-025: cobertura inicial completada en validador mediante T057–T058.
-- RF-026 a RF-030: pendiente cubrir en controlador y persistencia XML compatible (T059–T063).
+- RF-026: pendiente cubrir en controlador (T062–T063).
+- RF-027 a RF-030: cobertura de persistencia XML completada en T059–T060; quedan validaciones de integración de controlador en T061–T063.
 - RF-031 a RF-038: pendiente cubrir en formularios y reportes (T064–T070), sin declarar implementación aún.
 - RF-020 se mantiene con cobertura parcial hasta completar la validación funcional final de interfaz.

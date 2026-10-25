@@ -62,6 +62,86 @@ namespace GestorIncidencias.Tests.Controlador
         }
 
         [TestMethod]
+        public void CargarXmlLegacySinReportadoPorDebeConservarDatosYSinInventarNombre()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var repositorio = CrearRepositorio(ruta);
+                var guardado = repositorio.Guardar(new[]
+                {
+                    new Incidencia
+                    {
+                        Identificador = 11,
+                        Titulo = "Incidencia legacy",
+                        Descripcion = "Descripción legacy válida.",
+                        Responsable = "Ana",
+                        Prioridad = Prioridad.Media,
+                        Estado = EstadoIncidencia.Pendiente,
+                        FechaCreacion = new DateTime(2026, 10, 30, 13, 30, 0)
+                    }
+                });
+
+                Assert.IsTrue(guardado.Exito);
+
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var doc = XDocument.Load(rutaArchivo);
+                doc.Descendants().Where(x => x.Name.LocalName == "ReportadoPor").Remove();
+                doc.Save(rutaArchivo);
+
+                var xmlLegacy = File.ReadAllText(rutaArchivo);
+                Assert.IsFalse(xmlLegacy.Contains("ReportadoPor"));
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(11, recargado.Datos[0].Identificador);
+                Assert.AreEqual("Incidencia legacy", recargado.Datos[0].Titulo);
+                Assert.AreEqual("Descripción legacy válida.", recargado.Datos[0].Descripcion);
+                Assert.AreEqual("Ana", recargado.Datos[0].Responsable);
+                Assert.IsTrue(string.IsNullOrWhiteSpace(recargado.Datos[0].ReportadoPor));
+                Assert.AreEqual(xmlLegacy, File.ReadAllText(rutaArchivo));
+            });
+        }
+
+        [TestMethod]
+        public void GuardarYReabrirConReportadoPorDebePreservarValorEnEsquemaAmpliado()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var repositorio = CrearRepositorio(ruta);
+                var guardado = repositorio.Guardar(new[]
+                {
+                    new Incidencia
+                    {
+                        Identificador = 21,
+                        Titulo = "Incidencia con reportado por",
+                        Descripcion = "Descripción para persistencia ampliada.",
+                        ReportadoPor = "María",
+                        Responsable = "Luis",
+                        Prioridad = Prioridad.Alta,
+                        Estado = EstadoIncidencia.EnProceso,
+                        FechaCreacion = new DateTime(2026, 10, 30, 14, 45, 0)
+                    }
+                });
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsTrue(guardado.Exito);
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(21, recargado.Datos[0].Identificador);
+                Assert.AreEqual("Incidencia con reportado por", recargado.Datos[0].Titulo);
+                Assert.AreEqual("Descripción para persistencia ampliada.", recargado.Datos[0].Descripcion);
+                Assert.AreEqual("Luis", recargado.Datos[0].Responsable);
+                Assert.AreEqual(Prioridad.Alta, recargado.Datos[0].Prioridad);
+                Assert.AreEqual(EstadoIncidencia.EnProceso, recargado.Datos[0].Estado);
+                Assert.AreEqual(new DateTime(2026, 10, 30, 14, 45, 0), recargado.Datos[0].FechaCreacion);
+                Assert.AreEqual("María", recargado.Datos[0].ReportadoPor);
+            });
+        }
+
+        [TestMethod]
         public void GuardarReemplazaColeccionCompletaSinDuplicados()
         {
             EjecutarEnDirectorioTemporal(ruta =>
