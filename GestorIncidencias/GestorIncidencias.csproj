@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entidades\EstadoIncidencia.cs" />
+    <Compile Include="Entidades\Incidencia.cs" />
+    <Compile Include="Entidades\Prioridad.cs" />
+    <Compile Include="Controlador\IncidenciaRepository.cs" />
+    <Compile Include="Controlador\ResultadoOperacion.cs" />
+    <Compile Include="Controlador\IncidenciaValidator.cs" />
     <Compile Include="frmIncidencias.cs">
       <SubType>Form</SubType>
     </Compile>
