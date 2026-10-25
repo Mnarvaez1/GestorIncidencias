@@ -70,8 +70,14 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Verificación automatizada asociada: `T039-checkpoint-verificacion.trx` (79 pruebas, 79 correctas).
 - Verificación específica T038 (integración controlador + repositorio XML con datos temporales): `T038-verificacion-inicial.trx` (79 pruebas, 79 correctas).
 
+## Evidencia del bloque ReportadoPor (US1 / T057-T058)
+
+- Fase roja T057: `T057-rojo-reportadopor.trx` (7 pruebas, 2 correctas, 5 fallidas por ausencia de validación de `ReportadoPor`) y `T057-rojo.trx` (86 pruebas, 81 correctas, 5 fallidas).
+- Fase verde T058: `T058-verde-reportadopor.trx` (7 pruebas, 7 correctas) y `T058-verde.trx` (86 pruebas, 86 correctas).
+
 ## Cobertura pendiente de la ampliación aprobada (RF-024 a RF-038)
 
-- RF-024 a RF-030: pendiente cubrir `ReportadoPor` en validación, registro/edición, persistencia XML ampliada y compatibilidad con XML legado sin pérdida de información.
-- RF-031 a RF-038: pendiente cubrir mejoras visuales y `frmVistaPreviaReporte`, incluyendo exportación HTML UTF-8 escapada y verificación de no dependencia de `PrintDocument`, `PrintPreviewDialog`, `PrintPreviewControl` y `PrintDialog`.
+- RF-024 y RF-025: cobertura inicial completada en validador mediante T057–T058.
+- RF-026 a RF-030: pendiente cubrir en controlador y persistencia XML compatible (T059–T063).
+- RF-031 a RF-038: pendiente cubrir en formularios y reportes (T064–T070), sin declarar implementación aún.
 - RF-020 se mantiene con cobertura parcial hasta completar la validación funcional final de interfaz.

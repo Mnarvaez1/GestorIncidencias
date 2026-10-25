@@ -1,6 +1,7 @@
 using GestorIncidencias.Controlador;
 using GestorIncidencias.Entidades;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
 
 namespace GestorIncidencias.Tests.Controlador
 {
@@ -151,9 +152,80 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.IsFalse(resultado.Exito);
         }
 
+        [TestMethod]
+        public void ReportadoPorConDosCaracteresDespuesDeRecorteDebeAceptarse()
+        {
+            var resultado = ValidarConReportadoPor("abcde", "Descripción válida", "Ana", Prioridad.Media, " AB ");
+
+            Assert.IsTrue(resultado.Exito);
+        }
+
+        [TestMethod]
+        public void ReportadoPorConOchentaCaracteresDebeAceptarse()
+        {
+            var resultado = ValidarConReportadoPor("abcde", "Descripción válida", "Ana", Prioridad.Media, new string('a', 80));
+
+            Assert.IsTrue(resultado.Exito);
+        }
+
+        [TestMethod]
+        public void ReportadoPorConUnCaracterDebeRechazarse()
+        {
+            var resultado = ValidarConReportadoPor("abcde", "Descripción válida", "Ana", Prioridad.Media, "A");
+
+            Assert.IsFalse(resultado.Exito);
+        }
+
+        [TestMethod]
+        public void ReportadoPorConOchentaYUnCaracteresDebeRechazarse()
+        {
+            var resultado = ValidarConReportadoPor("abcde", "Descripción válida", "Ana", Prioridad.Media, new string('a', 81));
+
+            Assert.IsFalse(resultado.Exito);
+        }
+
+        [DataTestMethod]
+        [DataRow("")]
+        [DataRow("   ")]
+        [DataRow(null)]
+        public void ReportadoPorNuloVacioOSoloEspaciosDebeRechazarseEnRegistroNuevo(string reportadoPor)
+        {
+            var resultado = ValidarConReportadoPor("abcde", "Descripción válida", "Ana", Prioridad.Media, reportadoPor);
+
+            Assert.IsFalse(resultado.Exito);
+        }
+
         private static IncidenciaValidator CrearValidador()
         {
             return new IncidenciaValidator();
+        }
+
+        private static ResultadoOperacion<Incidencia> ValidarConReportadoPor(
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad,
+            string reportadoPor)
+        {
+            var validador = CrearValidador();
+            var tipoValidador = typeof(IncidenciaValidator);
+            var firmaConReportadoPor = tipoValidador.GetMethod(
+                "Validar",
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Prioridad),
+                    typeof(string)
+                });
+
+            Assert.IsNotNull(firmaConReportadoPor,
+                "Se esperaba una sobrecarga pública Validar(..., reportadoPor) para validar ReportadoPor en T058.");
+
+            return (ResultadoOperacion<Incidencia>)firmaConReportadoPor.Invoke(
+                validador,
+                new object[] { titulo, descripcion, responsable, prioridad, reportadoPor });
         }
     }
 }

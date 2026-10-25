@@ -218,12 +218,12 @@ propiedades inmutables.
 
 **Objetivo**: incorporar el nuevo campo en el modelo y asegurar validaciones/criterios base por TDD.
 
-- [ ] T056 [US1] Actualizar `Entidades/Incidencia.cs` para incluir `ReportadoPor` como dato
+- [x] T056 [US1] Actualizar `Entidades/Incidencia.cs` para incluir `ReportadoPor` como dato
   diferenciado de `Responsable`, manteniendo compatibilidad con C# 7.3/.NET Framework 4.7.2.
-- [ ] T057 [US1] Añadir pruebas en `GestorIncidencias.Tests/Controlador/IncidenciaValidatorTests.cs`
+- [x] T057 [US1] Añadir pruebas en `GestorIncidencias.Tests/Controlador/IncidenciaValidatorTests.cs`
   para validar `ReportadoPor` con recorte y longitud 2..80, incluyendo vacío, solo espacios y
   límites inválidos (RF-024, RF-025).
-- [ ] T058 [US1] Implementar en `Controlador/IncidenciaValidator.cs` la validación de
+- [x] T058 [US1] Implementar en `Controlador/IncidenciaValidator.cs` la validación de
   `ReportadoPor` reutilizable en alta y edición, con mensajes claros en español.
 
 ## Fase 12: Ampliación — Persistencia XML compatible (P1)

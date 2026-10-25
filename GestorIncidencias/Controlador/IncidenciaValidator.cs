@@ -12,9 +12,31 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
+            return ValidarInterno(titulo, descripcion, responsable, prioridad, null, false);
+        }
+
+        public ResultadoOperacion<Incidencia> Validar(
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad,
+            string reportadoPor)
+        {
+            return ValidarInterno(titulo, descripcion, responsable, prioridad, reportadoPor, true);
+        }
+
+        private static ResultadoOperacion<Incidencia> ValidarInterno(
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad,
+            string reportadoPor,
+            bool validarReportadoPor)
+        {
             titulo = (titulo ?? string.Empty).Trim();
             descripcion = (descripcion ?? string.Empty).Trim();
             responsable = (responsable ?? string.Empty).Trim();
+            reportadoPor = (reportadoPor ?? string.Empty).Trim();
 
             if (titulo.Length < 5 || titulo.Length > 100)
             {
@@ -29,6 +51,11 @@ namespace GestorIncidencias.Controlador
             if (responsable.Length < 2 || responsable.Length > 80)
             {
                 return Error("El responsable debe tener entre 2 y 80 caracteres.");
+            }
+
+            if (validarReportadoPor && (reportadoPor.Length < 2 || reportadoPor.Length > 80))
+            {
+                return Error("El reportado por debe tener entre 2 y 80 caracteres.");
             }
 
             if (!Enum.IsDefined(typeof(Prioridad), prioridad))
