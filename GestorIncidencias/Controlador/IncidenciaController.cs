@@ -110,6 +110,16 @@ namespace GestorIncidencias.Controlador
             };
         }
 
+        public ResultadoOperacion<Incidencia> Editar(
+            int identificador,
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad)
+        {
+            return Error("Edición no implementada.");
+        }
+
         private static ResultadoOperacion<Incidencia> Error(string mensaje)
         {
             return new ResultadoOperacion<Incidencia>
