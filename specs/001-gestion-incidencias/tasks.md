@@ -214,6 +214,70 @@ propiedades inmutables.
 - [ ] T053 Crear el Pull Request hacia `master` con enlaces a `spec.md`, `plan.md`, `tasks.md`,
   evidencia TDD roja/verde/refactorizada, resultados de CI, revisión de diseñador y artefacto.
 
+## Fase 11: Ampliación — Modelo y pruebas de `ReportadoPor` (P1)
+
+**Objetivo**: incorporar el nuevo campo en el modelo y asegurar validaciones/criterios base por TDD.
+
+- [ ] T056 [US1] Actualizar `Entidades/Incidencia.cs` para incluir `ReportadoPor` como dato
+  diferenciado de `Responsable`, manteniendo compatibilidad con C# 7.3/.NET Framework 4.7.2.
+- [ ] T057 [US1] Añadir pruebas en `GestorIncidencias.Tests/Controlador/IncidenciaValidatorTests.cs`
+  para validar `ReportadoPor` con recorte y longitud 2..80, incluyendo vacío, solo espacios y
+  límites inválidos (RF-024, RF-025).
+- [ ] T058 [US1] Implementar en `Controlador/IncidenciaValidator.cs` la validación de
+  `ReportadoPor` reutilizable en alta y edición, con mensajes claros en español.
+
+## Fase 12: Ampliación — Persistencia XML compatible (P1)
+
+**Objetivo**: persistir `ReportadoPor` sin perder compatibilidad con XML legado de siete campos.
+
+- [ ] T059 [US6] Añadir pruebas en
+  `GestorIncidencias.Tests/Controlador/XmlIncidenciaRepositoryTests.cs` para carga de XML
+  antiguo sin `ReportadoPor`, guardado/recuperación en esquema ampliado y preservación de
+  identificadores/datos (RF-027, RF-028, RF-029, RF-030).
+- [ ] T060 [US6] Ajustar `Controlador/XmlIncidenciaRepository.cs` para leer ambos esquemas
+  (legacy y ampliado), conservar datos históricos y persistir `ReportadoPor` en nuevos guardados
+  sin sobrescribir información válida previa.
+- [ ] T061 [US6] Ejecutar regresión de persistencia y controlador con TRX, verificando que
+  RF-020 permanece en cobertura parcial hasta la validación funcional de interfaz.
+
+## Fase 13: Ampliación — Controlador y casos de uso (P1)
+
+**Objetivo**: extender registro/edición/consulta con `ReportadoPor` sin romper reglas actuales.
+
+- [ ] T062 [US1] Añadir pruebas en `GestorIncidencias.Tests/Controlador/IncidenciaControllerTests.cs`
+  para registro, edición y consulta con `ReportadoPor`, incluyendo continuidad de identificadores
+  y comportamiento con datos legacy.
+- [ ] T063 [US1] Implementar en `Controlador/IncidenciaController.cs` la captura, edición y
+  proyección de `ReportadoPor`, manteniendo invariantes, orden y reglas vigentes (RF-024, RF-026,
+  RF-030).
+
+## Fase 14: Ampliación — Formularios principales (P2)
+
+**Objetivo**: actualizar `frmIncidencias` sobre base T039 sin romper compatibilidad de diseñador.
+
+- [ ] T064 [US9] Modificar `frmIncidencias.Designer.cs` para agregar controles de `ReportadoPor`,
+  compactar/alinear filtro de estado, asegurar visibilidad del área de mensajes e incorporar el
+  botón `Vista previa de reporte` (RF-031, RF-038).
+- [ ] T065 [US1] [US9] Conectar en `frmIncidencias.cs` alta/edición con `ReportadoPor`, refresco
+  de grilla con el nuevo campo y apertura de vista previa, sin mover reglas de negocio a eventos.
+- [ ] T066 [US9] Ejecutar validación manual en diseñador de Visual Studio 2026 y ejecución F5,
+  documentando evidencias separadas de pruebas automatizadas.
+
+## Fase 15: Ampliación — Vista previa y exportación de reportes (P2)
+
+**Objetivo**: implementar `frmVistaPreviaReporte` y exportación HTML local sin dependencias de impresión.
+
+- [ ] T067 [US8] Crear `frmVistaPreviaReporte.Designer.cs`, `frmVistaPreviaReporte.cs` y
+  `frmVistaPreviaReporte.resx` con encabezado empresarial, fecha/hora, tabla de incidencias y
+  estado vacío comprensible (RF-032, RF-033, RF-034, RF-035).
+- [ ] T068 [US8] Implementar exportación a HTML UTF-8 con escape de contenido y datos reales
+  filtrados, sin usar `PrintDocument`, `PrintPreviewDialog`, `PrintPreviewControl` ni
+  `PrintDialog` (RF-036, RF-037).
+- [ ] T069 [US8] Añadir pruebas automatizadas para generación/exportación de reporte y casos de
+  cero incidencias; conservar aislamiento de archivos temporales.
+- [ ] T070 [US8] [US9] Actualizar `contracts/requirements-traceability.md` y `quickstart.md` con
+  la cobertura RF-024 a RF-038 y evidencias manuales/automáticas de la ampliación.
+
 ## Dependencias y orden de ejecución
 
 ### Dependencias por fase
@@ -228,6 +292,11 @@ propiedades inmutables.
   conectar el formulario a datos reales.
 - **Fase 9**: depende de las reglas y persistencia de las fases 3–8.
 - **Fase 10**: depende de la implementación completa y de la evidencia de pruebas.
+- **Fase 11**: depende de la base actual completada hasta T039 y abre la ampliación `ReportadoPor`.
+- **Fase 12**: depende de Fase 11 y de contratos de persistencia para compatibilidad XML legacy.
+- **Fase 13**: depende de Fase 12 para integrar controlador con datos ya persistibles.
+- **Fase 14**: depende de Fase 13 para conectar UI con reglas y datos ampliados.
+- **Fase 15**: depende de Fase 14 para consumir búsqueda/filtro reales en vista previa y cierre documental.
 
 ### Primer bloque de implementación
 
@@ -252,6 +321,8 @@ No se comenzará la interfaz ni la persistencia antes de cerrar este bloque.
   su ejecución e integración se recomienda en el orden de las historias.
 - T033 y T035 pueden prepararse en paralelo; T036 y T037 dependen del repositorio definido.
 - T046, T047 y T048 pueden configurarse en pasos separados, pero deben integrarse antes de T049.
+- T057 y T062 pueden redactarse en paralelo sobre archivos de pruebas distintos.
+- T064 y T067 pueden prepararse en paralelo si no se modifica el mismo archivo de recursos.
 
 ## Estrategia de implementación
 
@@ -263,6 +334,17 @@ No se comenzará la interfaz ni la persistencia antes de cerrar este bloque.
 6. **Persistencia segura**: completar XML, fallos, corrupción y recuperación.
 7. **UI**: añadir controles al diseñador y conectar eventos del formulario sin duplicar reglas.
 8. **CI y cierre**: ejecutar trazabilidad, revisión manual, workflow, artefactos y Pull Request.
+
+### Primer bloque recomendado de implementación para la ampliación
+
+Después de cerrar la base previa, iniciar por **T056–T061**:
+
+1. Modelo + validación de `ReportadoPor` (T056–T058).
+2. Compatibilidad XML legacy y persistencia ampliada (T059–T060).
+3. Regresión y evidencia TRX manteniendo RF-020 como cobertura parcial (T061).
+
+Con ese bloque validado, continuar con controlador (T062–T063), luego formularios (T064–T066)
+y finalmente reportes (T067–T070).
 
 ## Criterio de parada de esta fase
 

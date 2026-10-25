@@ -5,13 +5,14 @@
 
 ## Resumen
 
-Se ampliará la aplicación Windows Forms existente para que `frmIncidencias` permita registrar,
-consultar, editar, cambiar estados, buscar y filtrar incidencias, con persistencia local segura.
-Las reglas vivirán fuera de los eventos de la interfaz para poder probarse sin abrir formularios.
+Se ampliará la aplicación Windows Forms existente para incorporar `ReportadoPor`, mantener
+compatibilidad con XML antiguos de siete campos, mejorar la experiencia visual del formulario
+principal y añadir una vista previa de reportes en `frmVistaPreviaReporte` con exportación HTML
+UTF-8 escapada.
 
-La implementación conservará el proyecto clásico `GestorIncidencias.csproj`, su destino .NET
-Framework 4.7.2 y la configuración C# 7.3. Se añadirá un proyecto MSTest clásico dirigido al
-mismo framework y un workflow de GitHub Actions para Windows.
+Las reglas seguirán fuera de los eventos de la interfaz para poder probarse sin abrir formularios.
+La implementación conservará el proyecto clásico `GestorIncidencias.csproj`, su destino
+.NET Framework 4.7.2 y la configuración C# 7.3, sin dependencias de impresión ni paquetes nuevos.
 
 ## Estado comprobado y decisiones previstas
 
@@ -21,19 +22,24 @@ mismo framework y un workflow de GitHub Actions para Windows.
 - El proyecto es no-SDK, de tipo `WinExe`, y apunta a .NET Framework 4.7.2.
 - `Program.cs` inicia `new frmIncidencias()` dentro del namespace `GestorIncidencias`.
 - `frmIncidencias.cs` contiene actualmente solo el constructor y `InitializeComponent()`.
-- `frmIncidencias.Designer.cs` contiene actualmente el formulario vacío sin controles funcionales.
+- `frmIncidencias.Designer.cs` ya contiene el diseño base T039 validado en diseñador y ejecución F5.
 - `MSBuild.exe` y `dotnet.exe` están disponibles en el entorno de Visual Studio 2026.
 - La solución compiló correctamente antes de esta planificación.
 - No hay `packages.config`, `Directory.Packages.props` ni proyecto de pruebas existente.
-- CE-001 confirma siete datos mostrables: identificador, título, descripción, responsable,
-  prioridad, estado y fecha de creación.
+- La cobertura actual automatizada es 79/79 pruebas y RF-020 permanece con cobertura parcial en
+  validación funcional de interfaz.
 
 ### Previsto, no implementado
 
 - Carpetas, clases de dominio, controlador, persistencia y controles descritos en este documento.
 - Proyecto `GestorIncidencias.Tests`, paquetes NuGet y referencias de solución.
 - Workflow de GitHub Actions.
-- XML de datos de usuario, mutex de instancia única y pruebas de recuperación.
+- Campo `ReportadoPor` en entidad, reglas, controlador, formularios y persistencia.
+- Compatibilidad de lectura para XML legado sin `ReportadoPor`, con representación explícita sin
+  inventar personas.
+- Formulario `frmVistaPreviaReporte` para visualización previa y exportación local a HTML UTF-8.
+- Ajustes visuales adicionales sobre base T039 (filtro de estado compacto/alineado, área de
+  mensajes visible, botón de vista previa).
 - No se han generado código, proyecto de pruebas ni workflow en esta fase.
 
 ## Contexto técnico
@@ -42,8 +48,8 @@ mismo framework y un workflow de GitHub Actions para Windows.
 **Framework objetivo**: .NET Framework 4.7.2.  
 **Dependencias principales**: referencias de framework existentes; `System.Runtime.Serialization`
 para `DataContractSerializer`; MSTest solo en el proyecto de pruebas.  
-**Persistencia**: XML local en `%LOCALAPPDATA%\GestorIncidencias\incidencias.xml`, con temporal y
-respaldo.  
+**Persistencia**: XML local en `%LOCALAPPDATA%\GestorIncidencias\incidencias.xml`, con temporal,
+respaldo y compatibilidad de lectura para esquema legacy de siete campos.  
 **Pruebas**: MSTest con `Microsoft.NET.Test.Sdk` 18.11.0, `MSTest.TestAdapter` 4.5.1 y
 `MSTest.TestFramework` 4.5.1, fijados en `packages.config`.  
 **Plataforma**: Windows, Visual Studio 2026, aplicación de escritorio de una sola instancia.  
@@ -52,7 +58,8 @@ respaldo.
 se ejecutarán sobre la colección local y deberán responder sin esperas perceptibles para un
 volumen pequeño de incidencias.  
 **Restricciones**: una sola instancia activa, sin red, sin múltiples usuarios, sin base de datos
-externa, sin cambiar el framework ni convertir el proyecto a SDK.
+externa, sin cambiar el framework ni convertir el proyecto a SDK, sin `PrintDocument`,
+`PrintPreviewDialog`, `PrintPreviewControl` ni `PrintDialog`.
 
 ## Comprobación de la constitución
 
@@ -155,16 +162,18 @@ Studio 2026 pueda mostrarlos y editarlos en el diseñador.
 
 Controles previstos:
 
-- `DataGridView dgvIncidencias`: identificador, título, descripción, responsable, prioridad,
-  estado y fecha de creación; selección de una incidencia.
+- `DataGridView dgvIncidencias`: identificador, título, descripción, `ReportadoPor`, responsable,
+  prioridad, estado y fecha de creación; selección de una incidencia.
 - `TextBox txtTitulo`: título de alta y edición.
 - `TextBox txtDescripcion`: descripción multilínea.
-- `TextBox txtResponsable`: responsable.
+- `TextBox txtReportadoPor`: persona que comunica la incidencia.
+- `TextBox txtResponsable`: técnico responsable de atenderla.
 - `ComboBox cboPrioridad`: Baja, Media, Alta; Media seleccionada inicialmente.
 - `ComboBox cboFiltroEstado`: Todos, Pendiente, En proceso, Resuelta.
 - `TextBox txtBuscar`: búsqueda mientras se escribe.
 - `ComboBox cboNuevoEstado`: estado a solicitar.
-- `Button btnNuevo`, `btnGuardar`, `btnEditar`, `btnCambiarEstado` y `btnCancelar`.
+- `Button btnNuevo`, `btnGuardar`, `btnEditar`, `btnCambiarEstado`, `btnCancelar` y
+  `btnVistaPreviaReporte`.
 - `Label lblMensaje`: mensajes de validación, error, estado vacío y confirmación.
 - `Label` auxiliares para que cada entrada tenga un texto identificable.
 
@@ -175,11 +184,13 @@ Eventos previstos:
 - `txtBuscar.TextChanged`: volver a consultar aplicando búsqueda y filtro.
 - `cboFiltroEstado.SelectedIndexChanged`: volver a consultar aplicando el filtro.
 - `btnNuevo.Click`: limpiar el modo de edición y aplicar valores iniciales.
-- `btnGuardar.Click`: construir la solicitud, invocar registro o edición y refrescar solo si
-  el controlador devuelve éxito.
+- `btnGuardar.Click`: construir la solicitud (incluyendo `ReportadoPor`), invocar registro o
+  edición y refrescar solo si el controlador devuelve éxito.
 - `btnEditar.Click`: cargar los datos seleccionados en los controles editables.
 - `btnCambiarEstado.Click`: solicitar una transición independiente y refrescar su resultado.
 - `btnCancelar.Click`: descartar valores no confirmados.
+- `btnVistaPreviaReporte.Click`: abrir `frmVistaPreviaReporte` con el resultado actual de
+  búsqueda y filtro.
 - `FormClosing`: liberar recursos de instancia y cerrar sin guardar cambios no confirmados.
 
 Los eventos no decidirán longitudes, estados permitidos, orden, identificadores ni formato de
@@ -190,9 +201,10 @@ resultado en español.
 
 ### Validación
 
-`IncidenciaValidator` recortará título, descripción y responsable antes de validar. Rechazará
-valores vacíos, límites inferiores/superiores y prioridades desconocidas. Devolverá errores por
-campo sin tocar la incidencia anterior. Las mismas reglas se usarán en alta y edición.
+`IncidenciaValidator` recortará título, descripción, `ReportadoPor` y responsable antes de
+validar. Rechazará valores vacíos, límites inferiores/superiores y prioridades desconocidas.
+Devolverá errores por campo sin tocar la incidencia anterior. Las mismas reglas se usarán en alta
+y edición.
 
 ### Identificadores y registro
 
@@ -203,7 +215,8 @@ compararán para unicidad.
 
 ### Edición y estados
 
-La edición copiará únicamente título, descripción, responsable y prioridad después de validar.
+La edición copiará únicamente título, descripción, `ReportadoPor`, responsable y prioridad
+después de validar.
 Identificador, fecha y estado permanecerán invariantes. El cambio de estado tendrá un método
 separado y una tabla explícita de transiciones. El mismo estado será una operación idempotente;
 las demás combinaciones devolverán error sin mutar la incidencia.
@@ -219,6 +232,22 @@ la búsqueda vacía no excluirá ninguna incidencia del filtro.
 
 El contrato detallado de carga, guardado, confirmación y bloqueo de sobrescritura se documenta
 en `contracts/repository-contract.md`, manteniendo las firmas de `IIncidenciaRepository`.
+
+La capa de persistencia deberá aceptar XML antiguo sin `ReportadoPor` y cargarlo sin pérdida de
+datos, preservando identificadores y valores existentes. Para registros legacy sin ese campo, la
+representación visible será `No informado (registro legado)` sin inventar nombres ni reescribir
+automáticamente el archivo original.
+
+## Vista previa y exportación de reportes
+
+Se añadirá `frmVistaPreviaReporte` como formulario independiente y compatible con diseñador.
+Recibirá la colección ya filtrada/buscada desde `frmIncidencias` y mostrará encabezado
+empresarial, fecha/hora de generación y tabla con: identificador, título, `ReportadoPor`,
+responsable, prioridad, estado y fecha.
+
+La exportación generará un archivo HTML local en UTF-8 con escape de contenido textual. El flujo
+no dependerá de impresoras ni usará `PrintDocument`, `PrintPreviewDialog`,
+`PrintPreviewControl` o `PrintDialog`.
 
 ### Ubicación y formato
 
@@ -361,6 +390,13 @@ El workflow será una fase posterior y no se crea en este plan.
 | RF-020 | Prueba con ruta o stream de almacenamiento fallido; confirmar estado anterior y sin éxito falso. |
 | RF-021 | Prueba con XML dañado; confirmar mensaje, preservación y bloqueo de guardado automático. |
 | RF-022–RF-023 | Pruebas de rechazo sin mutación y revisión manual de estados vacíos/mensajes. |
+| RF-024–RF-025 | Pruebas de validación de `ReportadoPor` (2..80, recorte, vacío inválido) en alta y edición. |
+| RF-026–RF-027 | Pruebas de listado/edición y persistencia de `ReportadoPor` en XML ampliado. |
+| RF-028–RF-030 | Pruebas de compatibilidad XML legado sin pérdida y conservación de identificadores/orden. |
+| RF-031–RF-032 | Verificación manual y pruebas de apertura de `frmVistaPreviaReporte` con encabezado y timestamp. |
+| RF-033–RF-036 | Pruebas de datos reales filtrados en reporte, estado vacío y exportación HTML UTF-8 escapada. |
+| RF-037 | Revisión de implementación y pruebas para confirmar ausencia de APIs de impresión prohibidas. |
+| RF-038 | Verificación manual del layout T039+ (filtro compacto/alineado, área de mensajes visible, botón de vista previa). |
 
 Verificación manual adicional:
 
@@ -371,6 +407,9 @@ Verificación manual adicional:
 - Ejecutar la aplicación desde Visual Studio y revisar alta, edición, estado, filtros y errores.
 - Confirmar que el formulario principal sigue siendo `frmIncidencias`.
 - Revisar que la interfaz no contiene reglas de negocio duplicadas.
+- Verificar que `frmVistaPreviaReporte` abre con datos reales según búsqueda/filtro vigente.
+- Verificar exportación HTML UTF-8 con caracteres especiales escapados.
+- Verificar que no existe dependencia de componentes de impresión prohibidos.
 
 ## Pull Request e integración
 
@@ -388,6 +427,7 @@ validación, persistencia segura y compatibilidad con el diseñador.
 - Las reglas son independientes de los formularios y se pueden probar con MSTest.
 - El diseñador mantiene los controles en archivos `.Designer.cs`.
 - La persistencia usa una dependencia mínima y contempla datos ausentes, errores y corrupción.
+- Se mantiene compatibilidad con XML legacy sin pérdida de información histórica.
 - El plan incluye especificación, aclaraciones, plan técnico, tareas posteriores, TDD,
   verificación y Pull Request a `master`.
 - No se crean código, pruebas ni workflow durante esta fase.
