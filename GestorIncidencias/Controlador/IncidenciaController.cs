@@ -7,6 +7,7 @@ namespace GestorIncidencias.Controlador
 {
     public class IncidenciaController
     {
+        private const string ReportadoPorLegacy = "No informado (registro legado)";
         private readonly IIncidenciaRepository repositorio;
 
         public IncidenciaController(IIncidenciaRepository repositorio)
@@ -20,11 +21,31 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            var validacion = new IncidenciaValidator().Validar(
-                titulo,
-                descripcion,
-                responsable,
-                prioridad);
+            return RegistrarInterno(titulo, descripcion, null, responsable, prioridad, false);
+        }
+
+        public ResultadoOperacion<Incidencia> Registrar(
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad)
+        {
+            return RegistrarInterno(titulo, descripcion, reportadoPor, responsable, prioridad, true);
+        }
+
+        private ResultadoOperacion<Incidencia> RegistrarInterno(
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad,
+            bool validarReportadoPor)
+        {
+            var validador = new IncidenciaValidator();
+            var validacion = validarReportadoPor
+                ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor)
+                : validador.Validar(titulo, descripcion, responsable, prioridad);
 
             if (!validacion.Exito)
             {
@@ -58,6 +79,7 @@ namespace GestorIncidencias.Controlador
                 Identificador = siguienteIdentificador,
                 Titulo = (titulo ?? string.Empty).Trim(),
                 Descripcion = (descripcion ?? string.Empty).Trim(),
+                ReportadoPor = validarReportadoPor ? (reportadoPor ?? string.Empty).Trim() : null,
                 Responsable = (responsable ?? string.Empty).Trim(),
                 Prioridad = prioridad,
                 Estado = EstadoIncidencia.Pendiente,
@@ -100,6 +122,19 @@ namespace GestorIncidencias.Controlador
             var ordenadas = incidencias
                 .OrderByDescending(i => i.FechaCreacion)
                 .ThenByDescending(i => i.Identificador)
+                .Select(i => new Incidencia
+                {
+                    Identificador = i.Identificador,
+                    Titulo = i.Titulo,
+                    Descripcion = i.Descripcion,
+                    ReportadoPor = string.IsNullOrWhiteSpace(i.ReportadoPor)
+                        ? ReportadoPorLegacy
+                        : i.ReportadoPor,
+                    Responsable = i.Responsable,
+                    Prioridad = i.Prioridad,
+                    Estado = i.Estado,
+                    FechaCreacion = i.FechaCreacion
+                })
                 .ToList();
 
             return new ResultadoOperacion<IList<Incidencia>>
@@ -151,6 +186,29 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
+            return EditarInterno(identificador, titulo, descripcion, null, responsable, prioridad, false);
+        }
+
+        public ResultadoOperacion<Incidencia> Editar(
+            int identificador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad)
+        {
+            return EditarInterno(identificador, titulo, descripcion, reportadoPor, responsable, prioridad, true);
+        }
+
+        private ResultadoOperacion<Incidencia> EditarInterno(
+            int identificador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad,
+            bool validarReportadoPor)
+        {
             var carga = repositorio.Cargar();
 
             if (!carga.Exito || carga.Datos == null)
@@ -165,11 +223,10 @@ namespace GestorIncidencias.Controlador
                 return Error("No existe una incidencia con el identificador indicado.");
             }
 
-            var validacion = new IncidenciaValidator().Validar(
-                titulo,
-                descripcion,
-                responsable,
-                prioridad);
+            var validador = new IncidenciaValidator();
+            var validacion = validarReportadoPor
+                ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor)
+                : validador.Validar(titulo, descripcion, responsable, prioridad);
 
             if (!validacion.Exito)
             {
@@ -183,6 +240,11 @@ namespace GestorIncidencias.Controlador
 
             incidencia.Titulo = (titulo ?? string.Empty).Trim();
             incidencia.Descripcion = (descripcion ?? string.Empty).Trim();
+            if (validarReportadoPor)
+            {
+                incidencia.ReportadoPor = (reportadoPor ?? string.Empty).Trim();
+            }
+
             incidencia.Responsable = (responsable ?? string.Empty).Trim();
             incidencia.Prioridad = prioridad;
 

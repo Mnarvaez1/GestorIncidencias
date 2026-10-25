@@ -244,10 +244,10 @@ propiedades inmutables.
 
 **Objetivo**: extender registro/edición/consulta con `ReportadoPor` sin romper reglas actuales.
 
-- [ ] T062 [US1] Añadir pruebas en `GestorIncidencias.Tests/Controlador/IncidenciaControllerTests.cs`
+- [x] T062 [US1] Añadir pruebas en `GestorIncidencias.Tests/Controlador/IncidenciaControllerTests.cs`
   para registro, edición y consulta con `ReportadoPor`, incluyendo continuidad de identificadores
   y comportamiento con datos legacy.
-- [ ] T063 [US1] Implementar en `Controlador/IncidenciaController.cs` la captura, edición y
+- [x] T063 [US1] Implementar en `Controlador/IncidenciaController.cs` la captura, edición y
   proyección de `ReportadoPor`, manteniendo invariantes, orden y reglas vigentes (RF-024, RF-026,
   RF-030).
 

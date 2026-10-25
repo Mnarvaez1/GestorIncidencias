@@ -87,10 +87,21 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Suite completa T061: `T061-suite-completa.trx` (88 pruebas, 88 correctas).
 - Resultado de control: la ampliación `ReportadoPor` no introduce regresiones en persistencia ni en comportamiento existente del controlador; RF-020 permanece en cobertura parcial hasta validación funcional de interfaz.
 
+## Evidencia del bloque controlador con ReportadoPor (US1 / T062)
+
+- Fase roja T062: `T062-targeted-rojo.trx` (11 pruebas, 1 correcta, 10 fallidas) y `T062-suite-completa-rojo.trx` (99 pruebas, 89 correctas, 10 fallidas).
+- Fallos esperados: ausencia de sobrecargas `IncidenciaController.Registrar(titulo, descripcion, reportadoPor, responsable, prioridad)` y `IncidenciaController.Editar(id, titulo, descripcion, reportadoPor, responsable, prioridad)`, además de proyección específica de `ReportadoPor` pendiente de T063.
+- Cobertura preservada: las 88 pruebas previas permanecen correctas en esta fase roja.
+
+## Evidencia del bloque controlador con ReportadoPor (US1 / T063)
+
+- Fase verde T063: `T063-targeted-verde.trx` (11 pruebas, 11 correctas) y `T063-suite-completa-verde.trx` (99 pruebas, 99 correctas).
+- Alcance verificado: captura, validación, edición y proyección de `ReportadoPor` en `IncidenciaController`, conservando invariantes y compatibilidad con registros legacy.
+
 ## Cobertura pendiente de la ampliación aprobada (RF-024 a RF-038)
 
 - RF-024 y RF-025: cobertura inicial completada en validador mediante T057–T058.
-- RF-026: pendiente cubrir en controlador (T062–T063).
-- RF-027 a RF-030: cobertura de persistencia XML completada en T059–T060; quedan validaciones de integración de controlador en T061–T063.
+- RF-026: cobertura de controlador completada en T062–T063.
+- RF-027 a RF-030: cobertura de persistencia XML completada en T059–T060 y regresión de integración de controlador verificada en T061–T063.
 - RF-031 a RF-038: pendiente cubrir en formularios y reportes (T064–T070), sin declarar implementación aún.
 - RF-020 se mantiene con cobertura parcial hasta completar la validación funcional final de interfaz.

@@ -46,6 +46,45 @@ namespace GestorIncidencias.Tests.Controlador
         }
 
         [TestMethod]
+        public void RegistrarConReportadoPorValidoDebeConservarloYDiferenciarloDeResponsable()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var resultado = RegistrarConReportadoPor(CrearControlador(repositorio),
+                "Error de conexión",
+                "La conexión falla al iniciar.",
+                "María",
+                "Ana",
+                Prioridad.Alta);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual("María", resultado.Datos.ReportadoPor);
+            Assert.AreEqual("Ana", resultado.Datos.Responsable);
+            Assert.AreEqual(1, repositorio.Registros.Count);
+            Assert.AreEqual("María", repositorio.Registros[0].ReportadoPor);
+            Assert.AreEqual("Ana", repositorio.Registros[0].Responsable);
+        }
+
+        [DataTestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow(" ")]
+        [DataRow("A")]
+        public void RegistrarConReportadoPorInvalidoDebeRechazarSinAgregarRegistros(string reportadoPor)
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var resultado = RegistrarConReportadoPor(CrearControlador(repositorio),
+                "Error de conexión",
+                "La conexión falla al iniciar.",
+                reportadoPor,
+                "Ana",
+                Prioridad.Alta);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(0, repositorio.Registros.Count);
+        }
+
+        [TestMethod]
         public void RegistrarTitulosDuplicadosAsignaIdentificadoresDistintos()
         {
             var repositorio = new IncidenciaRepositoryDoble();
@@ -113,6 +152,44 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(Prioridad.Alta, resultado.Datos[0].Prioridad);
             Assert.AreEqual(EstadoIncidencia.EnProceso, resultado.Datos[0].Estado);
             Assert.AreEqual(fecha, resultado.Datos[0].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void ConsultarDebeIncluirReportadoPorYRepresentarLegacySinInventarDato()
+        {
+            var fecha = new DateTime(2026, 10, 25, 10, 30, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 7,
+                Titulo = "Error de carga",
+                Descripcion = "La carga inicial falla al arrancar.",
+                ReportadoPor = "María",
+                Responsable = "Laura",
+                Prioridad = Prioridad.Alta,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fecha
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 8,
+                Titulo = "Incidencia legacy",
+                Descripcion = "Registro histórico sin reportado.",
+                ReportadoPor = null,
+                Responsable = "Luis",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fecha.AddMinutes(1)
+            });
+
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(2, resultado.Datos.Count);
+            Assert.AreEqual(8, resultado.Datos[0].Identificador);
+            Assert.AreEqual("No informado (registro legado)", resultado.Datos[0].ReportadoPor);
+            Assert.AreEqual(7, resultado.Datos[1].Identificador);
+            Assert.AreEqual("María", resultado.Datos[1].ReportadoPor);
         }
 
         [TestMethod]
@@ -215,6 +292,75 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(fechaOriginal, resultado.Datos.FechaCreacion);
             Assert.AreEqual(EstadoIncidencia.EnProceso, resultado.Datos.Estado);
             Assert.AreEqual(1, repositorio.Registros.Count);
+        }
+
+        [TestMethod]
+        public void EditarConReportadoPorValidoDebeActualizarloYConservarInvariantes()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = EditarConReportadoPor(CrearControlador(repositorio),
+                10,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Luis",
+                Prioridad.Alta);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual("María", resultado.Datos.ReportadoPor);
+            Assert.AreEqual("Luis", resultado.Datos.Responsable);
+            Assert.AreEqual(10, resultado.Datos.Identificador);
+            Assert.AreEqual(fechaOriginal, resultado.Datos.FechaCreacion);
+            Assert.AreEqual(EstadoIncidencia.EnProceso, resultado.Datos.Estado);
+        }
+
+        [DataTestMethod]
+        [DataRow(null)]
+        [DataRow("")]
+        [DataRow(" ")]
+        [DataRow("A")]
+        public void EditarConReportadoPorInvalidoDebeRechazarYNoMutarRegistro(string reportadoPor)
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = EditarConReportadoPor(CrearControlador(repositorio),
+                10,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                reportadoPor,
+                "Luis",
+                Prioridad.Alta);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("Carlos", repositorio.Registros[0].ReportadoPor);
+            Assert.AreEqual("Ana", repositorio.Registros[0].Responsable);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
         }
 
         [TestMethod]
@@ -794,6 +940,60 @@ namespace GestorIncidencias.Tests.Controlador
         private static IncidenciaController CrearControlador(IncidenciaRepositoryDoble repositorio)
         {
             return new IncidenciaController(repositorio);
+        }
+
+        private static ResultadoOperacion<Incidencia> RegistrarConReportadoPor(
+            IncidenciaController controlador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad)
+        {
+            var metodo = typeof(IncidenciaController).GetMethod(
+                "Registrar",
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Prioridad)
+                });
+
+            Assert.IsNotNull(metodo, "Falta sobrecarga Registrar con ReportadoPor para T063.");
+
+            return (ResultadoOperacion<Incidencia>)metodo.Invoke(
+                controlador,
+                new object[] { titulo, descripcion, reportadoPor, responsable, prioridad });
+        }
+
+        private static ResultadoOperacion<Incidencia> EditarConReportadoPor(
+            IncidenciaController controlador,
+            int identificador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad)
+        {
+            var metodo = typeof(IncidenciaController).GetMethod(
+                "Editar",
+                new[]
+                {
+                    typeof(int),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Prioridad)
+                });
+
+            Assert.IsNotNull(metodo, "Falta sobrecarga Editar con ReportadoPor para T063.");
+
+            return (ResultadoOperacion<Incidencia>)metodo.Invoke(
+                controlador,
+                new object[] { identificador, titulo, descripcion, reportadoPor, responsable, prioridad });
         }
     }
 }
