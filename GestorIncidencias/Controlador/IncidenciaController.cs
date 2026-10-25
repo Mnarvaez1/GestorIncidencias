@@ -164,7 +164,53 @@ namespace GestorIncidencias.Controlador
             int identificador,
             EstadoIncidencia estadoSolicitado)
         {
-            return Error("Cambio de estado no implementado.");
+            if (!Enum.IsDefined(typeof(EstadoIncidencia), estadoSolicitado))
+            {
+                return Error("El estado solicitado no es válido.");
+            }
+
+            var carga = repositorio.Cargar();
+
+            if (!carga.Exito || carga.Datos == null)
+            {
+                return Error(carga.Mensaje ?? "No se pudieron cargar las incidencias.");
+            }
+
+            var incidencia = carga.Datos.FirstOrDefault(i => i.Identificador == identificador);
+
+            if (incidencia == null)
+            {
+                return Error("No existe una incidencia con el identificador indicado.");
+            }
+
+            if (incidencia.Estado == estadoSolicitado)
+            {
+                return new ResultadoOperacion<Incidencia>
+                {
+                    Exito = true,
+                    Mensaje = "La incidencia ya tiene el estado solicitado.",
+                    Datos = incidencia
+                };
+            }
+
+            var transicionPermitida =
+                (incidencia.Estado == EstadoIncidencia.Pendiente && estadoSolicitado == EstadoIncidencia.EnProceso) ||
+                (incidencia.Estado == EstadoIncidencia.EnProceso && estadoSolicitado == EstadoIncidencia.Resuelta) ||
+                (incidencia.Estado == EstadoIncidencia.Resuelta && estadoSolicitado == EstadoIncidencia.EnProceso);
+
+            if (!transicionPermitida)
+            {
+                return Error("La transición de estado solicitada no está permitida.");
+            }
+
+            incidencia.Estado = estadoSolicitado;
+
+            return new ResultadoOperacion<Incidencia>
+            {
+                Exito = true,
+                Mensaje = "Estado de incidencia actualizado correctamente.",
+                Datos = incidencia
+            };
         }
 
         private static ResultadoOperacion<Incidencia> Error(string mensaje)

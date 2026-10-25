@@ -129,11 +129,11 @@ propiedades inmutables.
 
 **Objetivo**: aplicar exclusivamente las transiciones permitidas y rechazar las demás.
 
-- [ ] T027 [US4] Añadir a `IncidenciaControllerTests.cs` pruebas para Pendiente → En proceso,
+- [x] T027 [US4] Añadir a `IncidenciaControllerTests.cs` pruebas para Pendiente → En proceso,
   En proceso → Resuelta, Resuelta → En proceso, estado actual y combinaciones rechazadas.
-- [ ] T028 [US4] Implementar en `IncidenciaController.cs` la tabla de transiciones, la operación
+- [x] T028 [US4] Implementar en `IncidenciaController.cs` la tabla de transiciones, la operación
   idempotente del estado actual y el error de negocio claro; cubrir RF-013 a RF-015.
-- [ ] T029 [US4] Ejecutar la matriz completa de estados y verificar que ninguna transición
+- [x] T029 [US4] Ejecutar la matriz completa de estados y verificar que ninguna transición
   rechazada muta la incidencia ni confirma un guardado.
 
 ## Fase 7: Historia 5 — Buscar y filtrar (P1)
