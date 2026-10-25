@@ -140,11 +140,11 @@ propiedades inmutables.
 
 **Objetivo**: consultar coincidencias parciales por título/responsable y combinarlas con el filtro.
 
-- [ ] T030 [US5] Añadir pruebas de búsqueda parcial, mayúsculas/minúsculas, búsqueda vacía,
+- [x] T030 [US5] Añadir pruebas de búsqueda parcial, mayúsculas/minúsculas, búsqueda vacía,
   cada filtro, combinación de criterios y resultado vacío en `IncidenciaControllerTests.cs`.
-- [ ] T031 [US5] Implementar búsqueda y filtro en `IncidenciaController.cs`, incluyendo el orden
+- [x] T031 [US5] Implementar búsqueda y filtro en `IncidenciaController.cs`, incluyendo el orden
   establecido y mensajes de ausencia de resultados; cubrir RF-016 a RF-018 y RF-023.
-- [ ] T032 [US5] Ejecutar pruebas de consulta junto con registro, edición y estados, y conservar
+- [x] T032 [US5] Ejecutar pruebas de consulta junto con registro, edición y estados, y conservar
   el resultado TRX.
 
 ## Fase 8: Historia 6 — Persistencia y recuperación (P1)

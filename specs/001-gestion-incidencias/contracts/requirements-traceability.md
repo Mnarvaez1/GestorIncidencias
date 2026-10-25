@@ -12,7 +12,9 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 | RF-013 | `CambiarEstadoRespetaTransicionesYConservaDatos` (MSTest) valida transiciones permitidas Pendiente→EnProceso, EnProceso→Resuelta y Resuelta→EnProceso. Resultado: correcto en `T029-verde.trx`. |
 | RF-014 | `CambiarEstadoRespetaTransicionesYConservaDatos` (MSTest) valida operación idempotente al solicitar el mismo estado. Resultado: correcto en `T029-verde.trx`. |
 | RF-015 | `CambiarEstadoRespetaTransicionesYConservaDatos`, `CambiarEstadoConIdInexistenteRechazaYNoAlteraDatos` y `CambiarEstadoConValorFueraDeEnumRechazaYNoAlteraDatos` (MSTest) validan rechazos sin mutación. Resultado: correcto en `T029-verde.trx`. |
-| RF-016–RF-018 | Pruebas unitarias de búsqueda, sensibilidad de mayúsculas y combinación de filtros. |
+| RF-016 | `BuscarFiltrarCoincidenciaParcialPorTituloOResponsable`, `BuscarFiltrarNoDistingueMayusculasYMinusculas` y `BuscarFiltrarCoincidenciaSoloEnDescripcionNoIncluyeRegistro` (MSTest) validan coincidencias parciales solo en título/responsable sin distinguir mayúsculas. Resultado: correcto en `T032-verde.trx`. |
+| RF-017 | `BuscarFiltrarTextoVacioAplicaSoloFiltroDeEstado` y `BuscarFiltrarTodosEquivaleAAusenciaDeFiltroDeEstadoYConservaOrden` (MSTest) validan filtro por estado y opción Todos (`null`). Resultado: correcto en `T032-verde.trx`. |
+| RF-018 | `BuscarFiltrarCombinaBusquedaYFiltroConAnd` y `BuscarFiltrarSinCoincidenciasDevuelveColeccionVacia` (MSTest) validan combinación AND y vacío sin coincidencias. Resultado: correcto en `T032-verde.trx`. |
 | RF-019–RF-021 | Pruebas de persistencia con directorios temporales y simulación de errores/daños. |
 | RF-022 | Pruebas unitarias de validación en `IncidenciaValidatorTests` (límites, recorte, prioridad). Resultado: correcto en `T022-verde.trx`. |
 | RF-023 | `ConsultarSinRegistrosDevuelveColeccionVacia` (MSTest) valida estado vacío sin error técnico. Resultado: correcto en `T022-verde.trx`. |
@@ -45,3 +47,8 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 | Resuelta | Pendiente | Rechazado | `CambiarEstadoRespetaTransicionesYConservaDatos` ✅ |
 | Resuelta | En proceso | Permitido | `CambiarEstadoRespetaTransicionesYConservaDatos` ✅ |
 | Resuelta | Resuelta | Sin cambios (idempotente) | `CambiarEstadoRespetaTransicionesYConservaDatos` ✅ |
+
+## Evidencia del bloque de búsqueda y filtrado (US5)
+
+- Fase roja: `T030-rojo.trx` (55 pruebas, 49 correctas, 6 fallidas en búsqueda/filtro antes de T031).
+- Fase verde: `T032-verde.trx` (55 pruebas, 55 correctas).

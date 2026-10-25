@@ -114,7 +114,32 @@ namespace GestorIncidencias.Controlador
             string textoBusqueda,
             EstadoIncidencia? filtroEstado)
         {
-            return Consultar();
+            var consultaBase = Consultar();
+
+            if (!consultaBase.Exito)
+            {
+                return consultaBase;
+            }
+
+            var incidencias = consultaBase.Datos ?? new List<Incidencia>();
+            var texto = (textoBusqueda ?? string.Empty).Trim();
+            var tieneTexto = texto.Length > 0;
+
+            var filtradas = incidencias.Where(i =>
+                (!filtroEstado.HasValue || i.Estado == filtroEstado.Value) &&
+                (!tieneTexto ||
+                    i.Titulo.IndexOf(texto, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    i.Responsable.IndexOf(texto, StringComparison.OrdinalIgnoreCase) >= 0))
+                .ToList();
+
+            return new ResultadoOperacion<IList<Incidencia>>
+            {
+                Exito = true,
+                Mensaje = filtradas.Count == 0
+                    ? "No se encontraron incidencias para los criterios indicados."
+                    : "Consulta completada correctamente.",
+                Datos = filtradas
+            };
         }
 
         public ResultadoOperacion<Incidencia> Editar(
