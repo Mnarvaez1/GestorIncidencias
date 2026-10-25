@@ -65,7 +65,7 @@ namespace GestorIncidencias.Tests.Controlador
         {
             var repositorio = new IncidenciaRepositoryDoble();
             var resultado = CrearControlador(repositorio).Registrar(
-                "corto",
+                "cort",
                 "Descripción válida.",
                 "Ana",
                 Prioridad.Media);
