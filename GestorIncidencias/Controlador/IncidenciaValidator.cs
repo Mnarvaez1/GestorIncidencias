@@ -10,10 +10,19 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
+            if (string.IsNullOrWhiteSpace(titulo) || titulo.Trim().Length < 5)
+            {
+                return new ResultadoOperacion<Incidencia>
+                {
+                    Exito = false,
+                    Mensaje = "El título debe tener al menos cinco caracteres."
+                };
+            }
+
             return new ResultadoOperacion<Incidencia>
             {
                 Exito = true,
-                Mensaje = "Validación provisional correcta."
+                Mensaje = "Validación correcta."
             };
         }
     }
