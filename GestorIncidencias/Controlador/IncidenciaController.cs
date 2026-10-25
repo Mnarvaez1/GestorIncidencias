@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GestorIncidencias.Entidades;
 
 namespace GestorIncidencias.Controlador
@@ -80,11 +81,32 @@ namespace GestorIncidencias.Controlador
 
         public ResultadoOperacion<IList<Incidencia>> Consultar()
         {
+            var carga = repositorio.Cargar();
+
+            if (!carga.Exito)
+            {
+                return new ResultadoOperacion<IList<Incidencia>>
+                {
+                    Exito = false,
+                    Mensaje = carga.Mensaje,
+                    Errores = carga.Errores,
+                    Datos = new List<Incidencia>()
+                };
+            }
+
+            var incidencias = carga.Datos ?? new List<Incidencia>();
+            var ordenadas = incidencias
+                .OrderByDescending(i => i.FechaCreacion)
+                .ThenByDescending(i => i.Identificador)
+                .ToList();
+
             return new ResultadoOperacion<IList<Incidencia>>
             {
                 Exito = true,
-                Mensaje = "Consulta provisional.",
-                Datos = new List<Incidencia>()
+                Mensaje = ordenadas.Count == 0
+                    ? "No hay incidencias registradas."
+                    : "Consulta completada correctamente.",
+                Datos = ordenadas
             };
         }
 

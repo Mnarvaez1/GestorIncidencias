@@ -105,12 +105,12 @@ fecha y estado Pendiente sin abrir un formulario.
 
 **Objetivo**: listar los siete campos de la entidad en el orden requerido y comunicar listas vacías.
 
-- [ ] T021 [US2] Añadir a `IncidenciaControllerTests.cs` pruebas de proyección, lista vacía,
+- [x] T021 [US2] Añadir a `IncidenciaControllerTests.cs` pruebas de proyección, lista vacía,
   orden por fecha descendente y desempate por identificador descendente para RF-009, RF-010 y
   RF-023.
-- [ ] T022 [US2] Implementar en `IncidenciaController.cs` la consulta ordenada y una respuesta
+- [x] T022 [US2] Implementar en `IncidenciaController.cs` la consulta ordenada y una respuesta
   diferenciada para colección vacía, sin introducir dependencias de la UI.
-- [ ] T023 [US2] Revisar la trazabilidad de RF-009, RF-010 y RF-023 en
+- [x] T023 [US2] Revisar la trazabilidad de RF-009, RF-010 y RF-023 en
   `contracts/requirements-traceability.md` y conservar la salida de pruebas correspondiente.
 
 ## Fase 5: Historia 3 — Modificar una incidencia (P1)
