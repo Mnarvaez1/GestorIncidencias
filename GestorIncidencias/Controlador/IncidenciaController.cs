@@ -78,6 +78,16 @@ namespace GestorIncidencias.Controlador
             };
         }
 
+        public ResultadoOperacion<IList<Incidencia>> Consultar()
+        {
+            return new ResultadoOperacion<IList<Incidencia>>
+            {
+                Exito = true,
+                Mensaje = "Consulta provisional.",
+                Datos = new List<Incidencia>()
+            };
+        }
+
         private static ResultadoOperacion<Incidencia> Error(string mensaje)
         {
             return new ResultadoOperacion<Incidencia>

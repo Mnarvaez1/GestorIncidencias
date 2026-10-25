@@ -74,6 +74,113 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(0, repositorio.Registros.Count);
         }
 
+        [TestMethod]
+        public void ConsultarSinRegistrosDevuelveColeccionVacia()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        [TestMethod]
+        public void ConsultarRecuperaLosSieteCamposDeLaIncidencia()
+        {
+            var fecha = new DateTime(2026, 10, 25, 10, 30, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 7,
+                Titulo = "Error de carga",
+                Descripcion = "La carga inicial falla al arrancar.",
+                Responsable = "Laura",
+                Prioridad = Prioridad.Alta,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fecha
+            });
+
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(1, resultado.Datos.Count);
+            Assert.AreEqual(7, resultado.Datos[0].Identificador);
+            Assert.AreEqual("Error de carga", resultado.Datos[0].Titulo);
+            Assert.AreEqual("La carga inicial falla al arrancar.", resultado.Datos[0].Descripcion);
+            Assert.AreEqual("Laura", resultado.Datos[0].Responsable);
+            Assert.AreEqual(Prioridad.Alta, resultado.Datos[0].Prioridad);
+            Assert.AreEqual(EstadoIncidencia.EnProceso, resultado.Datos[0].Estado);
+            Assert.AreEqual(fecha, resultado.Datos[0].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void ConsultarOrdenaPorFechaDeCreacionDescendente()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 1,
+                Titulo = "Primera",
+                Descripcion = "Descripción válida 1.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = new DateTime(2026, 10, 24, 8, 0, 0)
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 2,
+                Titulo = "Segunda",
+                Descripcion = "Descripción válida 2.",
+                Responsable = "Luis",
+                Prioridad = Prioridad.Baja,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = new DateTime(2026, 10, 25, 8, 0, 0)
+            });
+
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(2, resultado.Datos.Count);
+            Assert.AreEqual(2, resultado.Datos[0].Identificador);
+            Assert.AreEqual(1, resultado.Datos[1].Identificador);
+        }
+
+        [TestMethod]
+        public void ConsultarConFechasIgualesDesempataPorIdDescendente()
+        {
+            var fecha = new DateTime(2026, 10, 25, 8, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 3,
+                Titulo = "Tercera",
+                Descripcion = "Descripción válida 3.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fecha
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 8,
+                Titulo = "Octava",
+                Descripcion = "Descripción válida 8.",
+                Responsable = "Luis",
+                Prioridad = Prioridad.Alta,
+                Estado = EstadoIncidencia.Resuelta,
+                FechaCreacion = fecha
+            });
+
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(2, resultado.Datos.Count);
+            Assert.AreEqual(8, resultado.Datos[0].Identificador);
+            Assert.AreEqual(3, resultado.Datos[1].Identificador);
+        }
+
         private static IncidenciaController CrearControlador(IncidenciaRepositoryDoble repositorio)
         {
             return new IncidenciaController(repositorio);
