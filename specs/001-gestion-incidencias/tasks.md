@@ -155,11 +155,11 @@ propiedades inmutables.
   `contracts/repository-contract.md` antes de T033, verificando semántica de reemplazo completo,
   confirmación de guardado antes de éxito y bloqueo de sobrescritura cuando `PuedeGuardar=false`.
 
-- [ ] T033 [P] [US6] Crear `Controlador/XmlIncidenciaRepository.cs` con el formato XML versionado,
+- [x] T033 [P] [US6] Crear `Controlador/XmlIncidenciaRepository.cs` con el formato XML versionado,
   ruta configurable para pruebas y directorios de usuario para producción.
-- [ ] T034 [US6] Implementar carga de archivo ausente como colección vacía y cálculo del siguiente
+- [x] T034 [US6] Implementar carga de archivo ausente como colección vacía y cálculo del siguiente
   identificador positivo, cubriendo RF-007, RF-008 y RF-019.
-- [ ] T035 [P] [US6] Añadir `XmlIncidenciaRepositoryTests.cs` con directorios temporales únicos
+- [x] T035 [P] [US6] Añadir `XmlIncidenciaRepositoryTests.cs` con directorios temporales únicos
   por prueba para carga, guardado, cierre/reapertura y recuperación de identificadores.
 - [ ] T036 [US6] Implementar guardado temporal, validación del temporal, respaldo y reemplazo
   atómico; actualizar memoria solo tras éxito y devolver fallo sin confirmación falsa, cubriendo

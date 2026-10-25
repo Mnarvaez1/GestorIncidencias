@@ -15,7 +15,9 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 | RF-016 | `BuscarFiltrarCoincidenciaParcialPorTituloOResponsable`, `BuscarFiltrarNoDistingueMayusculasYMinusculas` y `BuscarFiltrarCoincidenciaSoloEnDescripcionNoIncluyeRegistro` (MSTest) validan coincidencias parciales solo en título/responsable sin distinguir mayúsculas. Resultado: correcto en `T032-verde.trx`. |
 | RF-017 | `BuscarFiltrarTextoVacioAplicaSoloFiltroDeEstado` y `BuscarFiltrarTodosEquivaleAAusenciaDeFiltroDeEstadoYConservaOrden` (MSTest) validan filtro por estado y opción Todos (`null`). Resultado: correcto en `T032-verde.trx`. |
 | RF-018 | `BuscarFiltrarCombinaBusquedaYFiltroConAnd` y `BuscarFiltrarSinCoincidenciasDevuelveColeccionVacia` (MSTest) validan combinación AND y vacío sin coincidencias. Resultado: correcto en `T032-verde.trx`. |
-| RF-019–RF-021 | Pruebas de persistencia con directorios temporales y simulación de errores/daños. |
+| RF-019 | `CargarConArchivoAusenteDevuelveColeccionVacia`, `GuardarYReabrirRecuperaExactamenteLosSieteCampos` y `RegistrarDespuesDeReabrirRecuperaSiguienteIdYConservaRegistros` (MSTest) validan carga inicial, reapertura y continuidad de identificadores con directorios temporales. Resultado: correcto en `T035-verde-verificado.trx`. |
+| RF-020 | Cobertura parcial: `GuardarReemplazaColeccionCompletaSinDuplicados` y `CargarDevuelveCopiasIndependientesDeListaEIncidencias` (MSTest) validan reemplazo completo sin acumulación y copias independientes en carga. Pendiente completar verificación de fallos de guardado y preservación de datos anteriores en T036–T038. Resultado parcial: correcto en `T035-verde-verificado.trx`. |
+| RF-021 | Pendiente de verificación específica con pruebas de XML dañado, tipos inválidos, identificadores duplicados y fallo de escritura (T037/T038). |
 | RF-022 | Pruebas unitarias de validación en `IncidenciaValidatorTests` (límites, recorte, prioridad). Resultado: correcto en `T022-verde.trx`. |
 | RF-023 | `ConsultarSinRegistrosDevuelveColeccionVacia` (MSTest) valida estado vacío sin error técnico. Resultado: correcto en `T022-verde.trx`. |
 
@@ -52,3 +54,9 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 
 - Fase roja: `T030-rojo.trx` (55 pruebas, 49 correctas, 6 fallidas en búsqueda/filtro antes de T031).
 - Fase verde: `T032-verde.trx` (55 pruebas, 55 correctas).
+
+## Evidencia inicial del bloque de persistencia (US6)
+
+- Fase roja: `T035-rojo.trx` (68 pruebas, 64 correctas, 4 fallidas en persistencia XML inicial).
+- Verificación verde: `T035-verde-verificado.trx` (68 pruebas, 68 correctas).
+- Alcance de esta verificación: cubre T033–T035; no constituye cobertura completa de T036–T038.

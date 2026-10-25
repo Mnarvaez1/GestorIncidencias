@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D409E8A7-6C86-44D5-9597-F11064E67309}</ProjectGuid>
+    <ProjectGuid>{D14BC012-7BE1-465C-7B2D-1B06FD3EAB47}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>GestorIncidencias</RootNamespace>
     <AssemblyName>GestorIncidencias</AssemblyName>
@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
