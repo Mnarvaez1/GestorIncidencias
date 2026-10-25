@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using GestorIncidencias.Controlador;
 using GestorIncidencias.Entidades;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -168,10 +170,173 @@ namespace GestorIncidencias.Tests.Controlador
             });
         }
 
+        [TestMethod]
+        public void CargarConXmlDanadoDebeFallarYBloquearSobrescrituraAutomatica()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                CrearRepositorio(ruta).Guardar(new[] { CrearIncidencia(1, "Inicial") });
+
+                File.WriteAllText(rutaArchivo, "<IncidenciasPersistidas>");
+                var repositorio = CrearRepositorio(ruta);
+
+                var carga = repositorio.Cargar();
+                var guardado = repositorio.Guardar(new[] { CrearIncidencia(2, "Nueva") });
+
+                Assert.IsFalse(carga.Exito);
+                Assert.IsFalse(repositorio.PuedeGuardar);
+                Assert.IsFalse(guardado.Exito);
+                Assert.AreEqual("<IncidenciasPersistidas>", File.ReadAllText(rutaArchivo));
+            });
+        }
+
+        [TestMethod]
+        public void CargarConTiposDeDatosInvalidosDebeFallar()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                CrearRepositorio(ruta).Guardar(new[] { CrearIncidencia(1, "Inicial") });
+
+                CorromperPrimerNodo(rutaArchivo, "FechaCreacion", "no-es-fecha");
+
+                var carga = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsFalse(carga.Exito);
+                Assert.IsNotNull(carga.Errores);
+                Assert.AreEqual(0, carga.Datos.Count);
+            });
+        }
+
+        [TestMethod]
+        public void CargarConIdentificadoresDuplicadosDebeFallarYPreservarArchivoOriginal()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                CrearRepositorio(ruta).Guardar(new[]
+                {
+                    CrearIncidencia(1, "Primera"),
+                    CrearIncidencia(2, "Segunda")
+                });
+
+                CorromperIdentificadoresDuplicados(rutaArchivo);
+                var contenidoCorrupto = File.ReadAllText(rutaArchivo);
+
+                var carga = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsFalse(carga.Exito);
+                Assert.AreEqual(contenidoCorrupto, File.ReadAllText(rutaArchivo));
+            });
+        }
+
+        [TestMethod]
+        public void CargarConPrioridadInvalidaDebeFallar()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                CrearRepositorio(ruta).Guardar(new[] { CrearIncidencia(1, "Inicial") });
+
+                CorromperPrimerNodo(rutaArchivo, "Prioridad", "99");
+
+                var repositorio = CrearRepositorio(ruta);
+                var carga = repositorio.Cargar();
+
+                Assert.IsFalse(carga.Exito);
+                Assert.IsFalse(repositorio.PuedeGuardar);
+            });
+        }
+
+        [TestMethod]
+        public void CargarConEstadoInvalidoDebeFallar()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                CrearRepositorio(ruta).Guardar(new[] { CrearIncidencia(1, "Inicial") });
+
+                CorromperPrimerNodo(rutaArchivo, "Estado", "99");
+
+                var repositorio = CrearRepositorio(ruta);
+                var carga = repositorio.Cargar();
+
+                Assert.IsFalse(carga.Exito);
+                Assert.IsFalse(repositorio.PuedeGuardar);
+            });
+        }
+
+        [TestMethod]
+        public void GuardarConArchivoBloqueadoDebeFallarYPreservarDatosAnteriores()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var repositorio = CrearRepositorio(ruta);
+                repositorio.Guardar(new[] { CrearIncidencia(1, "Inicial") });
+                var contenidoAnterior = File.ReadAllText(rutaArchivo);
+
+                using (new FileStream(rutaArchivo, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    var guardado = repositorio.Guardar(new[] { CrearIncidencia(2, "Cambio") });
+                    Assert.IsFalse(guardado.Exito);
+                }
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(1, recargado.Datos[0].Identificador);
+                Assert.AreEqual(contenidoAnterior, File.ReadAllText(rutaArchivo));
+            });
+        }
+
         private static XmlIncidenciaRepository CrearRepositorio(string directorio)
         {
-            var rutaArchivo = Path.Combine(directorio, "incidencias.xml");
-            return new XmlIncidenciaRepository(rutaArchivo);
+            return new XmlIncidenciaRepository(ObtenerRutaArchivo(directorio));
+        }
+
+        private static string ObtenerRutaArchivo(string directorio)
+        {
+            return Path.Combine(directorio, "incidencias.xml");
+        }
+
+        private static Incidencia CrearIncidencia(int id, string titulo)
+        {
+            return new Incidencia
+            {
+                Identificador = id,
+                Titulo = titulo,
+                Descripcion = "Descripción válida para persistencia.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = new DateTime(2026, 10, 30, 9, 0, 0).AddMinutes(id)
+            };
+        }
+
+        private static void CorromperPrimerNodo(string rutaArchivo, string nombreNodo, string nuevoValor)
+        {
+            var doc = XDocument.Load(rutaArchivo);
+            var nodo = doc.Descendants().FirstOrDefault(x => x.Name.LocalName == nombreNodo);
+            Assert.IsNotNull(nodo, "No se encontró el nodo esperado para corrupción controlada.");
+            nodo.Value = nuevoValor;
+            doc.Save(rutaArchivo);
+        }
+
+        private static void CorromperIdentificadoresDuplicados(string rutaArchivo)
+        {
+            var doc = XDocument.Load(rutaArchivo);
+            var ids = doc.Descendants()
+                .Where(x => x.Name.LocalName == "Identificador")
+                .Take(2)
+                .ToList();
+
+            Assert.AreEqual(2, ids.Count, "Se esperaban al menos dos nodos Identificador para forzar duplicados.");
+            ids[0].Value = "1";
+            ids[1].Value = "1";
+            doc.Save(rutaArchivo);
         }
 
         private static void EjecutarEnDirectorioTemporal(Action<string> accion)
