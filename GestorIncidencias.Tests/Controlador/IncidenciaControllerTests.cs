@@ -438,6 +438,147 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
         }
 
+        [TestMethod]
+        public void BuscarFiltrarSinRegistrosDevuelveColeccionVacia()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+
+            var resultado = CrearControlador(repositorio).Consultar("error", EstadoIncidencia.Pendiente);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarCoincidenciaParcialPorTituloOResponsable()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var porTitulo = CrearControlador(repositorio).Consultar("error", null);
+            var porResponsable = CrearControlador(repositorio).Consultar("lui", null);
+
+            Assert.AreEqual(2, porTitulo.Datos.Count);
+            Assert.AreEqual(5, porTitulo.Datos[0].Identificador);
+            Assert.AreEqual(1, porTitulo.Datos[1].Identificador);
+            Assert.AreEqual(1, porResponsable.Datos.Count);
+            Assert.AreEqual(2, porResponsable.Datos[0].Identificador);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarNoDistingueMayusculasYMinusculas()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar("aNa", null);
+
+            Assert.AreEqual(1, resultado.Datos.Count);
+            Assert.AreEqual(1, resultado.Datos[0].Identificador);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarCoincidenciaSoloEnDescripcionNoIncluyeRegistro()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar("autenticación", null);
+
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarCombinaBusquedaYFiltroConAnd()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar("error", EstadoIncidencia.Pendiente);
+
+            Assert.AreEqual(1, resultado.Datos.Count);
+            Assert.AreEqual(1, resultado.Datos[0].Identificador);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarTextoVacioAplicaSoloFiltroDeEstado()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar("   ", EstadoIncidencia.EnProceso);
+
+            Assert.AreEqual(1, resultado.Datos.Count);
+            Assert.AreEqual(2, resultado.Datos[0].Identificador);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarTodosEquivaleAAusenciaDeFiltroDeEstadoYConservaOrden()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar(string.Empty, null);
+
+            Assert.AreEqual(4, resultado.Datos.Count);
+            Assert.AreEqual(5, resultado.Datos[0].Identificador);
+            Assert.AreEqual(2, resultado.Datos[1].Identificador);
+            Assert.AreEqual(1, resultado.Datos[2].Identificador);
+            Assert.AreEqual(3, resultado.Datos[3].Identificador);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarSinCoincidenciasDevuelveColeccionVacia()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar("zzz", null);
+
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        private static IncidenciaRepositoryDoble CrearRepositorioParaBusqueda()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 1,
+                Titulo = "Error de login",
+                Descripcion = "Falla en autenticación interna.",
+                Responsable = "Ana Pérez",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = new DateTime(2026, 10, 24, 10, 0, 0)
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 2,
+                Titulo = "Timeout API",
+                Descripcion = "Error de login en descripción solamente.",
+                Responsable = "Luis Gómez",
+                Prioridad = Prioridad.Alta,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = new DateTime(2026, 10, 25, 11, 0, 0)
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 5,
+                Titulo = "Error en reporte",
+                Descripcion = "Fallo al exportar reporte.",
+                Responsable = "María López",
+                Prioridad = Prioridad.Baja,
+                Estado = EstadoIncidencia.Resuelta,
+                FechaCreacion = new DateTime(2026, 10, 25, 11, 0, 0)
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 3,
+                Titulo = "Mejora visual",
+                Descripcion = "Ajustes de interfaz.",
+                Responsable = "Carlos Ruiz",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = new DateTime(2026, 10, 23, 9, 0, 0)
+            });
+
+            return repositorio;
+        }
+
         private static IncidenciaController CrearControlador(IncidenciaRepositoryDoble repositorio)
         {
             return new IncidenciaController(repositorio);

@@ -110,6 +110,13 @@ namespace GestorIncidencias.Controlador
             };
         }
 
+        public ResultadoOperacion<IList<Incidencia>> Consultar(
+            string textoBusqueda,
+            EstadoIncidencia? filtroEstado)
+        {
+            return Consultar();
+        }
+
         public ResultadoOperacion<Incidencia> Editar(
             int identificador,
             string titulo,
