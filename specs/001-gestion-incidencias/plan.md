@@ -84,6 +84,7 @@ specs/001-gestion-incidencias/
 ├── quickstart.md                        # Comandos y validación local previstos
 ├── contracts/
 │   ├── business-rules.md                # Contratos verificables de reglas de negocio
+│   ├── repository-contract.md           # Contrato operativo de carga/guardado y confirmación
 │   └── requirements-traceability.md     # Trazabilidad RF-001 a RF-023
 └── checklists/requirements.md            # Checklist de calidad de la especificación
 ```
@@ -215,6 +216,9 @@ en título y responsable. El filtro de estado se aplicará después o como condi
 la búsqueda vacía no excluirá ninguna incidencia del filtro.
 
 ## Persistencia local
+
+El contrato detallado de carga, guardado, confirmación y bloqueo de sobrescritura se documenta
+en `contracts/repository-contract.md`, manteniendo las firmas de `IIncidenciaRepository`.
 
 ### Ubicación y formato
 

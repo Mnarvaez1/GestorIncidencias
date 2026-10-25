@@ -532,6 +532,217 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(0, resultado.Datos.Count);
         }
 
+        [TestMethod]
+        public void ContratoRepositorioRegistrarVariasIncidenciasDebeConservarAnterioresSinDuplicar()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var controlador = CrearControlador(repositorio);
+
+            var primero = controlador.Registrar("Error uno", "Descripción válida uno.", "Ana", Prioridad.Media);
+            var segundo = controlador.Registrar("Error dos", "Descripción válida dos.", "Luis", Prioridad.Alta);
+            var consulta = controlador.Consultar();
+
+            Assert.IsTrue(primero.Exito);
+            Assert.IsTrue(segundo.Exito);
+            Assert.AreEqual(2, consulta.Datos.Count);
+            Assert.AreEqual(1, consulta.Datos[0].Identificador);
+            Assert.AreEqual(2, consulta.Datos[1].Identificador);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioEditarDebeInvocarGuardarYPersistirCambiosAlVolverACargar()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 21,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).Editar(
+                21,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "Luis",
+                Prioridad.Alta);
+
+            var recarga = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(1, repositorio.IntentosGuardar);
+            Assert.AreEqual("Titulo actualizado", recarga.Datos[0].Titulo);
+            Assert.AreEqual("Descripción actualizada válida.", recarga.Datos[0].Descripcion);
+            Assert.AreEqual("Luis", recarga.Datos[0].Responsable);
+            Assert.AreEqual(Prioridad.Alta, recarga.Datos[0].Prioridad);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioCambiarEstadoPermitidoDebeInvocarGuardarYPersistirCambio()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 22,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(22, EstadoIncidencia.EnProceso);
+            var recarga = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(1, repositorio.IntentosGuardar);
+            Assert.AreEqual(EstadoIncidencia.EnProceso, recarga.Datos[0].Estado);
+            Assert.AreEqual("Titulo inicial", recarga.Datos[0].Titulo);
+            Assert.AreEqual(fechaOriginal, recarga.Datos[0].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioFalloGuardarEnRegistrarDevuelveErrorYConservaDatos()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble { GuardarDebeFallar = true };
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 30,
+                Titulo = "Persistida",
+                Descripcion = "Descripción persistida válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).Registrar(
+                "Nuevo error",
+                "Descripción válida de alta.",
+                "Luis",
+                Prioridad.Alta);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(1, repositorio.IntentosGuardar);
+            Assert.AreEqual(1, repositorio.Registros.Count);
+            Assert.AreEqual(30, repositorio.Registros[0].Identificador);
+            Assert.AreEqual("Persistida", repositorio.Registros[0].Titulo);
+            Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioFalloGuardarEnEditarDevuelveErrorYConservaDatos()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble { GuardarDebeFallar = true };
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 31,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).Editar(
+                31,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "Luis",
+                Prioridad.Alta);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(1, repositorio.IntentosGuardar);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
+            Assert.AreEqual(Prioridad.Media, repositorio.Registros[0].Prioridad);
+            Assert.AreEqual(EstadoIncidencia.EnProceso, repositorio.Registros[0].Estado);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioFalloGuardarEnCambiarEstadoDevuelveErrorYConservaDatos()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble { GuardarDebeFallar = true };
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 32,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(32, EstadoIncidencia.EnProceso);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(1, repositorio.IntentosGuardar);
+            Assert.AreEqual(EstadoIncidencia.Pendiente, repositorio.Registros[0].Estado);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
+            Assert.AreEqual(fechaOriginal, repositorio.Registros[0].FechaCreacion);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioSolicitarMismoEstadoNoInvocaGuardar()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 33,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = new DateTime(2026, 10, 20, 9, 0, 0)
+            });
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(33, EstadoIncidencia.EnProceso);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(0, repositorio.IntentosGuardar);
+        }
+
+        [TestMethod]
+        public void ContratoRepositorioPuedeGuardarFalseImpideOperacionesSinIntentarGuardar()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble { PuedeGuardarConfigurado = false };
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 34,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                Responsable = "Ana",
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var controlador = CrearControlador(repositorio);
+            var registro = controlador.Registrar("Nuevo", "Descripción válida de alta.", "Luis", Prioridad.Alta);
+            var edicion = controlador.Editar(34, "Titulo editado", "Descripción editada válida.", "Luis", Prioridad.Baja);
+            var cambioEstado = controlador.CambiarEstado(34, EstadoIncidencia.EnProceso);
+
+            Assert.IsFalse(registro.Exito);
+            Assert.IsFalse(edicion.Exito);
+            Assert.IsFalse(cambioEstado.Exito);
+            Assert.AreEqual(0, repositorio.IntentosGuardar);
+            Assert.AreEqual("Titulo inicial", repositorio.Registros[0].Titulo);
+            Assert.AreEqual(EstadoIncidencia.Pendiente, repositorio.Registros[0].Estado);
+        }
+
         private static IncidenciaRepositoryDoble CrearRepositorioParaBusqueda()
         {
             var repositorio = new IncidenciaRepositoryDoble();

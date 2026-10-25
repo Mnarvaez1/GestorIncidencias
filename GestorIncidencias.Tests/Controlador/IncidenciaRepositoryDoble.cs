@@ -8,9 +8,15 @@ namespace GestorIncidencias.Tests.Controlador
     {
         public IList<Incidencia> Registros { get; } = new List<Incidencia>();
 
+        public bool PuedeGuardarConfigurado { get; set; } = true;
+
+        public bool GuardarDebeFallar { get; set; }
+
+        public int IntentosGuardar { get; private set; }
+
         public bool PuedeGuardar
         {
-            get { return true; }
+            get { return PuedeGuardarConfigurado; }
         }
 
         public ResultadoOperacion<IList<Incidencia>> Cargar()
@@ -18,13 +24,28 @@ namespace GestorIncidencias.Tests.Controlador
             return new ResultadoOperacion<IList<Incidencia>>
             {
                 Exito = true,
-                Datos = Registros
+                Datos = ClonarLista(Registros)
             };
         }
 
         public ResultadoOperacion Guardar(IList<Incidencia> incidencias)
         {
-            foreach (var incidencia in incidencias)
+            IntentosGuardar++;
+
+            if (GuardarDebeFallar)
+            {
+                return new ResultadoOperacion
+                {
+                    Exito = false,
+                    Mensaje = "Error simulado de guardado."
+                };
+            }
+
+            var copia = ClonarLista(incidencias ?? new List<Incidencia>());
+
+            Registros.Clear();
+
+            foreach (var incidencia in copia)
             {
                 Registros.Add(incidencia);
             }
@@ -33,6 +54,27 @@ namespace GestorIncidencias.Tests.Controlador
             {
                 Exito = true
             };
+        }
+
+        private static IList<Incidencia> ClonarLista(IList<Incidencia> origen)
+        {
+            var resultado = new List<Incidencia>();
+
+            foreach (var incidencia in origen)
+            {
+                resultado.Add(new Incidencia
+                {
+                    Identificador = incidencia.Identificador,
+                    Titulo = incidencia.Titulo,
+                    Descripcion = incidencia.Descripcion,
+                    Responsable = incidencia.Responsable,
+                    Prioridad = incidencia.Prioridad,
+                    Estado = incidencia.Estado,
+                    FechaCreacion = incidencia.FechaCreacion
+                });
+            }
+
+            return resultado;
         }
     }
 }
