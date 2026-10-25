@@ -167,7 +167,7 @@ propiedades inmutables.
 - [x] T037 [US6] Añadir pruebas de XML dañado, tipos inválidos, identificadores duplicados,
   prioridades/estados no válidos y fallo de escritura; comprobar preservación y bloqueo de
   sobrescritura automática según RF-021.
-- [ ] T038 [US6] Integrar el repositorio con `IncidenciaController.cs` y ejecutar todas las
+- [x] T038 [US6] Integrar el repositorio con `IncidenciaController.cs` y ejecutar todas las
   pruebas de persistencia usando exclusivamente datos temporales.
 
 ## Fase 9: Historia 7 — Formulario y experiencia de operador (P1)

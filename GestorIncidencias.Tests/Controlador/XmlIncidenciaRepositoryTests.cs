@@ -362,6 +362,84 @@ namespace GestorIncidencias.Tests.Controlador
             });
         }
 
+        [TestMethod]
+        public void RegistrarConRepositorioXmlEnNuevasInstanciasConservaIdentificadoresYCampos()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var controladorPrimeraSesion = new IncidenciaController(CrearRepositorio(ruta));
+                var alta1 = controladorPrimeraSesion.Registrar(
+                    "Incidencia uno",
+                    "Descripción válida uno.",
+                    "Ana",
+                    Prioridad.Media);
+
+                var controladorSegundaSesion = new IncidenciaController(CrearRepositorio(ruta));
+                var alta2 = controladorSegundaSesion.Registrar(
+                    "Incidencia dos",
+                    "Descripción válida dos.",
+                    "Luis",
+                    Prioridad.Alta);
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsTrue(alta1.Exito);
+                Assert.IsTrue(alta2.Exito);
+                Assert.AreEqual(1, alta1.Datos.Identificador);
+                Assert.AreEqual(2, alta2.Datos.Identificador);
+
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(2, recargado.Datos.Count);
+                Assert.AreEqual("Incidencia uno", recargado.Datos[0].Titulo);
+                Assert.AreEqual("Descripción válida uno.", recargado.Datos[0].Descripcion);
+                Assert.AreEqual("Ana", recargado.Datos[0].Responsable);
+                Assert.AreEqual(Prioridad.Media, recargado.Datos[0].Prioridad);
+
+                Assert.AreEqual("Incidencia dos", recargado.Datos[1].Titulo);
+                Assert.AreEqual("Descripción válida dos.", recargado.Datos[1].Descripcion);
+                Assert.AreEqual("Luis", recargado.Datos[1].Responsable);
+                Assert.AreEqual(Prioridad.Alta, recargado.Datos[1].Prioridad);
+            });
+        }
+
+        [TestMethod]
+        public void RegistrarConErrorRealDeGuardadoNoDebeReportarExitoNiPerderDatosPersistidos()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var controladorInicial = new IncidenciaController(CrearRepositorio(ruta));
+                var altaInicial = controladorInicial.Registrar(
+                    "Incidencia previa",
+                    "Descripción previa válida.",
+                    "Ana",
+                    Prioridad.Media);
+
+                Assert.IsTrue(altaInicial.Exito);
+                var contenidoAnterior = File.ReadAllText(rutaArchivo);
+
+                ResultadoOperacion<Incidencia> altaConFallo;
+                using (new FileStream(rutaArchivo, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    var controladorBloqueado = new IncidenciaController(CrearRepositorio(ruta));
+                    altaConFallo = controladorBloqueado.Registrar(
+                        "Incidencia nueva",
+                        "Descripción nueva válida.",
+                        "Luis",
+                        Prioridad.Alta);
+                }
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsFalse(altaConFallo.Exito);
+                Assert.IsNotNull(altaConFallo.Mensaje);
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(1, recargado.Datos[0].Identificador);
+                Assert.AreEqual(contenidoAnterior, File.ReadAllText(rutaArchivo));
+            });
+        }
+
         private static XmlIncidenciaRepository CrearRepositorio(string directorio)
         {
             return new XmlIncidenciaRepository(ObtenerRutaArchivo(directorio));
