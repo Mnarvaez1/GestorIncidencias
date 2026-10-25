@@ -292,6 +292,76 @@ namespace GestorIncidencias.Tests.Controlador
             });
         }
 
+        [TestMethod]
+        public void GuardarSobreArchivoExistenteDebeCrearRespaldoYReemplazarContenidoPrincipal()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var rutaRespaldo = rutaArchivo + ".bak";
+                var repositorio = CrearRepositorio(ruta);
+
+                repositorio.Guardar(new[] { CrearIncidencia(1, "Inicial") });
+                var contenidoPrincipalAnterior = File.ReadAllText(rutaArchivo);
+
+                var guardado = repositorio.Guardar(new[] { CrearIncidencia(2, "Nuevo") });
+                var contenidoPrincipalActual = File.ReadAllText(rutaArchivo);
+
+                Assert.IsTrue(guardado.Exito);
+                Assert.IsTrue(File.Exists(rutaRespaldo));
+                Assert.AreEqual(contenidoPrincipalAnterior, File.ReadAllText(rutaRespaldo));
+                Assert.AreNotEqual(contenidoPrincipalAnterior, contenidoPrincipalActual);
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(2, recargado.Datos[0].Identificador);
+            });
+        }
+
+        [TestMethod]
+        public void GuardarExitosoNoDebeDejarArchivoTemporal()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var rutaTemporal = rutaArchivo + ".tmp";
+                var repositorio = CrearRepositorio(ruta);
+
+                var guardado = repositorio.Guardar(new[] { CrearIncidencia(1, "Temporal") });
+
+                Assert.IsTrue(guardado.Exito);
+                Assert.IsFalse(File.Exists(rutaTemporal));
+                Assert.IsTrue(File.Exists(rutaArchivo));
+            });
+        }
+
+        [TestMethod]
+        public void GuardarConFalloControladoEnValidacionTemporalDebeConservarPrincipalYDevolverError()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var rutaRespaldo = rutaArchivo + ".bak";
+
+                CrearRepositorio(ruta).Guardar(new[] { CrearIncidencia(1, "Inicial") });
+                var contenidoAnterior = File.ReadAllText(rutaArchivo);
+
+                var repositorio = new XmlIncidenciaRepositoryConFalloValidacionTemporal(rutaArchivo);
+                var guardado = repositorio.Guardar(new[] { CrearIncidencia(2, "Nuevo") });
+
+                Assert.IsFalse(guardado.Exito);
+                Assert.AreEqual(contenidoAnterior, File.ReadAllText(rutaArchivo));
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(1, recargado.Datos[0].Identificador);
+
+                Assert.IsFalse(File.Exists(rutaRespaldo));
+            });
+        }
+
         private static XmlIncidenciaRepository CrearRepositorio(string directorio)
         {
             return new XmlIncidenciaRepository(ObtenerRutaArchivo(directorio));
@@ -354,6 +424,20 @@ namespace GestorIncidencias.Tests.Controlador
                 {
                     Directory.Delete(directorio, true);
                 }
+            }
+        }
+
+        private class XmlIncidenciaRepositoryConFalloValidacionTemporal : XmlIncidenciaRepository
+        {
+            public XmlIncidenciaRepositoryConFalloValidacionTemporal(string rutaArchivo)
+                : base(rutaArchivo)
+            {
+            }
+
+            protected override void ValidarArchivoTemporal(string rutaTemporal)
+            {
+                Assert.IsTrue(File.Exists(rutaTemporal), "El archivo temporal debe existir antes de validar.");
+                throw new InvalidOperationException("Fallo controlado en validación de temporal.");
             }
         }
     }

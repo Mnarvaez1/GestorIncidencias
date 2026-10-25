@@ -117,10 +117,7 @@ namespace GestorIncidencias.Controlador
                     stream.Flush();
                 }
 
-                using (var validacion = File.OpenRead(temporal))
-                {
-                    CrearSerializer().ReadObject(validacion);
-                }
+                ValidarArchivoTemporal(temporal);
 
                 if (File.Exists(rutaArchivo))
                 {
@@ -175,6 +172,14 @@ namespace GestorIncidencias.Controlador
             }
 
             return incidencias.Max(i => i.Identificador) + 1;
+        }
+
+        protected virtual void ValidarArchivoTemporal(string rutaTemporal)
+        {
+            using (var validacion = File.OpenRead(rutaTemporal))
+            {
+                CrearSerializer().ReadObject(validacion);
+            }
         }
 
         private static IList<Incidencia> ClonarLista(IList<Incidencia> incidencias)

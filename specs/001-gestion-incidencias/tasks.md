@@ -161,10 +161,10 @@ propiedades inmutables.
   identificador positivo, cubriendo RF-007, RF-008 y RF-019.
 - [x] T035 [P] [US6] Añadir `XmlIncidenciaRepositoryTests.cs` con directorios temporales únicos
   por prueba para carga, guardado, cierre/reapertura y recuperación de identificadores.
-- [ ] T036 [US6] Implementar guardado temporal, validación del temporal, respaldo y reemplazo
+- [x] T036 [US6] Implementar guardado temporal, validación del temporal, respaldo y reemplazo
   atómico; actualizar memoria solo tras éxito y devolver fallo sin confirmación falsa, cubriendo
   RF-019 y RF-020.
-- [ ] T037 [US6] Añadir pruebas de XML dañado, tipos inválidos, identificadores duplicados,
+- [x] T037 [US6] Añadir pruebas de XML dañado, tipos inválidos, identificadores duplicados,
   prioridades/estados no válidos y fallo de escritura; comprobar preservación y bloqueo de
   sobrescritura automática según RF-021.
 - [ ] T038 [US6] Integrar el repositorio con `IncidenciaController.cs` y ejecutar todas las
