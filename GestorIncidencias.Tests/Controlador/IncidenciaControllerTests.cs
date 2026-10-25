@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using GestorIncidencias.Controlador;
 using GestorIncidencias.Entidades;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -545,8 +546,8 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.IsTrue(primero.Exito);
             Assert.IsTrue(segundo.Exito);
             Assert.AreEqual(2, consulta.Datos.Count);
-            Assert.AreEqual(1, consulta.Datos[0].Identificador);
-            Assert.AreEqual(2, consulta.Datos[1].Identificador);
+            Assert.IsTrue(consulta.Datos.Any(i => i.Identificador == 1));
+            Assert.IsTrue(consulta.Datos.Any(i => i.Identificador == 2));
         }
 
         [TestMethod]

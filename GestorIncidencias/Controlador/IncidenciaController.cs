@@ -64,7 +64,9 @@ namespace GestorIncidencias.Controlador
                 FechaCreacion = DateTime.Now
             };
 
-            var guardado = repositorio.Guardar(new List<Incidencia> { incidencia });
+            carga.Datos.Add(incidencia);
+
+            var guardado = repositorio.Guardar(carga.Datos);
 
             if (!guardado.Exito)
             {
@@ -149,11 +151,6 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            if (!repositorio.PuedeGuardar)
-            {
-                return Error("El repositorio no permite guardar incidencias.");
-            }
-
             var carga = repositorio.Cargar();
 
             if (!carga.Exito || carga.Datos == null)
@@ -179,10 +176,22 @@ namespace GestorIncidencias.Controlador
                 return validacion;
             }
 
+            if (!repositorio.PuedeGuardar)
+            {
+                return Error("El repositorio no permite guardar incidencias.");
+            }
+
             incidencia.Titulo = (titulo ?? string.Empty).Trim();
             incidencia.Descripcion = (descripcion ?? string.Empty).Trim();
             incidencia.Responsable = (responsable ?? string.Empty).Trim();
             incidencia.Prioridad = prioridad;
+
+            var guardado = repositorio.Guardar(carga.Datos);
+
+            if (!guardado.Exito)
+            {
+                return Error(guardado.Mensaje ?? "No se pudo guardar la incidencia editada.");
+            }
 
             return new ResultadoOperacion<Incidencia>
             {
@@ -235,7 +244,19 @@ namespace GestorIncidencias.Controlador
                 return Error("La transición de estado solicitada no está permitida.");
             }
 
+            if (!repositorio.PuedeGuardar)
+            {
+                return Error("El repositorio no permite guardar incidencias.");
+            }
+
             incidencia.Estado = estadoSolicitado;
+
+            var guardado = repositorio.Guardar(carga.Datos);
+
+            if (!guardado.Exito)
+            {
+                return Error(guardado.Mensaje ?? "No se pudo guardar el cambio de estado.");
+            }
 
             return new ResultadoOperacion<Incidencia>
             {

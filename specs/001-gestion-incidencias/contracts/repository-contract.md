@@ -28,3 +28,8 @@ Este contrato define el comportamiento esperado de `IIncidenciaRepository` sin m
 
 - Cuando se detecta archivo persistido dañado, se conserva el archivo original.
 - Ante archivo dañado, se bloquea la sobrescritura automática estableciendo `PuedeGuardar=false`.
+
+## Evidencia TDD (T055)
+
+- Fase roja: `T055-rojo.trx` (63 pruebas, 52 correctas, 11 fallidas en semántica de persistencia previa).
+- Fase verde: `T055-verde.trx` (63 pruebas, 63 correctas).

@@ -151,7 +151,7 @@ propiedades inmutables.
 
 **Objetivo**: conservar datos confirmados y proteger los datos anteriores ante fallos o corrupción.
 
-- [ ] T055 [US6] Alinear por TDD `IncidenciaRepositoryDoble` y `IncidenciaController.cs` con
+- [x] T055 [US6] Alinear por TDD `IncidenciaRepositoryDoble` y `IncidenciaController.cs` con
   `contracts/repository-contract.md` antes de T033, verificando semántica de reemplazo completo,
   confirmación de guardado antes de éxito y bloqueo de sobrescritura cuando `PuedeGuardar=false`.
 
