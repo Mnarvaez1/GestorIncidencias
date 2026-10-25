@@ -62,4 +62,10 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Alcance de esta verificación: cubre T033–T035; no constituye cobertura completa de T036–T038.
 - Verificación específica T037: `T037-verificacion-inicial.trx` (74 pruebas, 74 correctas, incluyendo 6 pruebas de corrupción/fallo de persistencia).
 - Verificación específica T036 (validación temporal): `T036-validacion-temporal.trx` (77 pruebas, 77 correctas; incluye fallo controlado durante validación del `.tmp` con preservación del archivo principal).
+
+## Evidencia del bloque de interfaz base (US7 / T039)
+
+- Verificación manual: `frmIncidencias` abre correctamente en Vista Diseño de Visual Studio 2026 y muestra controles del layout base empresarial.
+- Verificación manual: ejecución con F5 abre el formulario principal sin errores de carga de diseñador.
+- Verificación automatizada asociada: `T039-checkpoint-verificacion.trx` (79 pruebas, 79 correctas).
 - Verificación específica T038 (integración controlador + repositorio XML con datos temporales): `T038-verificacion-inicial.trx` (79 pruebas, 79 correctas).

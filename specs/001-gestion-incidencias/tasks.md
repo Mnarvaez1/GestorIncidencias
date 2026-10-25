@@ -174,7 +174,7 @@ propiedades inmutables.
 
 **Objetivo**: exponer los casos de uso sin duplicar reglas y conservar el diseñador.
 
-- [ ] T039 [US1] Modificar `frmIncidencias.Designer.cs` para declarar y disponer `DataGridView`,
+- [x] T039 [US1] Modificar `frmIncidencias.Designer.cs` para declarar y disponer `DataGridView`,
   cajas de texto, combos, botones, etiquetas y layout; comprobar que los controles se muestran
   en el diseñador de Visual Studio 2026.
 - [ ] T040 [US1] Mantener `Formularios/frmIncidencias.cs` o la ruta actual compatible con el
