@@ -35,6 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Controlador\IncidenciaControllerTests.cs" />
+    <Compile Include="Controlador\IncidenciaRepositoryDoble.cs" />
     <Compile Include="Controlador\IncidenciaValidatorTests.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
