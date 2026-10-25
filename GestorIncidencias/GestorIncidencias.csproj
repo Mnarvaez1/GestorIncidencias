@@ -52,6 +52,7 @@
     <Compile Include="Controlador\IncidenciaRepository.cs" />
     <Compile Include="Controlador\ResultadoOperacion.cs" />
     <Compile Include="Controlador\IncidenciaValidator.cs" />
+    <Compile Include="Controlador\SingleInstanceGuard.cs" />
     <Compile Include="frmIncidencias.cs">
       <SubType>Form</SubType>
     </Compile>
