@@ -118,11 +118,11 @@ fecha y estado Pendiente sin abrir un formulario.
 **Objetivo**: editar únicamente título, descripción, responsable y prioridad manteniendo las
 propiedades inmutables.
 
-- [ ] T024 [US3] Añadir pruebas de edición válida, edición inválida, cancelación lógica y
+- [x] T024 [US3] Añadir pruebas de edición válida, edición inválida, cancelación lógica y
   conservación de identificador, fecha y estado en `IncidenciaControllerTests.cs`.
-- [ ] T025 [US3] Implementar el método de edición de `IncidenciaController.cs` reutilizando el
+- [x] T025 [US3] Implementar el método de edición de `IncidenciaController.cs` reutilizando el
   validador y aplicando cambios solo después de validar; cubrir RF-011, RF-012 y RF-022.
-- [ ] T026 [US3] Ejecutar pruebas de regresión de registro y edición, comprobar que no se altera
+- [x] T026 [US3] Ejecutar pruebas de regresión de registro y edición, comprobar que no se altera
   el objeto ante errores y guardar el TRX de la historia.
 
 ## Fase 6: Historia 4 — Cambiar el estado (P1)

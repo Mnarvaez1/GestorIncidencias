@@ -117,7 +117,47 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            return Error("Edición no implementada.");
+            if (!repositorio.PuedeGuardar)
+            {
+                return Error("El repositorio no permite guardar incidencias.");
+            }
+
+            var carga = repositorio.Cargar();
+
+            if (!carga.Exito || carga.Datos == null)
+            {
+                return Error(carga.Mensaje ?? "No se pudieron cargar las incidencias.");
+            }
+
+            var incidencia = carga.Datos.FirstOrDefault(i => i.Identificador == identificador);
+
+            if (incidencia == null)
+            {
+                return Error("No existe una incidencia con el identificador indicado.");
+            }
+
+            var validacion = new IncidenciaValidator().Validar(
+                titulo,
+                descripcion,
+                responsable,
+                prioridad);
+
+            if (!validacion.Exito)
+            {
+                return validacion;
+            }
+
+            incidencia.Titulo = (titulo ?? string.Empty).Trim();
+            incidencia.Descripcion = (descripcion ?? string.Empty).Trim();
+            incidencia.Responsable = (responsable ?? string.Empty).Trim();
+            incidencia.Prioridad = prioridad;
+
+            return new ResultadoOperacion<Incidencia>
+            {
+                Exito = true,
+                Mensaje = "Incidencia editada correctamente.",
+                Datos = incidencia
+            };
         }
 
         private static ResultadoOperacion<Incidencia> Error(string mensaje)
