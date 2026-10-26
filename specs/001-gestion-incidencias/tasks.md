@@ -182,7 +182,7 @@ propiedades inmutables.
   `frmIncidencias` como formulario iniciado por `Program.cs`.
 - [x] T041 [US2] Conectar la lista a `dgvIncidencias`, mostrar identificador, título, descripción,
   responsable, prioridad, estado y fecha, y comunicar el estado vacío.
-- [ ] T042 [US4] Conectar el cambio de estado independiente y mostrar errores de transición sin
+- [x] T042 [US4] Conectar el cambio de estado independiente y mostrar errores de transición sin
   mutar los controles ni anunciar éxito falso.
 - [ ] T043 [US5] Conectar `txtBuscar.TextChanged` y `cboFiltroEstado.SelectedIndexChanged` para
   refrescar búsqueda/filtro mientras se escribe, sin mover reglas de negocio a los eventos.

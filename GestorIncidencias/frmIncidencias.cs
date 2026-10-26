@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using GestorIncidencias.Controlador;
 using GestorIncidencias.Entidades;
@@ -18,6 +19,7 @@ namespace GestorIncidencias
 
             btnNuevaIncidencia.Click += BtnNuevaIncidencia_Click;
             btnModificarIncidencia.Click += BtnModificarIncidencia_Click;
+            btnCambiarEstado.Click += BtnCambiarEstado_Click;
             Load += FrmIncidencias_Load;
         }
 
@@ -97,6 +99,129 @@ namespace GestorIncidencias
             }
         }
 
+        private void BtnCambiarEstado_Click(object sender, EventArgs e)
+        {
+            var incidenciaSeleccionada = ObtenerIncidenciaSeleccionada();
+
+            if (incidenciaSeleccionada == null)
+            {
+                lblEstadoOperacion.Text = "Seleccione una incidencia para cambiar el estado.";
+                return;
+            }
+
+            EstadoIncidencia estadoDestino;
+            var confirmaCambio = IntentarSeleccionarEstadoDestino(incidenciaSeleccionada.Estado, out estadoDestino);
+
+            if (!confirmaCambio)
+            {
+                lblEstadoOperacion.Text = "Cambio de estado cancelado por el operador.";
+                return;
+            }
+
+            var cambio = controlador.CambiarEstado(incidenciaSeleccionada.Identificador, estadoDestino);
+
+            if (!cambio.Exito)
+            {
+                lblEstadoOperacion.Text = cambio.Mensaje ?? "No se pudo cambiar el estado de la incidencia.";
+                return;
+            }
+
+            RecargarGrilla();
+            SeleccionarFilaPorId(incidenciaSeleccionada.Identificador);
+            lblEstadoOperacion.Text = cambio.Mensaje ?? "Estado de incidencia actualizado correctamente.";
+        }
+
+        private bool IntentarSeleccionarEstadoDestino(EstadoIncidencia estadoActual, out EstadoIncidencia estadoDestino)
+        {
+            var opciones = ObtenerOpcionesEstado(estadoActual);
+            var selector = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                DataSource = opciones,
+                DisplayMember = "Texto",
+                ValueMember = "Valor",
+                Left = 20,
+                Top = 20,
+                Width = 260
+            };
+
+            var btnAceptar = new Button
+            {
+                Text = "Aceptar",
+                DialogResult = DialogResult.OK,
+                Left = 120,
+                Top = 60,
+                Width = 80
+            };
+
+            var btnCancelar = new Button
+            {
+                Text = "Cancelar",
+                DialogResult = DialogResult.Cancel,
+                Left = 205,
+                Top = 60,
+                Width = 80
+            };
+
+            using (var dialogo = new Form())
+            {
+                dialogo.Text = "Cambiar estado";
+                dialogo.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dialogo.StartPosition = FormStartPosition.CenterParent;
+                dialogo.MinimizeBox = false;
+                dialogo.MaximizeBox = false;
+                dialogo.ShowInTaskbar = false;
+                dialogo.ClientSize = new System.Drawing.Size(305, 105);
+                dialogo.Controls.Add(selector);
+                dialogo.Controls.Add(btnAceptar);
+                dialogo.Controls.Add(btnCancelar);
+                dialogo.AcceptButton = btnAceptar;
+                dialogo.CancelButton = btnCancelar;
+
+                if (dialogo.ShowDialog(this) != DialogResult.OK || selector.SelectedValue == null)
+                {
+                    estadoDestino = estadoActual;
+                    return false;
+                }
+
+                estadoDestino = (EstadoIncidencia)selector.SelectedValue;
+                return true;
+            }
+        }
+
+        private static List<OpcionEstado> ObtenerOpcionesEstado(EstadoIncidencia estadoActual)
+        {
+            var opciones = new List<OpcionEstado>
+            {
+                new OpcionEstado(estadoActual, ObtenerTextoEstado(estadoActual) + " (sin cambios)")
+            };
+
+            if (estadoActual == EstadoIncidencia.Pendiente)
+            {
+                opciones.Add(new OpcionEstado(EstadoIncidencia.EnProceso, ObtenerTextoEstado(EstadoIncidencia.EnProceso)));
+            }
+            else if (estadoActual == EstadoIncidencia.EnProceso)
+            {
+                opciones.Add(new OpcionEstado(EstadoIncidencia.Resuelta, ObtenerTextoEstado(EstadoIncidencia.Resuelta)));
+            }
+            else if (estadoActual == EstadoIncidencia.Resuelta)
+            {
+                opciones.Add(new OpcionEstado(EstadoIncidencia.EnProceso, ObtenerTextoEstado(EstadoIncidencia.EnProceso)));
+            }
+
+            return opciones;
+        }
+
+        private static string ObtenerTextoEstado(EstadoIncidencia estado)
+        {
+            if (estado == EstadoIncidencia.EnProceso)
+            {
+                return "En proceso";
+            }
+
+            return estado.ToString();
+        }
+
         private void RecargarGrilla()
         {
             var consulta = controlador.Consultar();
@@ -172,6 +297,19 @@ namespace GestorIncidencias
             }
 
             return recortado;
+        }
+
+        private class OpcionEstado
+        {
+            public OpcionEstado(EstadoIncidencia valor, string texto)
+            {
+                Valor = valor;
+                Texto = texto;
+            }
+
+            public EstadoIncidencia Valor { get; private set; }
+
+            public string Texto { get; private set; }
         }
     }
 }
