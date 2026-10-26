@@ -184,7 +184,7 @@ propiedades inmutables.
   responsable, prioridad, estado y fecha, y comunicar el estado vacío.
 - [x] T042 [US4] Conectar el cambio de estado independiente y mostrar errores de transición sin
   mutar los controles ni anunciar éxito falso.
-- [ ] T043 [US5] Conectar `txtBuscar.TextChanged` y `cboFiltroEstado.SelectedIndexChanged` para
+- [x] T043 [US5] Conectar `txtBuscar.TextChanged` y `cboFiltroEstado.SelectedIndexChanged` para
   refrescar búsqueda/filtro mientras se escribe, sin mover reglas de negocio a los eventos.
 - [ ] T044 [US6] En `frmIncidencias.Load`, usar el controlador y bloqueo ya preparados por
   `Program.Main`, cargar datos y mostrar errores de carga; no adquirir un segundo mutex.

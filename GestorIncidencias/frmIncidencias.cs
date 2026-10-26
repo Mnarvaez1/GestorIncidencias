@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using GestorIncidencias.Controlador;
+﻿using GestorIncidencias.Controlador;
 using GestorIncidencias.Entidades;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace GestorIncidencias
 {
@@ -20,12 +21,24 @@ namespace GestorIncidencias
             btnNuevaIncidencia.Click += BtnNuevaIncidencia_Click;
             btnModificarIncidencia.Click += BtnModificarIncidencia_Click;
             btnCambiarEstado.Click += BtnCambiarEstado_Click;
+            txtBuscar.TextChanged += TxtBuscar_TextChanged;
+            cboFiltroEstado.SelectedIndexChanged += CboFiltroEstado_SelectedIndexChanged;
             Load += FrmIncidencias_Load;
         }
 
         private void FrmIncidencias_Load(object sender, EventArgs e)
         {
             RecargarGrilla();
+        }
+
+        private void TxtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            AplicarBusquedaYFiltro();
+        }
+
+        private void CboFiltroEstado_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            AplicarBusquedaYFiltro();
         }
 
         private void BtnNuevaIncidencia_Click(object sender, EventArgs e)
@@ -224,6 +237,11 @@ namespace GestorIncidencias
 
         private void RecargarGrilla()
         {
+            AplicarBusquedaYFiltro();
+        }
+
+        private void AplicarBusquedaYFiltro()
+        {
             var consulta = controlador.Consultar();
 
             if (!consulta.Exito)
@@ -232,9 +250,44 @@ namespace GestorIncidencias
                 return;
             }
 
+            var incidencias = consulta.Datos ?? new List<Incidencia>();
+            var texto = (txtBuscar.Text ?? string.Empty).Trim();
+            var filtroEstado = ObtenerFiltroEstadoSeleccionado();
+            var tieneTexto = texto.Length > 0;
+
+
+            var filtradas = incidencias
+                .Where(i =>
+                    (!filtroEstado.HasValue || i.Estado == filtroEstado.Value) &&
+                    (!tieneTexto ||
+                     ContieneTexto(i.Titulo, texto) ||
+                     ContieneTexto(i.ReportadoPor, texto) ||
+                     ContieneTexto(i.Responsable, texto)))
+                .ToList();
+
+
+            CargarFilas(filtradas);
+
+            if (filtradas.Count == 0)
+            {
+                lblEstadoOperacion.Text = "No se encontraron incidencias para los criterios indicados.";
+                return;
+            }
+
+            if (tieneTexto || filtroEstado.HasValue)
+            {
+                lblEstadoOperacion.Text = "Consulta completada correctamente.";
+                return;
+            }
+
+            lblEstadoOperacion.Text = consulta.Mensaje;
+        }
+
+        private void CargarFilas(List<Incidencia> incidencias)
+        {
             dgvIncidencias.Rows.Clear();
 
-            foreach (var incidencia in consulta.Datos)
+            foreach (var incidencia in incidencias)
             {
                 var indice = dgvIncidencias.Rows.Add(
                     incidencia.Identificador,
@@ -248,8 +301,40 @@ namespace GestorIncidencias
 
                 dgvIncidencias.Rows[indice].Tag = incidencia;
             }
+        }
 
-            lblEstadoOperacion.Text = consulta.Mensaje;
+        private EstadoIncidencia? ObtenerFiltroEstadoSeleccionado()
+        {
+            var seleccionado = cboFiltroEstado.SelectedItem as string;
+
+            if (string.IsNullOrWhiteSpace(seleccionado) ||
+                string.Equals(seleccionado, "Todos", StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            if (string.Equals(seleccionado, "En proceso", StringComparison.OrdinalIgnoreCase))
+            {
+                return EstadoIncidencia.EnProceso;
+            }
+
+            EstadoIncidencia estado;
+            if (Enum.TryParse(seleccionado, true, out estado))
+            {
+                return estado;
+            }
+
+            return null;
+        }
+
+        private static bool ContieneTexto(string valor, string texto)
+        {
+            if (string.IsNullOrEmpty(valor) || string.IsNullOrEmpty(texto))
+            {
+                return false;
+            }
+
+            return valor.IndexOf(texto, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         private Incidencia ObtenerIncidenciaSeleccionada()
