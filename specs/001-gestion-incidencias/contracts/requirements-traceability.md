@@ -149,3 +149,18 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Seguridad y consistencia: `ReportadoPor` ausente se representa como `No informado (registro legado)` solo en salida visual/HTML, sin modificar datos originales en memoria.
 - Manejo de flujo y errores en español: cancelación de diálogo y fallos de escritura informados al operador; éxito comunicado solo después de guardado confirmado.
 - Verificación real en esta ejecución: compilación correcta de la solución (2 proyectos, 0 errores).
+
+## Evidencia de pruebas automatizadas de reporte (US8 / T069)
+
+- Pruebas añadidas en `GestorIncidencias.Tests/Controlador/VistaPreviaReporteHtmlTests.cs` y registradas en `GestorIncidencias.Tests.csproj`.
+- Cobertura automatizada incorporada para reportes HTML:
+  - Exportación con incidencias reales y conservación de identificadores/datos.
+  - Uso exclusivo de la colección recibida (sin incluir incidencias ajenas al filtrado).
+  - Escape HTML seguro de `<`, `>`, `&` y comillas.
+  - Representación legacy de `ReportadoPor` como `No informado (registro legado)` sin mutar el dato fuente.
+  - Caso de cero incidencias con estado vacío comprensible.
+  - Escritura en UTF-8 con verificación de BOM y meta charset.
+  - Manejo de error de ruta inválida sin falso éxito.
+- Corrección documentada de expectativa de prueba: el contenido exportado se mantiene escapado (`WebUtility.HtmlEncode`), por lo que la validación de caracteres acentuados se ajustó usando `WebUtility.HtmlDecode` en la aserción de texto visible (ejemplo: `&#241;` -> `ñ`) sin debilitar controles de seguridad sobre HTML sin decodificar.
+- Evidencia real aportada por el operador en Visual Studio: suite MSTest completa 111 ejecutadas, 111 aprobadas, 0 fallidas, 0 omitidas, 0 advertencias; compilación correcta.
+- Alcance no incluido en T069: no se declara conexión del botón principal de vista previa (T065) ni cierre documental global de ampliación (T070).

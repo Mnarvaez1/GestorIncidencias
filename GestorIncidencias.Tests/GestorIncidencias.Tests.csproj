@@ -38,6 +38,7 @@
     <Compile Include="Controlador\IncidenciaControllerTests.cs" />
     <Compile Include="Controlador\IncidenciaRepositoryDoble.cs" />
     <Compile Include="Controlador\IncidenciaValidatorTests.cs" />
+    <Compile Include="Controlador\VistaPreviaReporteHtmlTests.cs" />
     <Compile Include="Controlador\XmlIncidenciaRepositoryTests.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />

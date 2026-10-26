@@ -273,7 +273,7 @@ propiedades inmutables.
 - [x] T068 [US8] Implementar exportación a HTML UTF-8 con escape de contenido y datos reales
   filtrados, sin usar `PrintDocument`, `PrintPreviewDialog`, `PrintPreviewControl` ni
   `PrintDialog` (RF-036, RF-037).
-- [ ] T069 [US8] Añadir pruebas automatizadas para generación/exportación de reporte y casos de
+- [x] T069 [US8] Añadir pruebas automatizadas para generación/exportación de reporte y casos de
   cero incidencias; conservar aislamiento de archivos temporales.
 - [ ] T070 [US8] [US9] Actualizar `contracts/requirements-traceability.md` y `quickstart.md` con
   la cobertura RF-024 a RF-038 y evidencias manuales/automáticas de la ampliación.

@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
+using GestorIncidencias.Controlador;
 
 namespace GestorIncidencias
 {
@@ -124,8 +125,18 @@ namespace GestorIncidencias
 
                 try
                 {
-                    var contenidoHtml = ConstruirDocumentoHtml();
-                    File.WriteAllText(dialogo.FileName, contenidoHtml, Encoding.UTF8);
+                    var exportacion = ExportarHtml(dialogo.FileName, incidencias, fechaGeneracion);
+
+                    if (!exportacion.Exito)
+                    {
+                        MessageBox.Show(
+                            this,
+                            exportacion.Mensaje ?? "No se pudo exportar el reporte a HTML.",
+                            "Vista previa de reporte",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
 
                     MessageBox.Show(
                         this,
@@ -146,8 +157,41 @@ namespace GestorIncidencias
             }
         }
 
-        private string ConstruirDocumentoHtml()
+        internal static ResultadoOperacion ExportarHtml(string rutaArchivo, IList<Incidencia> incidencias, DateTime fechaGeneracion)
         {
+            if (string.IsNullOrWhiteSpace(rutaArchivo))
+            {
+                return new ResultadoOperacion
+                {
+                    Exito = false,
+                    Mensaje = "No se especificó una ruta válida para exportar el reporte."
+                };
+            }
+
+            try
+            {
+                var contenidoHtml = ConstruirDocumentoHtml(incidencias, fechaGeneracion);
+                File.WriteAllText(rutaArchivo, contenidoHtml, Encoding.UTF8);
+
+                return new ResultadoOperacion
+                {
+                    Exito = true,
+                    Mensaje = "Reporte exportado correctamente a HTML."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultadoOperacion
+                {
+                    Exito = false,
+                    Mensaje = "No se pudo exportar el reporte a HTML. " + ex.Message
+                };
+            }
+        }
+
+        internal static string ConstruirDocumentoHtml(IList<Incidencia> incidencias, DateTime fechaGeneracion)
+        {
+            var incidenciasReporte = ClonarIncidencias(incidencias);
             var html = new StringBuilder();
             html.AppendLine("<!DOCTYPE html>");
             html.AppendLine("<html lang=\"es\">");
@@ -176,9 +220,9 @@ namespace GestorIncidencias
             html.AppendLine("      <p class=\"subtitulo\">GestorIncidencias - Reporte operativo</p>");
             html.AppendLine("      <div class=\"meta\">Generado: " + EscapeHtml(fechaGeneracion.ToString("dd/MM/yyyy HH:mm")) + "</div>");
             html.AppendLine("    </section>");
-            html.AppendLine("    <section class=\"resumen\">Total de incidencias incluidas: " + incidencias.Count + "</section>");
+            html.AppendLine("    <section class=\"resumen\">Total de incidencias incluidas: " + incidenciasReporte.Count + "</section>");
 
-            if (incidencias.Count == 0)
+            if (incidenciasReporte.Count == 0)
             {
                 html.AppendLine("    <section class=\"vacio\">No hay incidencias para mostrar en la vista previa del reporte.</section>");
             }
@@ -198,7 +242,7 @@ namespace GestorIncidencias
                 html.AppendLine("      </thead>");
                 html.AppendLine("      <tbody>");
 
-                foreach (var incidencia in incidencias)
+                foreach (var incidencia in incidenciasReporte)
                 {
                     html.AppendLine("        <tr>");
                     html.AppendLine("          <td>" + incidencia.Identificador + "</td>");
