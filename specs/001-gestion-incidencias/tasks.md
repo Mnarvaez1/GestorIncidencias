@@ -258,9 +258,9 @@ propiedades inmutables.
 - [x] T064 [US9] Modificar `frmIncidencias.Designer.cs` para agregar controles de `ReportadoPor`,
   compactar/alinear filtro de estado, asegurar visibilidad del área de mensajes e incorporar el
   botón `Vista previa de reporte` (RF-031, RF-038).
-- [ ] T065 [US1] [US9] Conectar en `frmIncidencias.cs` alta/edición con `ReportadoPor`, refresco
+- [x] T065 [US1] [US9] Conectar en `frmIncidencias.cs` alta/edición con `ReportadoPor`, refresco
   de grilla con el nuevo campo y apertura de vista previa, sin mover reglas de negocio a eventos.
-- [ ] T066 [US9] Ejecutar validación manual en diseñador de Visual Studio 2026 y ejecución F5,
+- [x] T066 [US9] Ejecutar validación manual en diseñador de Visual Studio 2026 y ejecución F5,
   documentando evidencias separadas de pruebas automatizadas.
 
 ## Fase 15: Ampliación — Vista previa y exportación de reportes (P2)
@@ -277,6 +277,65 @@ propiedades inmutables.
   cero incidencias; conservar aislamiento de archivos temporales.
 - [ ] T070 [US8] [US9] Actualizar `contracts/requirements-traceability.md` y `quickstart.md` con
   la cobertura RF-024 a RF-038 y evidencias manuales/automáticas de la ampliación.
+
+## Fase 16: Evolución visual de reporte ejecutivo (P2)
+
+**Objetivo**: modernizar la presentación de `frmVistaPreviaReporte` con el modelo ejecutivo negro y dorado sin alterar comportamiento funcional.
+
+- [x] T071 [US8] Aplicar rediseño visual en `frmVistaPreviaReporte.Designer.cs` y ajustes mínimos en
+  `frmVistaPreviaReporte.cs` para encabezado ejecutivo, indicadores (Total/Pendientes/En proceso/Resueltas),
+	detalle optimizado con presentación inicial en tarjetas y vista técnica secundaria, además de pie con acciones,
+  conservando datos reales filtrados, exportación existente,
+  compatibilidad de diseñador y sin usar componentes de impresión.
+
+## Fase 17: Evolución visual de identidad unificada (P2)
+
+**Objetivo**: unificar la identidad visual negro/dorado/crema en formularios principales sin alterar comportamiento funcional.
+
+- [x] T072 [US9] Aplicar en `frmIncidencias.Designer.cs` la paleta corporativa negro/dorado/crema,
+  conservando estructura de búsqueda/filtros, `DataGridView`, botones y mensajes operativos existentes.
+- [x] T073 [US1] [US9] Aplicar en `frmEditarIncidencia.Designer.cs` la paleta corporativa
+  negro/dorado/crema con encabezado y acciones consistentes, preservando validaciones, eventos,
+  campos y compatibilidad de diseñador.
+- [x] T074 [US1] [US9] Documentar en `contracts/requirements-traceability.md` la evolución visual
+  unificada y dejar pendiente su cierre hasta validación manual en diseñador/F5 por el estudiante.
+
+## Fase 18: Evolución de usabilidad en formulario principal (P2)
+
+**Objetivo**: mejorar la salida explícita del sistema desde `frmIncidencias` sin alterar reglas funcionales.
+
+- [x] T075 [US9] Agregar en `frmIncidencias.Designer.cs` el botón `btnSalir` con estilo corporativo,
+  ubicación en panel de acciones y distribución compatible con el resto de botones.
+- [x] T076 [US9] Conectar en `frmIncidencias.cs` el evento de `btnSalir` con confirmación Sí/No en
+  español y cierre estándar del formulario principal sin cierres forzados.
+- [x] T077 [US9] Actualizar `contracts/requirements-traceability.md` con evidencia de alcance de la
+  evolución de salida visible, dejando pendiente validación manual en Visual Studio.
+
+## Fase 19: Evolución de identidad corporativa XAMY (P2)
+
+**Objetivo**: personalizar la marca visible de la aplicación a XAMY TECHNOLOGIES sin alterar funcionamiento interno ni arquitectura.
+
+- [x] T078 [US8] [US9] Actualizar textos visibles de marca en `frmIncidencias` y `frmEditarIncidencia`
+  (encabezados, subtítulos y títulos de ventana) para reflejar `XAMY TECHNOLOGIES` con
+  conservación de distribución y estilos aprobados.
+- [x] T079 [US8] Actualizar textos visibles de marca en `frmVistaPreviaReporte` y en el HTML exportado
+  para reflejar `XAMY TECHNOLOGIES`, preservando indicadores, tarjetas, codificación UTF-8,
+  escape seguro y flujo funcional vigente.
+- [x] T080 [US8] [US9] Documentar en `contracts/requirements-traceability.md` la evolución de
+  identidad corporativa XAMY, dejando pendiente su cierre hasta validación manual en Designer,
+  ejecución F5 y regresión de pruebas MSTest por el estudiante.
+
+## Fase 20: Evolución de plantilla HTML ejecutiva (P2)
+
+**Objetivo**: modernizar la plantilla del HTML exportado para reflejar el estilo ejecutivo XAMY sin alterar contratos de seguridad ni datos.
+
+- [x] T081 [US8] Actualizar en `frmVistaPreviaReporte.cs` la plantilla HTML/CSS exportada a diseño
+  ejecutivo negro/dorado/crema con encabezado corporativo, indicadores dinámicos y tarjetas de
+  incidencias como presentación principal.
+- [x] T082 [US8] Conservar en el HTML exportado la tabla de detalle técnico como sección secundaria,
+  preservando cobertura funcional de campos completos, estado vacío y compatibilidad con filtros.
+- [x] T083 [US8] [US9] Actualizar `contracts/requirements-traceability.md` con la evolución de
+  plantilla HTML ejecutiva, dejando pendiente su validación manual y regresión MSTest por el estudiante.
 
 ## Dependencias y orden de ejecución
 

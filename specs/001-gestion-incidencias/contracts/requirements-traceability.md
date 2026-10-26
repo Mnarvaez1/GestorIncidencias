@@ -164,3 +164,51 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Corrección documentada de expectativa de prueba: el contenido exportado se mantiene escapado (`WebUtility.HtmlEncode`), por lo que la validación de caracteres acentuados se ajustó usando `WebUtility.HtmlDecode` en la aserción de texto visible (ejemplo: `&#241;` -> `ñ`) sin debilitar controles de seguridad sobre HTML sin decodificar.
 - Evidencia real aportada por el operador en Visual Studio: suite MSTest completa 111 ejecutadas, 111 aprobadas, 0 fallidas, 0 omitidas, 0 advertencias; compilación correcta.
 - Alcance no incluido en T069: no se declara conexión del botón principal de vista previa (T065) ni cierre documental global de ampliación (T070).
+
+## Evolución visual pendiente de validación manual (US8 / T071)
+
+- Se define una evolución de presentación para `frmVistaPreviaReporte` (modelo ejecutivo negro y dorado) sin cambiar reglas de negocio ni exportación segura ya validada.
+- Evidencia manual aportada por el estudiante: diseñador funcional en Visual Studio, ejecución F5 correcta, indicadores y tarjetas del informe ejecutivo con datos reales y contadores coherentes.
+
+## Evolución visual compacta pendiente de validación manual (US8 / T071)
+
+- Dentro de T071 se incorpora ajuste de compactación del informe ejecutivo para mejorar visibilidad integral del formulario y mantener acciones inferiores siempre accesibles.
+- Este ajuste conserva paleta negro/dorado/crema y comportamiento funcional; la validación manual fue reportada por el estudiante con apertura correcta del formulario y controles visibles.
+- Se reubica `Exportar HTML` al encabezado derecho del panel "Detalle de incidencias" junto al conteo y enlace de detalle técnico, manteniendo un único botón y el mismo evento existente.
+
+## Evolución visual de identidad unificada pendiente de validación manual (US1 / US9 / T072-T074)
+
+- Se aplica la identidad visual negro/dorado/crema de forma consistente a `frmIncidencias` y `frmEditarIncidencia` usando controles nativos de Windows Forms.
+- En `frmIncidencias` se ajustan encabezado, panel de filtros, `DataGridView`, botones operativos y área de mensajes sin alterar búsqueda inmediata, filtro combinado, selección ni eventos existentes.
+- En `frmEditarIncidencia` se ajustan encabezado con detalle dorado, superficie de formulario, etiquetas/campos y botones Guardar/Cancelar sin modificar validaciones, eventos ni flujo de alta/edición.
+- Evidencia manual aportada por el estudiante: apertura en diseñador de formularios, ejecución F5 y verificación visual de la paleta corporativa aplicada sin regresión funcional.
+
+## Evolución de usabilidad de salida visible pendiente de validación manual (US9 / T075-T077)
+
+- Se incorpora `btnSalir` en `frmIncidencias` con estilo consistente negro/dorado/crema y ubicación en el panel de acciones.
+- Se conecta confirmación en español: "¿Está seguro de que desea salir de XAMY Technologies?" con opciones Sí/No.
+- Si el operador confirma Sí, el formulario principal se cierra por vía estándar (`Close`) para respetar el ciclo normal de finalización.
+- Si el operador selecciona No, la operación se cancela sin cambios funcionales ni de datos.
+- Evidencia manual aportada por el estudiante: compilación correcta, navegación operativa y validación funcional del botón Salir (confirmación y cierre) en Visual Studio.
+
+## Evolución de identidad corporativa XAMY pendiente de validación manual (US8 / US9 / T078-T080)
+
+- Se actualiza la marca visible en formularios principales y reporte ejecutivo a `XAMY TECHNOLOGIES`, manteniendo `GestorIncidencias` como nombre interno técnico del proyecto.
+- En `frmIncidencias` se actualizan textos de encabezado, subtítulo institucional, título de ventana y confirmación de salida sin alterar flujos de operación.
+- En `frmEditarIncidencia` se actualizan subtítulo corporativo y títulos de ventana por modo (nueva/modificar) sin cambiar campos, validaciones ni eventos.
+- En `frmVistaPreviaReporte` se actualizan textos de marca en encabezado, leyenda inferior y título de ventana manteniendo diseño aprobado, indicadores dinámicos y tarjetas de incidencias.
+- En la exportación HTML se actualizan únicamente textos de identidad corporativa visibles, preservando estructura, codificación UTF-8, escape seguro (`WebUtility.HtmlEncode`) y datos filtrados reales.
+- Evidencia manual aportada por el estudiante: marca XAMY TECHNOLOGIES visible en formularios y reporte, reporte HTML abierto en Chrome con nueva identidad corporativa.
+
+## Evolución de plantilla HTML ejecutiva pendiente de validación manual (US8 / T081-T083)
+
+- Se moderniza la plantilla HTML exportada desde `frmVistaPreviaReporte` para reflejar identidad ejecutiva XAMY con paleta negro/dorado/crema y estructura responsiva local.
+- El encabezado del HTML incluye marca corporativa, título `INFORME EJECUTIVO`, subtítulo operativo, separador dorado y fecha/hora real de generación.
+- Se incorporan indicadores dinámicos (Total, Pendientes, En proceso, Resueltas) calculados sobre la colección exportada real.
+- El detalle principal se presenta en tarjetas por incidencia con metadatos y estado; la tabla completa se conserva como detalle técnico secundario para mantener cobertura de campos requeridos.
+- Se mantiene seguridad y compatibilidad existentes: codificación UTF-8, `WebUtility.HtmlEncode`, datos filtrados, representación legacy de `ReportadoPor`, estado vacío y flujo de exportación sin componentes de impresión.
+- Evidencia manual aportada por el estudiante: exportación HTML validada en Chrome con filtro Todos y filtro Pendiente (ID 2 Cobertura), plantilla ejecutiva XAMY, compilación sin errores y regresión MSTest 111/111 aprobadas.
+
+## Pendiente intencional de cierre documental global (US8 / US9 / T070)
+
+- T070 permanece abierto por alcance explícito: requiere actualización adicional de `quickstart.md` y consolidación final de cobertura RF-024 a RF-038 en un cierre posterior.

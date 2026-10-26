@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.pnlEncabezado = new System.Windows.Forms.Panel();
+            this.pnlLineaDoradaEncabezado = new System.Windows.Forms.Panel();
             this.lblSubtitulo = new System.Windows.Forms.Label();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.pnlFormulario = new System.Windows.Forms.Panel();
@@ -52,26 +53,36 @@
             //
             // pnlEncabezado
             //
-            this.pnlEncabezado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(45)))), ((int)(((byte)(74)))));
+            this.pnlEncabezado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
+            this.pnlEncabezado.Controls.Add(this.pnlLineaDoradaEncabezado);
             this.pnlEncabezado.Controls.Add(this.lblSubtitulo);
             this.pnlEncabezado.Controls.Add(this.lblTitulo);
             this.pnlEncabezado.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlEncabezado.Location = new System.Drawing.Point(0, 0);
             this.pnlEncabezado.Name = "pnlEncabezado";
             this.pnlEncabezado.Padding = new System.Windows.Forms.Padding(20, 12, 20, 12);
-            this.pnlEncabezado.Size = new System.Drawing.Size(860, 82);
+            this.pnlEncabezado.Size = new System.Drawing.Size(860, 88);
             this.pnlEncabezado.TabIndex = 0;
+            //
+            // pnlLineaDoradaEncabezado
+            //
+            this.pnlLineaDoradaEncabezado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.pnlLineaDoradaEncabezado.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlLineaDoradaEncabezado.Location = new System.Drawing.Point(20, 74);
+            this.pnlLineaDoradaEncabezado.Name = "pnlLineaDoradaEncabezado";
+            this.pnlLineaDoradaEncabezado.Size = new System.Drawing.Size(820, 2);
+            this.pnlLineaDoradaEncabezado.TabIndex = 2;
             //
             // lblSubtitulo
             //
             this.lblSubtitulo.AutoSize = true;
             this.lblSubtitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(223)))), ((int)(((byte)(242)))));
+            this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(115)))), ((int)(((byte)(107)))));
             this.lblSubtitulo.Location = new System.Drawing.Point(24, 44);
             this.lblSubtitulo.Name = "lblSubtitulo";
-            this.lblSubtitulo.Size = new System.Drawing.Size(335, 25);
+            this.lblSubtitulo.Size = new System.Drawing.Size(520, 25);
             this.lblSubtitulo.TabIndex = 1;
-            this.lblSubtitulo.Text = "Registro y edición de datos de incidencia";
+            this.lblSubtitulo.Text = "XAMY TECHNOLOGIES · Sistema de Gestión de Incidencias";
             //
             // lblTitulo
             //
@@ -86,7 +97,7 @@
             //
             // pnlFormulario
             //
-            this.pnlFormulario.BackColor = System.Drawing.Color.White;
+            this.pnlFormulario.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
             this.pnlFormulario.Controls.Add(this.cboPrioridad);
             this.pnlFormulario.Controls.Add(this.lblPrioridad);
             this.pnlFormulario.Controls.Add(this.txtResponsable);
@@ -98,16 +109,17 @@
             this.pnlFormulario.Controls.Add(this.txtTitulo);
             this.pnlFormulario.Controls.Add(this.lblTituloCampo);
             this.pnlFormulario.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlFormulario.Location = new System.Drawing.Point(0, 82);
+            this.pnlFormulario.Location = new System.Drawing.Point(0, 88);
             this.pnlFormulario.Name = "pnlFormulario";
             this.pnlFormulario.Padding = new System.Windows.Forms.Padding(24, 20, 24, 12);
-            this.pnlFormulario.Size = new System.Drawing.Size(860, 482);
+            this.pnlFormulario.Size = new System.Drawing.Size(860, 476);
             this.pnlFormulario.TabIndex = 1;
             //
             // cboPrioridad
             //
             this.cboPrioridad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cboPrioridad.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboPrioridad.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cboPrioridad.FormattingEnabled = true;
             this.cboPrioridad.Items.AddRange(new object[] {
             "Baja",
@@ -122,6 +134,7 @@
             //
             this.lblPrioridad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblPrioridad.AutoSize = true;
+            this.lblPrioridad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblPrioridad.Location = new System.Drawing.Point(24, 414);
             this.lblPrioridad.Name = "lblPrioridad";
             this.lblPrioridad.Size = new System.Drawing.Size(84, 25);
@@ -132,6 +145,7 @@
             //
             this.txtResponsable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtResponsable.BackColor = System.Drawing.Color.White;
             this.txtResponsable.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtResponsable.Location = new System.Drawing.Point(436, 367);
             this.txtResponsable.Name = "txtResponsable";
@@ -142,6 +156,7 @@
             //
             this.lblResponsable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblResponsable.AutoSize = true;
+            this.lblResponsable.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblResponsable.Location = new System.Drawing.Point(432, 343);
             this.lblResponsable.Name = "lblResponsable";
             this.lblResponsable.Size = new System.Drawing.Size(183, 25);
@@ -152,6 +167,7 @@
             //
             this.txtReportadoPor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtReportadoPor.BackColor = System.Drawing.Color.White;
             this.txtReportadoPor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtReportadoPor.Location = new System.Drawing.Point(28, 367);
             this.txtReportadoPor.Name = "txtReportadoPor";
@@ -162,6 +178,7 @@
             //
             this.lblReportadoPor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lblReportadoPor.AutoSize = true;
+            this.lblReportadoPor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblReportadoPor.Location = new System.Drawing.Point(24, 343);
             this.lblReportadoPor.Name = "lblReportadoPor";
             this.lblReportadoPor.Size = new System.Drawing.Size(129, 25);
@@ -173,6 +190,7 @@
             this.txtDescripcion.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtDescripcion.BackColor = System.Drawing.Color.White;
             this.txtDescripcion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtDescripcion.Location = new System.Drawing.Point(28, 134);
             this.txtDescripcion.Multiline = true;
@@ -184,6 +202,7 @@
             // lblDescripcion
             //
             this.lblDescripcion.AutoSize = true;
+            this.lblDescripcion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblDescripcion.Location = new System.Drawing.Point(24, 110);
             this.lblDescripcion.Name = "lblDescripcion";
             this.lblDescripcion.Size = new System.Drawing.Size(104, 25);
@@ -194,6 +213,7 @@
             //
             this.txtTitulo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTitulo.BackColor = System.Drawing.Color.White;
             this.txtTitulo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTitulo.Location = new System.Drawing.Point(28, 62);
             this.txtTitulo.Name = "txtTitulo";
@@ -203,6 +223,7 @@
             // lblTituloCampo
             //
             this.lblTituloCampo.AutoSize = true;
+            this.lblTituloCampo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblTituloCampo.Location = new System.Drawing.Point(24, 38);
             this.lblTituloCampo.Name = "lblTituloCampo";
             this.lblTituloCampo.Size = new System.Drawing.Size(56, 25);
@@ -211,7 +232,7 @@
             //
             // pnlAcciones
             //
-            this.pnlAcciones.BackColor = System.Drawing.Color.White;
+            this.pnlAcciones.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
             this.pnlAcciones.Controls.Add(this.btnCancelar);
             this.pnlAcciones.Controls.Add(this.btnGuardar);
             this.pnlAcciones.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -224,9 +245,10 @@
             // btnCancelar
             //
             this.btnCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancelar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(108)))), ((int)(((byte)(117)))), ((int)(((byte)(125)))));
+            this.btnCancelar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.btnCancelar.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancelar.FlatAppearance.BorderSize = 0;
+            this.btnCancelar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(115)))), ((int)(((byte)(107)))));
+            this.btnCancelar.FlatAppearance.BorderSize = 1;
             this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelar.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCancelar.ForeColor = System.Drawing.Color.White;
@@ -240,11 +262,12 @@
             // btnGuardar
             //
             this.btnGuardar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(86)))), ((int)(((byte)(179)))));
-            this.btnGuardar.FlatAppearance.BorderSize = 0;
+            this.btnGuardar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnGuardar.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(175)))), ((int)(((byte)(143)))), ((int)(((byte)(82)))));
+            this.btnGuardar.FlatAppearance.BorderSize = 1;
             this.btnGuardar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnGuardar.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGuardar.ForeColor = System.Drawing.Color.White;
+            this.btnGuardar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             this.btnGuardar.Location = new System.Drawing.Point(568, 18);
             this.btnGuardar.Name = "btnGuardar";
             this.btnGuardar.Size = new System.Drawing.Size(124, 36);
@@ -257,7 +280,7 @@
             this.AcceptButton = this.btnGuardar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
             this.CancelButton = this.btnCancelar;
             this.ClientSize = new System.Drawing.Size(860, 640);
             this.Controls.Add(this.pnlFormulario);
@@ -267,7 +290,7 @@
             this.MinimumSize = new System.Drawing.Size(760, 620);
             this.Name = "frmEditarIncidencia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "GestorIncidencias - Editar incidencia";
+            this.Text = "XAMY Technologies - Editar incidencia";
             this.pnlEncabezado.ResumeLayout(false);
             this.pnlEncabezado.PerformLayout();
             this.pnlFormulario.ResumeLayout(false);
@@ -279,6 +302,7 @@
 
         #endregion
         private System.Windows.Forms.Panel pnlEncabezado;
+        private System.Windows.Forms.Panel pnlLineaDoradaEncabezado;
         private System.Windows.Forms.Label lblSubtitulo;
         private System.Windows.Forms.Label lblTitulo;
         private System.Windows.Forms.Panel pnlFormulario;

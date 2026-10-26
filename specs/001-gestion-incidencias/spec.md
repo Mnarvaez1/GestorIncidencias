@@ -158,6 +158,69 @@ Como operador, quiero una pantalla principal más clara para filtrar, revisar me
 3. **Dado** que el operador necesita reportes, **cuando** revisa acciones principales, **entonces** existe botón `Vista previa de reporte`.
 4. **Dado** la actualización visual, **cuando** se compara con T039, **entonces** se conservan colores corporativos, tipografía Segoe UI y compatibilidad de diseñador.
 
+### Evolución visual solicitada - Modelo 6 (Informe ejecutivo negro y dorado)
+
+Como operador, quiero que `frmVistaPreviaReporte` tenga una presentación ejecutiva moderna para leer y compartir el estado operativo con formato gerencial sin alterar la lógica funcional existente.
+
+**Criterios de evolución**:
+
+1. El formulario conserva vista previa y exportación HTML actuales, pero adopta paleta negro/dorado con fondo crema y tipografía Segoe UI.
+2. Se incluye encabezado ejecutivo con marca institucional, título, subtítulo, fecha y hora de generación y separador dorado.
+3. Se incorporan cuatro indicadores calculados sobre la colección real recibida: Total, Pendientes, En proceso y Resueltas.
+4. La presentación inicial del detalle usa tarjetas/resumen por incidencia con desplazamiento interno; el `DataGridView` nativo de columnas actuales se conserva como vista técnica secundaria accesible.
+5. Se mantiene compatibilidad de diseñador de Visual Studio y se preserva la prohibición de componentes de impresión.
+6. La ventana de reporte adopta formato compacto (aprox. 1120x700 de área cliente), mantiene visibles los botones inferiores y conserva adaptación al redimensionado sin superposiciones.
+
+### Evolución visual solicitada - Identidad unificada de formularios (Negro/Dorado/Crema)
+
+Como operador, quiero que `frmIncidencias` y `frmEditarIncidencia` compartan la misma identidad visual empresarial del informe ejecutivo para mantener coherencia de uso sin afectar las funciones existentes.
+
+**Criterios de evolución**:
+
+1. `frmIncidencias` y `frmEditarIncidencia` adoptan la paleta: negro carbón `#252729`, dorado `#C5A15C`, crema `#F5F3EC`, blanco `#FFFFFF`, gris oscuro `#484848` y gris secundario `#77736B`.
+2. Se preservan todos los eventos y flujos funcionales existentes (alta, edición, búsqueda, filtro, cambio de estado, vista previa y mensajes operativos).
+3. En `frmIncidencias` se conserva `DataGridView` y columnas actuales, aplicando solo ajustes visuales de encabezados, filas, selección y contraste.
+4. En `frmEditarIncidencia` se mantienen campos, validaciones y orden de tabulación, aplicando solo ajustes visuales de encabezado, etiquetas, entradas y botones.
+5. La evolución mantiene compatibilidad con Visual Studio Designer y no introduce dependencias externas ni componentes no nativos.
+
+### Evolución de usabilidad solicitada - Acción de salida visible
+
+Como operador, quiero un botón `Salir` visible en `frmIncidencias` para cerrar la aplicación de forma explícita y segura sin depender solo del botón X de Windows.
+
+**Criterios de evolución**:
+
+1. `frmIncidencias` incorpora un botón `Salir` en el área de acciones, con estilo visual consistente con la paleta negro/dorado/crema.
+2. Al pulsar `Salir`, el sistema solicita confirmación en español con opciones Sí/No y, si se confirma, cierra el formulario principal por la vía estándar (`Close`).
+3. La opción No cancela la salida sin alterar datos ni estado visible.
+4. La evolución no modifica búsqueda, filtros, alta/edición, cambio de estado, vista previa, exportación HTML ni persistencia XML.
+5. La evolución mantiene compatibilidad con Visual Studio Designer y no introduce cierres forzados (`Environment.Exit`, `Application.ExitThread`).
+
+### Evolución de identidad corporativa solicitada - XAMY TECHNOLOGIES
+
+Como operador, quiero que los formularios y reportes muestren la marca empresarial ficticia `XAMY TECHNOLOGIES` para presentar el sistema con una identidad profesional uniforme, manteniendo `GestorIncidencias` como nombre interno técnico.
+
+**Criterios de evolución**:
+
+1. En `frmIncidencias`, `frmEditarIncidencia` y `frmVistaPreviaReporte` se actualizan únicamente los textos visibles de marca hacia `XAMY TECHNOLOGIES` sin alterar nombres internos de clases, namespaces ni controles.
+2. Se preserva la paleta negro carbón/dorado/crema ya aprobada y la tipografía Segoe UI.
+3. La exportación HTML conserva datos reales, seguridad de escape (`WebUtility.HtmlEncode`), codificación UTF-8 y estructura funcional, ajustando solo textos de identidad corporativa.
+4. Las funcionalidades existentes (alta, edición, estado, búsqueda, filtros, vista previa, exportación y salida segura) permanecen sin cambios de comportamiento.
+5. La evolución mantiene compatibilidad con Visual Studio Designer y no introduce dependencias externas ni cambios de arquitectura.
+
+### Evolución visual solicitada - Plantilla HTML ejecutiva XAMY
+
+Como operador, quiero que el archivo HTML exportado tenga la misma estética ejecutiva del informe en Windows Forms para compartir resultados con una presentación corporativa consistente.
+
+**Criterios de evolución**:
+
+1. El HTML exportado adopta paleta negro carbón `#252729`, dorado `#C5A15C`, crema `#F5F3EC`, blanco `#FFFFFF` y gris secundario `#77736B`, manteniendo tipografía Segoe UI.
+2. El encabezado HTML incluye marca `XAMY TECHNOLOGIES · SOPORTE TI`, título `INFORME EJECUTIVO`, subtítulo operativo, separador dorado y fecha/hora real de generación.
+3. Se renderizan cuatro indicadores dinámicos (Total, Pendientes, En proceso, Resueltas) calculados únicamente desde la colección exportada.
+4. La sección principal de detalle muestra incidencias en tarjetas-resumen y conserva la tabla completa como detalle técnico secundario para no perder cobertura contractual.
+5. Se preservan seguridad y compatibilidad existentes: UTF-8, `WebUtility.HtmlEncode`, datos filtrados reales, comportamiento de colección vacía y manejo legacy de `ReportadoPor`.
+
+**Estado de validación informado**: el estudiante reporta compilación sin errores, validación visual en diseñador/F5 y regresión MSTest 111/111, además de comprobación manual del HTML exportado en escenarios Todos, Pendiente y sin coincidencias.
+
 ## Casos límite
 
 - `ReportadoPor` con 2 y 80 caracteres: válido.

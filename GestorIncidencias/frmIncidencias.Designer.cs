@@ -30,6 +30,7 @@
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlEncabezado = new System.Windows.Forms.Panel();
             this.lblSubtitulo = new System.Windows.Forms.Label();
             this.lblTituloApp = new System.Windows.Forms.Label();
@@ -50,6 +51,7 @@
             this.colEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colFechaCreacion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlAcciones = new System.Windows.Forms.Panel();
+            this.btnSalir = new System.Windows.Forms.Button();
             this.btnVistaPreviaReporte = new System.Windows.Forms.Button();
             this.btnCambiarEstado = new System.Windows.Forms.Button();
             this.btnModificarIncidencia = new System.Windows.Forms.Button();
@@ -66,7 +68,7 @@
             // 
             // pnlEncabezado
             // 
-            this.pnlEncabezado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(26)))), ((int)(((byte)(45)))), ((int)(((byte)(74)))));
+            this.pnlEncabezado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             this.pnlEncabezado.Controls.Add(this.lblSubtitulo);
             this.pnlEncabezado.Controls.Add(this.lblTituloApp);
             this.pnlEncabezado.Dock = System.Windows.Forms.DockStyle.Top;
@@ -78,14 +80,14 @@
             // 
             // lblSubtitulo
             // 
-            this.lblSubtitulo.AutoSize = true;
+            this.lblSubtitulo.AutoSize = false;
             this.lblSubtitulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(223)))), ((int)(((byte)(242)))));
-            this.lblSubtitulo.Location = new System.Drawing.Point(28, 52);
+            this.lblSubtitulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.lblSubtitulo.Location = new System.Drawing.Point(28, 45);
             this.lblSubtitulo.Name = "lblSubtitulo";
-            this.lblSubtitulo.Size = new System.Drawing.Size(326, 25);
+            this.lblSubtitulo.Size = new System.Drawing.Size(420, 42);
             this.lblSubtitulo.TabIndex = 1;
-            this.lblSubtitulo.Text = "Sistema de Soporte Técnico Empresarial";
+            this.lblSubtitulo.Text = "Sistema de Gestión de Incidencias\r\nSoporte Técnico Empresarial";
             //
             // lblTituloApp
             //
@@ -94,13 +96,13 @@
             this.lblTituloApp.ForeColor = System.Drawing.Color.White;
             this.lblTituloApp.Location = new System.Drawing.Point(24, 12);
             this.lblTituloApp.Name = "lblTituloApp";
-            this.lblTituloApp.Size = new System.Drawing.Size(332, 45);
+            this.lblTituloApp.Size = new System.Drawing.Size(352, 45);
             this.lblTituloApp.TabIndex = 0;
-            this.lblTituloApp.Text = "GESTORINCIDENCIAS";
+            this.lblTituloApp.Text = "XAMY TECHNOLOGIES";
             //
             // pnlAdministracion
             //
-            this.pnlAdministracion.BackColor = System.Drawing.Color.White;
+            this.pnlAdministracion.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
             this.pnlAdministracion.Controls.Add(this.cboFiltroEstado);
             this.pnlAdministracion.Controls.Add(this.lblFiltroEstado);
             this.pnlAdministracion.Controls.Add(this.txtBuscar);
@@ -135,7 +137,7 @@
             this.lblFiltroEstado.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblFiltroEstado.AutoSize = true;
             this.lblFiltroEstado.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblFiltroEstado.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(104)))));
+            this.lblFiltroEstado.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblFiltroEstado.Location = new System.Drawing.Point(1013, 37);
             this.lblFiltroEstado.Name = "lblFiltroEstado";
             this.lblFiltroEstado.Size = new System.Drawing.Size(119, 25);
@@ -157,7 +159,7 @@
             //
             this.lblBuscar.AutoSize = true;
             this.lblBuscar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblBuscar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(80)))), ((int)(((byte)(104)))));
+            this.lblBuscar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblBuscar.Location = new System.Drawing.Point(22, 37);
             this.lblBuscar.Name = "lblBuscar";
             this.lblBuscar.Size = new System.Drawing.Size(385, 25);
@@ -168,7 +170,7 @@
             //
             this.lblTituloAdministracion.AutoSize = true;
             this.lblTituloAdministracion.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblTituloAdministracion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(59)))), ((int)(((byte)(92)))));
+            this.lblTituloAdministracion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             this.lblTituloAdministracion.Location = new System.Drawing.Point(22, 8);
             this.lblTituloAdministracion.Name = "lblTituloAdministracion";
             this.lblTituloAdministracion.Size = new System.Drawing.Size(282, 28);
@@ -177,7 +179,7 @@
             //
             // pnlContenido
             //
-            this.pnlContenido.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.pnlContenido.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
             this.pnlContenido.Controls.Add(this.dgvIncidencias);
             this.pnlContenido.Controls.Add(this.pnlAcciones);
             this.pnlContenido.Controls.Add(this.pnlEstado);
@@ -194,13 +196,15 @@
             this.dgvIncidencias.AllowUserToDeleteRows = false;
             this.dgvIncidencias.AllowUserToResizeRows = false;
             this.dgvIncidencias.BackgroundColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(248)))), ((int)(((byte)(243)))));
+            this.dgvIncidencias.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle5;
             this.dgvIncidencias.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvIncidencias.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(59)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle3.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(59)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvIncidencias.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
@@ -218,13 +222,13 @@
             dataGridViewCellStyle4.BackColor = System.Drawing.Color.White;
             dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(232)))), ((int)(((byte)(247)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(59)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(215)))), ((int)(((byte)(189)))));
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.dgvIncidencias.DefaultCellStyle = dataGridViewCellStyle4;
             this.dgvIncidencias.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvIncidencias.EnableHeadersVisualStyles = false;
-            this.dgvIncidencias.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(222)))), ((int)(((byte)(226)))), ((int)(((byte)(230)))));
+            this.dgvIncidencias.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(224)))), ((int)(((byte)(214)))));
             this.dgvIncidencias.Location = new System.Drawing.Point(24, 0);
             this.dgvIncidencias.MultiSelect = false;
             this.dgvIncidencias.Name = "dgvIncidencias";
@@ -302,6 +306,7 @@
             // 
             // pnlAcciones
             // 
+            this.pnlAcciones.Controls.Add(this.btnSalir);
             this.pnlAcciones.Controls.Add(this.btnVistaPreviaReporte);
             this.pnlAcciones.Controls.Add(this.btnCambiarEstado);
             this.pnlAcciones.Controls.Add(this.btnModificarIncidencia);
@@ -313,15 +318,32 @@
             this.pnlAcciones.Size = new System.Drawing.Size(1192, 68);
             this.pnlAcciones.TabIndex = 1;
             //
+            // btnSalir
+            //
+            this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSalir.BackColor = System.Drawing.Color.White;
+            this.btnSalir.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnSalir.FlatAppearance.BorderSize = 1;
+            this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSalir.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSalir.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
+            this.btnSalir.Location = new System.Drawing.Point(1065, 16);
+            this.btnSalir.Name = "btnSalir";
+            this.btnSalir.Size = new System.Drawing.Size(124, 36);
+            this.btnSalir.TabIndex = 4;
+            this.btnSalir.Text = "Salir";
+            this.btnSalir.UseVisualStyleBackColor = false;
+            //
             // btnVistaPreviaReporte
             //
             this.btnVistaPreviaReporte.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnVistaPreviaReporte.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(59)))), ((int)(((byte)(92)))));
-            this.btnVistaPreviaReporte.FlatAppearance.BorderSize = 0;
+            this.btnVistaPreviaReporte.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
+            this.btnVistaPreviaReporte.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnVistaPreviaReporte.FlatAppearance.BorderSize = 1;
             this.btnVistaPreviaReporte.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnVistaPreviaReporte.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnVistaPreviaReporte.ForeColor = System.Drawing.Color.White;
-            this.btnVistaPreviaReporte.Location = new System.Drawing.Point(959, 16);
+            this.btnVistaPreviaReporte.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnVistaPreviaReporte.Location = new System.Drawing.Point(829, 16);
             this.btnVistaPreviaReporte.Name = "btnVistaPreviaReporte";
             this.btnVistaPreviaReporte.Size = new System.Drawing.Size(230, 36);
             this.btnVistaPreviaReporte.TabIndex = 3;
@@ -330,8 +352,9 @@
             //
             // btnCambiarEstado
             //
-            this.btnCambiarEstado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(80)))), ((int)(((byte)(87)))));
-            this.btnCambiarEstado.FlatAppearance.BorderSize = 0;
+            this.btnCambiarEstado.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
+            this.btnCambiarEstado.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(115)))), ((int)(((byte)(107)))));
+            this.btnCambiarEstado.FlatAppearance.BorderSize = 1;
             this.btnCambiarEstado.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCambiarEstado.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCambiarEstado.ForeColor = System.Drawing.Color.White;
@@ -344,11 +367,12 @@
             // 
             // btnModificarIncidencia
             // 
-            this.btnModificarIncidencia.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(86)))), ((int)(((byte)(179)))));
-            this.btnModificarIncidencia.FlatAppearance.BorderSize = 0;
+            this.btnModificarIncidencia.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnModificarIncidencia.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(175)))), ((int)(((byte)(143)))), ((int)(((byte)(82)))));
+            this.btnModificarIncidencia.FlatAppearance.BorderSize = 1;
             this.btnModificarIncidencia.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnModificarIncidencia.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnModificarIncidencia.ForeColor = System.Drawing.Color.White;
+            this.btnModificarIncidencia.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
             this.btnModificarIncidencia.Location = new System.Drawing.Point(206, 16);
             this.btnModificarIncidencia.Name = "btnModificarIncidencia";
             this.btnModificarIncidencia.Size = new System.Drawing.Size(190, 36);
@@ -358,8 +382,9 @@
             // 
             // btnNuevaIncidencia
             // 
-            this.btnNuevaIncidencia.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(122)))), ((int)(((byte)(73)))));
-            this.btnNuevaIncidencia.FlatAppearance.BorderSize = 0;
+            this.btnNuevaIncidencia.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
+            this.btnNuevaIncidencia.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnNuevaIncidencia.FlatAppearance.BorderSize = 1;
             this.btnNuevaIncidencia.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnNuevaIncidencia.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnNuevaIncidencia.ForeColor = System.Drawing.Color.White;
@@ -386,7 +411,7 @@
             this.lblEstadoOperacion.AutoEllipsis = true;
             this.lblEstadoOperacion.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblEstadoOperacion.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblEstadoOperacion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(80)))), ((int)(((byte)(87)))));
+            this.lblEstadoOperacion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
             this.lblEstadoOperacion.Location = new System.Drawing.Point(12, 8);
             this.lblEstadoOperacion.Name = "lblEstadoOperacion";
             this.lblEstadoOperacion.Size = new System.Drawing.Size(1168, 36);
@@ -398,7 +423,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
             this.ClientSize = new System.Drawing.Size(1240, 720);
             this.Controls.Add(this.pnlContenido);
             this.Controls.Add(this.pnlAdministracion);
@@ -407,7 +432,7 @@
             this.MinimumSize = new System.Drawing.Size(1100, 700);
             this.Name = "frmIncidencias";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "GestorIncidencias";
+            this.Text = "XAMY Technologies - Gestión de incidencias";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.pnlEncabezado.ResumeLayout(false);
             this.pnlEncabezado.PerformLayout();
@@ -435,6 +460,7 @@
         private System.Windows.Forms.Panel pnlContenido;
         private System.Windows.Forms.DataGridView dgvIncidencias;
         private System.Windows.Forms.Panel pnlAcciones;
+        private System.Windows.Forms.Button btnSalir;
         private System.Windows.Forms.Button btnCambiarEstado;
         private System.Windows.Forms.Button btnModificarIncidencia;
         private System.Windows.Forms.Button btnNuevaIncidencia;

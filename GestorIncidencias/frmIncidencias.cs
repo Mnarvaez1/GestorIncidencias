@@ -21,9 +21,29 @@ namespace GestorIncidencias
             btnNuevaIncidencia.Click += BtnNuevaIncidencia_Click;
             btnModificarIncidencia.Click += BtnModificarIncidencia_Click;
             btnCambiarEstado.Click += BtnCambiarEstado_Click;
+            btnVistaPreviaReporte.Click += BtnVistaPreviaReporte_Click;
+            btnSalir.Click += BtnSalir_Click;
             txtBuscar.TextChanged += TxtBuscar_TextChanged;
             cboFiltroEstado.SelectedIndexChanged += CboFiltroEstado_SelectedIndexChanged;
             Load += FrmIncidencias_Load;
+        }
+
+        private void BtnSalir_Click(object sender, EventArgs e)
+        {
+            var confirmacion = MessageBox.Show(
+                this,
+                "¿Está seguro de que desea salir de XAMY Technologies?",
+                "Confirmar salida",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            if (confirmacion != DialogResult.Yes)
+            {
+                return;
+            }
+
+            Close();
         }
 
         private void FrmIncidencias_Load(object sender, EventArgs e)
@@ -142,6 +162,16 @@ namespace GestorIncidencias
             RecargarGrilla();
             SeleccionarFilaPorId(incidenciaSeleccionada.Identificador);
             lblEstadoOperacion.Text = cambio.Mensaje ?? "Estado de incidencia actualizado correctamente.";
+        }
+
+        private void BtnVistaPreviaReporte_Click(object sender, EventArgs e)
+        {
+            var incidenciasVisibles = ObtenerIncidenciasVisiblesEnGrilla();
+
+            using (var vistaPrevia = new frmVistaPreviaReporte(incidenciasVisibles))
+            {
+                vistaPrevia.ShowDialog(this);
+            }
         }
 
         private bool IntentarSeleccionarEstadoDestino(EstadoIncidencia estadoActual, out EstadoIncidencia estadoDestino)
@@ -355,6 +385,35 @@ namespace GestorIncidencias
             }
 
             return dgvIncidencias.CurrentRow.Tag as Incidencia;
+        }
+
+        private List<Incidencia> ObtenerIncidenciasVisiblesEnGrilla()
+        {
+            var visibles = new List<Incidencia>();
+
+            foreach (DataGridViewRow fila in dgvIncidencias.Rows)
+            {
+                var incidencia = fila.Tag as Incidencia;
+
+                if (incidencia == null)
+                {
+                    continue;
+                }
+
+                visibles.Add(new Incidencia
+                {
+                    Identificador = incidencia.Identificador,
+                    Titulo = incidencia.Titulo,
+                    Descripcion = incidencia.Descripcion,
+                    ReportadoPor = incidencia.ReportadoPor,
+                    Responsable = incidencia.Responsable,
+                    Prioridad = incidencia.Prioridad,
+                    Estado = incidencia.Estado,
+                    FechaCreacion = incidencia.FechaCreacion
+                });
+            }
+
+            return visibles;
         }
 
         private void SeleccionarFilaPorId(int identificador)
