@@ -12,6 +12,10 @@ namespace GestorIncidencias.Tests.Controlador
 
         public bool GuardarDebeFallar { get; set; }
 
+        public bool CargarDebeFallar { get; set; }
+
+        public string CargarMensajeError { get; set; } = "Error simulado de carga.";
+
         public int IntentosGuardar { get; private set; }
 
         public bool PuedeGuardar
@@ -21,6 +25,17 @@ namespace GestorIncidencias.Tests.Controlador
 
         public ResultadoOperacion<IList<Incidencia>> Cargar()
         {
+            if (CargarDebeFallar)
+            {
+                return new ResultadoOperacion<IList<Incidencia>>
+                {
+                    Exito = false,
+                    Mensaje = CargarMensajeError,
+                    Errores = new List<string> { CargarMensajeError },
+                    Datos = new List<Incidencia>()
+                };
+            }
+
             return new ResultadoOperacion<IList<Incidencia>>
             {
                 Exito = true,

@@ -111,3 +111,17 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Revisión técnica (sin cambios de código): `Program.Main` mantiene adquisición/liberación de `SingleInstanceGuard` y abre `frmIncidencias` una sola vez; `frmIncidencias.Load` ejecuta `RecargarGrilla()` y la consulta se realiza mediante `IncidenciaController.Consultar()`.
 - Manejo de error de carga verificado en UI: ante `consulta.Exito=false`, `frmIncidencias` comunica `consulta.Mensaje` o el fallback en español `"No se pudieron cargar las incidencias."`, sin anunciar éxito falso.
 - Verificación ejecutada en esta sesión: compilación correcta de la solución y ejecución de suite MSTest completa (99/99 superadas).
+
+## Evidencia de mensajes de usuario (US1–US7 / T045)
+
+- Revisión de código realizada en `frmIncidencias.cs`, `frmEditarIncidencia.cs`, `IncidenciaController.cs`, `IncidenciaValidator.cs` y `XmlIncidenciaRepository.cs` para validar mensajes en español, cancelación sin mutación y conservación de datos ante fallo.
+- Cambios generados por IA en pruebas: `IncidenciaRepositoryDoble` permite simular fallo de carga controlado (`CargarDebeFallar`, `CargarMensajeError`) para verificar propagación de errores reales de lectura sin anunciar éxito falso.
+- Nuevas pruebas MSTest agregadas en `IncidenciaControllerTests`:
+  - `ConsultarSinRegistrosDevuelveMensajeClaroDeListaVacia`
+  - `BuscarFiltrarSinCoincidenciasDevuelveMensajeClaro`
+  - `ConsultarConFalloDeCargaDevuelveMensajeDeErrorDelRepositorio`
+  - `RegistrarConFalloDeCargaDebeConservarMensajeDeErrorReal`
+  - `EditarConFalloDeCargaDebeConservarMensajeDeErrorReal`
+  - `CambiarEstadoConFalloDeCargaDebeConservarMensajeDeErrorReal`
+- Cobertura automatizada relacionada preservada: validaciones de `IncidenciaValidatorTests`; errores de almacenamiento y conservación de datos en `IncidenciaControllerTests`; XML dañado/archivo bloqueado en `XmlIncidenciaRepositoryTests` (siempre con archivos temporales aislados).
+- Evidencia de ejecución completa aportada por el operador en Visual Studio: suite MSTest 105 ejecutadas, 105 aprobadas, 0 fallidas, 0 omitidas, 0 advertencias.

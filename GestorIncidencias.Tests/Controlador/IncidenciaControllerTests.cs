@@ -680,6 +680,107 @@ namespace GestorIncidencias.Tests.Controlador
         }
 
         [TestMethod]
+        public void ConsultarSinRegistrosDevuelveMensajeClaroDeListaVacia()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual("No hay incidencias registradas.", resultado.Mensaje);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        [TestMethod]
+        public void BuscarFiltrarSinCoincidenciasDevuelveMensajeClaro()
+        {
+            var repositorio = CrearRepositorioParaBusqueda();
+
+            var resultado = CrearControlador(repositorio).Consultar("zzz", EstadoIncidencia.Resuelta);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual("No se encontraron incidencias para los criterios indicados.", resultado.Mensaje);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        [TestMethod]
+        public void ConsultarConFalloDeCargaDevuelveMensajeDeErrorDelRepositorio()
+        {
+            var repositorio = new IncidenciaRepositoryDoble
+            {
+                CargarDebeFallar = true,
+                CargarMensajeError = "No se pudieron cargar las incidencias desde el archivo XML."
+            };
+
+            var resultado = CrearControlador(repositorio).Consultar();
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("No se pudieron cargar las incidencias desde el archivo XML.", resultado.Mensaje);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(0, resultado.Datos.Count);
+        }
+
+        [TestMethod]
+        public void RegistrarConFalloDeCargaDebeConservarMensajeDeErrorReal()
+        {
+            var repositorio = new IncidenciaRepositoryDoble
+            {
+                CargarDebeFallar = true,
+                CargarMensajeError = "No se pudieron cargar las incidencias desde el archivo XML."
+            };
+
+            var resultado = CrearControlador(repositorio).Registrar(
+                "Incidencia nueva",
+                "Descripción nueva válida.",
+                "Ana",
+                Prioridad.Alta);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("No se pudieron cargar las incidencias desde el archivo XML.", resultado.Mensaje);
+            Assert.AreEqual(0, repositorio.IntentosGuardar);
+            Assert.AreEqual(0, repositorio.Registros.Count);
+        }
+
+        [TestMethod]
+        public void EditarConFalloDeCargaDebeConservarMensajeDeErrorReal()
+        {
+            var repositorio = new IncidenciaRepositoryDoble
+            {
+                CargarDebeFallar = true,
+                CargarMensajeError = "No se pudieron cargar las incidencias desde el archivo XML."
+            };
+
+            var resultado = CrearControlador(repositorio).Editar(
+                10,
+                "Título actualizado",
+                "Descripción actualizada válida.",
+                "Luis",
+                Prioridad.Media);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("No se pudieron cargar las incidencias desde el archivo XML.", resultado.Mensaje);
+            Assert.AreEqual(0, repositorio.IntentosGuardar);
+        }
+
+        [TestMethod]
+        public void CambiarEstadoConFalloDeCargaDebeConservarMensajeDeErrorReal()
+        {
+            var repositorio = new IncidenciaRepositoryDoble
+            {
+                CargarDebeFallar = true,
+                CargarMensajeError = "No se pudieron cargar las incidencias desde el archivo XML."
+            };
+
+            var resultado = CrearControlador(repositorio).CambiarEstado(10, EstadoIncidencia.EnProceso);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("No se pudieron cargar las incidencias desde el archivo XML.", resultado.Mensaje);
+            Assert.AreEqual(0, repositorio.IntentosGuardar);
+        }
+
+        [TestMethod]
         public void ContratoRepositorioRegistrarVariasIncidenciasDebeConservarAnterioresSinDuplicar()
         {
             var repositorio = new IncidenciaRepositoryDoble();
