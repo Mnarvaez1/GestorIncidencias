@@ -66,7 +66,7 @@ namespace GestorIncidencias
         private void ConfigurarModoNuevo()
         {
             lblTitulo.Text = "Nueva incidencia";
-            Text = "GestorIncidencias - Nueva incidencia";
+            Text = "XAMY Technologies - Nueva incidencia";
             txtTitulo.Text = string.Empty;
             txtDescripcion.Text = string.Empty;
             txtReportadoPor.Text = string.Empty;
@@ -83,7 +83,7 @@ namespace GestorIncidencias
             }
 
             lblTitulo.Text = "Modificar incidencia";
-            Text = "GestorIncidencias - Modificar incidencia";
+            Text = "XAMY Technologies - Modificar incidencia";
             txtTitulo.Text = incidencia.Titulo ?? string.Empty;
             txtDescripcion.Text = incidencia.Descripcion ?? string.Empty;
             txtReportadoPor.Text = NormalizarReportadoPorParaEdicion(incidencia.ReportadoPor);
