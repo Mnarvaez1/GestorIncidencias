@@ -20,9 +20,9 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 | RF-021 | `CargarConXmlDanadoDebeFallarYBloquearSobrescrituraAutomatica`, `CargarConTiposDeDatosInvalidosDebeFallar`, `CargarConIdentificadoresDuplicadosDebeFallarYPreservarArchivoOriginal`, `CargarConPrioridadInvalidaDebeFallar`, `CargarConEstadoInvalidoDebeFallar` y `GuardarConArchivoBloqueadoDebeFallarYPreservarDatosAnteriores` (MSTest) validan detección de corrupción, bloqueo de sobrescritura y preservación ante fallos de persistencia. Resultado: correcto en `T037-verificacion-inicial.trx`. |
 | RF-022 | Pruebas unitarias de validación en `IncidenciaValidatorTests` (límites, recorte, prioridad). Resultado: correcto en `T022-verde.trx`. |
 | RF-023 | `ConsultarSinRegistrosDevuelveColeccionVacia` (MSTest) valida estado vacío sin error técnico. Resultado: correcto en `T022-verde.trx`. |
-| RF-039–RF-040 | Avance T092+T093: entidad `Empleado` y `EmpleadoValidator` con `EmpleadoValidatorTests` validan empleado no nulo, identificador positivo, nombre obligatorio y longitud 2..120 tras recorte. La unicidad entre registros y reglas de casos de uso permanecen pendientes en `EmpleadoControllerTests` (T095). |
-| RF-041–RF-042 | Planificado para `EmpleadoControllerTests` y verificación de interfaz en `frmEmpleados`/`frmEditarEmpleado`: consulta y edición conservando identificador estable. Estado: pendiente (T095–T097). |
-| RF-043–RF-044 | Planificado para pruebas de estado Activo/Inactivo y búsqueda parcial por nombre en controlador + UI. Estado: pendiente (T095–T097). |
+| RF-039–RF-040 | Implementado en T095 con `EmpleadoController` + `EmpleadoControllerTests`: registro con identificador monotónico (`max(ID)+1`), validación de nombre con `EmpleadoValidator` y rechazo de entradas inválidas sin éxito falso. Verificación real: compilación correcta y MSTest 160/160 aprobadas. |
+| RF-041–RF-042 | Implementado parcialmente en T095 a nivel controlador: consulta de empleados, edición de `NombreCompleto`/`EsTecnicoSoporte`/`Activo` y conservación de `Identificador`/`FechaCreacion`; la verificación de interfaz sigue pendiente para T096–T097. |
+| RF-043–RF-044 | Implementado en T095 a nivel controlador: ausencia de eliminación física, inactivación/activación y búsqueda parcial por nombre sin distinguir mayúsculas/minúsculas. |
 | RF-045–RF-046 | Implementado en T094 con `IEmpleadoRepository` + `XmlEmpleadoRepository` y verificado con `XmlEmpleadoRepositoryTests`: carga con archivo ausente, persistencia/recuperación completa de campos, XML corrupto, errores de guardado y preservación de datos previos sin falso éxito. Verificación real: compilación correcta y MSTest 140/140 aprobadas. |
 | RF-047–RF-050 | Planificado para pruebas de integración en `IncidenciaControllerTests` y formularios de incidencia: selección exclusiva de técnicos activos, compatibilidad con responsable textual legacy e independencia de `ReportadoPor`. Estado: pendiente (T098–T099). |
 
@@ -254,3 +254,15 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 - Verificación real aportada por el estudiante en Visual Studio: compilación sin errores y suite MSTest completa 140/140 aprobadas, 0 fallidas, 0 advertencias (baseline previo 128; incremento de 12 ejecuciones).
 - Diferenciación de evidencia: lo anterior corresponde a verificación automatizada ejecutada en pruebas; no se declara validación manual de formularios ni funcionalidades de T095–T099.
 - Alcance explícito de T094: no incluye `EmpleadoController`, administración por formularios ni asignación de técnicos en incidencias.
+
+## Evidencia de casos de uso de empleados en controlador (US10 / T095)
+
+- Implementación realizada: `GestorIncidencias/Controlador/EmpleadoController.cs`.
+- Pruebas añadidas: `GestorIncidencias.Tests/Controlador/EmpleadoControllerTests.cs` y doble auxiliar `GestorIncidencias.Tests/Controlador/EmpleadoRepositoryDoble.cs`.
+- Operaciones cubiertas por pruebas automatizadas: registrar, consultar, buscar, editar, activar e inactivar empleados, con mensajes en español y propagación de errores reales de repositorio (`Cargar`/`Guardar`).
+- Reglas verificadas: conservación de `Identificador` y `FechaCreacion` en edición/cambio de estado, no eliminación física al inactivar, bloqueo por `PuedeGuardar=false`, rechazo sin persistencia en validaciones fallidas y ausencia de éxito falso ante errores de guardado/carga.
+- Consistencia de identificadores con persistencia XML: `EmpleadoController` calcula alta con estrategia monotónica `max(ID)+1`, compatible con `SiguienteIdentificador` de `XmlEmpleadoRepository` (también derivado de `max(ID)+1` en guardado). No se evidencia reutilización de IDs; riesgo residual concurrente no cubierto en el alcance actual monousuario.
+- Integración de proyecto confirmada por el estudiante: `EmpleadoController.cs`, `EmpleadoControllerTests.cs` y `EmpleadoRepositoryDoble.cs` incluidos en los `.csproj` clásicos.
+- Verificación real aportada por el estudiante en Visual Studio: compilación sin errores y suite MSTest completa 160/160 aprobadas (baseline previo 140; incremento de 20 ejecuciones).
+- Registro de advertencia: Test Explorer mostró 1 advertencia no identificada sin impacto en el resultado (0 fallidas).
+- Diferenciación de evidencia: se documenta ejecución automatizada real de pruebas; no se declara validación manual de formularios ni integración de T096–T099.
