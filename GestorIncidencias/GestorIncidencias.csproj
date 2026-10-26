@@ -47,7 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controlador\EmpleadoRepository.cs" />
     <Compile Include="Controlador\EmpleadoValidator.cs" />
+    <Compile Include="Controlador\XmlEmpleadoRepository.cs" />
     <Compile Include="Entidades\Empleado.cs" />
     <Compile Include="Entidades\EstadoIncidencia.cs" />
     <Compile Include="Entidades\Incidencia.cs" />

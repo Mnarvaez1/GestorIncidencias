@@ -23,7 +23,7 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 | RF-039–RF-040 | Avance T092+T093: entidad `Empleado` y `EmpleadoValidator` con `EmpleadoValidatorTests` validan empleado no nulo, identificador positivo, nombre obligatorio y longitud 2..120 tras recorte. La unicidad entre registros y reglas de casos de uso permanecen pendientes en `EmpleadoControllerTests` (T095). |
 | RF-041–RF-042 | Planificado para `EmpleadoControllerTests` y verificación de interfaz en `frmEmpleados`/`frmEditarEmpleado`: consulta y edición conservando identificador estable. Estado: pendiente (T095–T097). |
 | RF-043–RF-044 | Planificado para pruebas de estado Activo/Inactivo y búsqueda parcial por nombre en controlador + UI. Estado: pendiente (T095–T097). |
-| RF-045–RF-046 | Planificado para `XmlEmpleadoRepositoryTests`: persistencia XML, carga segura, fallo controlado y preservación de datos previos. Estado: pendiente (T094, T099). |
+| RF-045–RF-046 | Implementado en T094 con `IEmpleadoRepository` + `XmlEmpleadoRepository` y verificado con `XmlEmpleadoRepositoryTests`: carga con archivo ausente, persistencia/recuperación completa de campos, XML corrupto, errores de guardado y preservación de datos previos sin falso éxito. Verificación real: compilación correcta y MSTest 140/140 aprobadas. |
 | RF-047–RF-050 | Planificado para pruebas de integración en `IncidenciaControllerTests` y formularios de incidencia: selección exclusiva de técnicos activos, compatibilidad con responsable textual legacy e independencia de `ReportadoPor`. Estado: pendiente (T098–T099). |
 
 ## Evidencia del bloque de consulta (US2)
@@ -243,3 +243,14 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 - Registro de advertencia: Test Explorer mostró una advertencia no identificada sin impacto en resultado (0 fallidas).
 - Nota de TDD: en esta evidencia se registra diseño y ejecución de pruebas automatizadas; no se declara ni inventa evidencia separada de ciclos RED/GREEN más allá de la ejecución real confirmada.
 - Alcance explícito de T093: no incluye repositorio/persistencia XML de empleados, `EmpleadoController` ni formularios (`frmEmpleados`, `frmEditarEmpleado`).
+
+## Evidencia de persistencia XML de empleados (US10 / T094)
+
+- Implementación realizada: `GestorIncidencias/Controlador/EmpleadoRepository.cs` y `GestorIncidencias/Controlador/XmlEmpleadoRepository.cs`.
+- Pruebas añadidas: `GestorIncidencias.Tests/Controlador/XmlEmpleadoRepositoryTests.cs`.
+- Cobertura automatizada de persistencia (rutas temporales aisladas): archivo inexistente, guardado/recuperación de uno y varios empleados, conservación de `Identificador` y `FechaCreacion`, conservación de `Activo` y `EsTecnicoSoporte`, rechazo de datos inválidos sin sobrescritura, XML corrupto, fallos de lectura/escritura controlados, preservación de archivo previo ante fallo de validación temporal y repetición de cargas/guardados sin pérdida.
+- Independencia de almacenamiento: pruebas y repositorio usan `empleados.xml`, separado de `incidencias.xml`; no se alteran archivos de incidencias existentes.
+- Integración de proyecto confirmada por el estudiante: `Controlador\EmpleadoRepository.cs` y `Controlador\XmlEmpleadoRepository.cs` registrados en `GestorIncidencias.csproj`; `Controlador\XmlEmpleadoRepositoryTests.cs` registrado en `GestorIncidencias.Tests.csproj`.
+- Verificación real aportada por el estudiante en Visual Studio: compilación sin errores y suite MSTest completa 140/140 aprobadas, 0 fallidas, 0 advertencias (baseline previo 128; incremento de 12 ejecuciones).
+- Diferenciación de evidencia: lo anterior corresponde a verificación automatizada ejecutada en pruebas; no se declara validación manual de formularios ni funcionalidades de T095–T099.
+- Alcance explícito de T094: no incluye `EmpleadoController`, administración por formularios ni asignación de técnicos en incidencias.
