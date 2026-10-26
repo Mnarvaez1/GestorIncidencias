@@ -379,9 +379,20 @@ propiedades inmutables.
 - [x] T094 [US10] Crear contratos/repositorio de empleados (`EmpleadoRepository.cs`, `XmlEmpleadoRepository.cs`) y pruebas de persistencia XML segura.
 - [x] T095 [US10] Crear `Controlador/EmpleadoController.cs` con pruebas de alta, consulta, edición, búsqueda y estado Activo/Inactivo.
 - [ ] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY.
+- [ ] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY, incluyendo columna `Disponibilidad` (Libre/Ocupado/No calculada) junto a Nombre, Rol y Estado laboral sin mostrar `Libre` ficticio antes de integración real.
 - [ ] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
-- [ ] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias`, además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
+- [ ] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias` (botón corporativo `Administrar empleados`), además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
 - [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070.
+
+## Fase 25: Disponibilidad operativa automática de técnicos (pendiente)
+
+**Objetivo**: incorporar cálculo dinámico de disponibilidad de técnicos basado en incidencias vinculadas sin persistir estado fijo.
+
+- [ ] T100 [US10] Extender contratos/modelo operativo en código para distinguir estado laboral y disponibilidad derivada (`Libre`/`Ocupado`/`No calculada`) sin persistencia fija en `Empleado`.
+- [ ] T101 [US10] Añadir pruebas MSTest de disponibilidad en controlador para incidencias abiertas (`Pendiente`/`En proceso`), cierre `Resuelta` y recálculo por reasignación de `ResponsableEmpleadoId`.
+- [ ] T102 [US10] Implementar en la capa de casos de uso el recálculo de disponibilidad desde incidencias reales vinculadas por `ResponsableEmpleadoId`, sin inferencias por nombre legacy.
+- [ ] T103 [US10] Integrar priorización visual de técnicos activos/libres en selector de responsable y documentar explícitamente la política aplicada cuando el técnico esté ocupado.
+- [ ] T104 [US10] Actualizar pruebas de regresión e evidencia de trazabilidad para RF-051 a RF-061 manteniendo T070 pendiente.
 
 ## Dependencias y orden de ejecución
 
@@ -406,6 +417,7 @@ propiedades inmutables.
 - **Fase 22**: depende de Fase 21 y bloquea planificación detallada e implementación del módulo Empleados.
 - **Fase 23**: depende de Fase 22 y produce el backlog ejecutable del módulo Empleados.
 - **Fase 24**: depende de aprobación formal de fases 21-23 y habilita implementación posterior (fuera de este alcance).
+- **Fase 25**: depende de Fase 24 (T095+), y de la integración de formularios T096–T098 para exponer disponibilidad operativa en UI y selector técnico.
 
 ### Primer bloque de implementación
 

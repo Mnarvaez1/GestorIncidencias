@@ -73,3 +73,5 @@ Este bloque define el comportamiento esperado del futuro `IEmpleadoRepository` y
 
 - La persistencia de incidencias legacy con responsable textual DEBE mantenerse compatible aunque no exista vínculo a empleado.
 - El repositorio de empleados NO DEBE reescribir incidencias históricas para forzar asignaciones retroactivas.
+- La disponibilidad operativa de técnicos NO DEBE persistirse como atributo fijo en `Empleado`; se calcula en capa de casos de uso a partir de incidencias vinculadas.
+- El repositorio de empleados mantiene exclusivamente datos propios de empleado y NO deriva disponibilidad por análisis de nombres legacy.

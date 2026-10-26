@@ -36,12 +36,21 @@ Modelo ampliado para `ReportadoPor`, compatibilidad XML legacy y vista previa de
 | Activo | Booleano | Sí | `true` activo, `false` inactivo; no implica eliminación física. |
 | FechaCreacion | Fecha y hora | Sí | Asignada al registrar empleado; inmutable en edición. |
 
+## Proyección operativa de disponibilidad (derivada)
+
+| Campo derivado | Tipo conceptual | Persistencia | Reglas |
+|---|---|---:|---|
+| DisponibilidadOperativa | Enumeración (`Libre`/`Ocupado`/`No calculada`) | No | Se calcula desde incidencias reales vinculadas por `ResponsableEmpleadoId`; no se guarda como bandera fija. |
+
 ## Reglas de relación Incidencia-Empleado
 
 - `ReportadoPor` es independiente de `Empleado` y del técnico asignado.
 - Al registrar/editar incidencias nuevas, el responsable seleccionable debe ser un empleado con `EsTecnicoSoporte=true` y `Activo=true`.
 - Si la incidencia ya tiene responsable textual legacy sin vínculo (`ResponsableEmpleadoId=null`), el sistema conserva ese valor histórico.
 - Si un empleado técnico pasa a inactivo, las incidencias históricas mantienen su responsable textual existente.
+- Una incidencia se considera abierta para disponibilidad cuando su estado sea `Pendiente` o `En proceso`; `Resuelta` no cuenta como carga activa.
+- La disponibilidad operativa solo se calcula para técnicos activos (`EsTecnicoSoporte=true` y `Activo=true`) con vínculo por `ResponsableEmpleadoId`.
+- No se permite inferir vínculos automáticos desde `Responsable` textual legacy por comparación de nombres.
 
 ## Valores controlados
 
@@ -78,8 +87,14 @@ título o responsable. El filtro de estado se aplica conjuntamente con la búsqu
 
 ## Vista de consulta de empleados
 
-La colección de empleados se proyecta con cuatro campos: identificador, nombre completo,
-indicador técnico (Sí/No) y estado (Activo/Inactivo).
+La colección de empleados se proyecta con cinco campos: identificador, nombre completo,
+indicador técnico (Sí/No), estado laboral (Activo/Inactivo) y disponibilidad operativa.
+
+Reglas de proyección de disponibilidad:
+
+- `No calculada` cuando aún no exista integración efectiva con incidencias vinculadas o el empleado no sea técnico activo.
+- `Libre` cuando técnico activo no tenga incidencias abiertas vinculadas por `ResponsableEmpleadoId`.
+- `Ocupado` cuando técnico activo tenga al menos una incidencia abierta vinculada por `ResponsableEmpleadoId`.
 
 El orden recomendado para administración es nombre ascendente y, en empate, identificador ascendente.
 La búsqueda aplica coincidencia parcial sin distinguir mayúsculas/minúsculas sobre nombre completo.

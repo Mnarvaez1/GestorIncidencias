@@ -308,6 +308,17 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **RF-048**: El sistema DEBE conservar incidencias históricas cuyo responsable solo exista como texto, sin exigir conversión forzada a empleado.
 - **RF-049**: El sistema DEBE mantener `ReportadoPor` independiente del responsable técnico y de la entidad empleado.
 - **RF-050**: El sistema DEBE cargar datos legacy de incidencias y empleados sin perder trazabilidad ni romper consultas/reportes existentes.
+- **RF-051**: El sistema DEBE distinguir entre estado laboral del empleado (Activo/Inactivo) y disponibilidad operativa del técnico (Libre/Ocupado).
+- **RF-052**: Un empleado técnico activo DEBE considerarse `Libre` cuando no tenga incidencias abiertas vinculadas por `ResponsableEmpleadoId`.
+- **RF-053**: Tras registrar o editar una incidencia con vínculo técnico (`ResponsableEmpleadoId`), el sistema DEBE recalcular disponibilidad de los técnicos involucrados usando incidencias abiertas reales.
+- **RF-054**: Para disponibilidad operativa, el sistema DEBE considerar abiertas las incidencias `Pendiente` y `En proceso`, y cerradas las `Resuelta`.
+- **RF-055**: Al cambiar una incidencia a `Resuelta`, el sistema DEBE recalcular disponibilidad y dejar `Libre` al técnico solo si no conserva otras incidencias abiertas vinculadas.
+- **RF-056**: Si una incidencia cambia de técnico responsable, el sistema DEBE recalcular disponibilidad tanto del técnico saliente como del entrante según incidencias realmente vinculadas.
+- **RF-057**: El sistema NO DEBE mantener un indicador persistido de `Ocupado` como estado permanente; la disponibilidad DEBE derivarse de incidencias vinculadas por `ResponsableEmpleadoId`.
+- **RF-058**: El sistema NO DEBE inferir ni vincular automáticamente técnicos legacy comparando nombres de texto en `Responsable`.
+- **RF-059**: En la selección de responsables técnicos, el sistema DEBE priorizar visualmente técnicos activos y libres, documentando el manejo de selección de técnicos ocupados como regla pendiente de aprobación funcional.
+- **RF-060**: `frmEmpleados` DEBE mostrar la columna `Disponibilidad` junto a Nombre, Rol y Estado laboral; si no existe integración real con incidencias vinculadas, DEBE mostrarse `No calculada` en lugar de `Libre` ficticio.
+- **RF-061**: `frmIncidencias` DEBE incorporar un botón corporativo `Administrar empleados` que abra `frmEmpleados`, manteniendo estilo visual XAMY negro/dorado/crema y sin alterar `ReportadoPor`.
 
 ## Entidades principales
 
@@ -318,6 +329,7 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **Reporte de incidencias**: proyección temporal para vista previa y exportación HTML basada en el resultado actual de búsqueda/filtro.
 - **Empleado**: registro administrativo con identificador, nombre completo, perfil técnico y estado activo/inactivo.
 - **Responsable técnico vinculado**: referencia opcional de incidencia a empleado técnico para integraciones futuras, manteniendo texto legacy.
+- **Disponibilidad operativa de técnico**: estado derivado (`Libre`, `Ocupado` o `No calculada`) calculado dinámicamente desde incidencias vinculadas por `ResponsableEmpleadoId`.
 
 ## Criterios de éxito
 
@@ -333,6 +345,9 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **CE-010**: El operador administra empleados (alta, consulta, edición, búsqueda y estado Activo/Inactivo) sin eliminación física ni pérdida de identificadores.
 - **CE-011**: Solo técnicos activos aparecen como candidatos a responsable en alta/edición de incidencia.
 - **CE-012**: Las incidencias históricas con responsable textual permanecen visibles y editables sin migración forzada.
+- **CE-013**: La disponibilidad operativa se recalcula sin persistir bandera fija y refleja correctamente incidencias abiertas/cerradas vinculadas por `ResponsableEmpleadoId`.
+- **CE-014**: El módulo de empleados muestra estado laboral y disponibilidad operativa como conceptos diferenciados sin inferencias legacy por nombre.
+- **CE-015**: El acceso `Administrar empleados` desde `frmIncidencias` abre el formulario de gestión sin alterar flujos existentes de incidencias.
 
 ## Supuestos y dependencias
 

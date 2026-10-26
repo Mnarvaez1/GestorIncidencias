@@ -16,6 +16,10 @@ El módulo cubrirá alta/consulta/edición/búsqueda de empleados, gestión Acti
 selección de técnicos activos como responsables y compatibilidad con responsables históricos
 almacenados como texto en incidencias legacy.
 
+Evolución aprobada para siguiente incremento: disponibilidad operativa de técnicos calculada desde
+incidencias vinculadas por `ResponsableEmpleadoId`, diferenciada del estado laboral Activo/Inactivo,
+y acceso directo al módulo mediante botón `Administrar empleados` en `frmIncidencias`.
+
 Las reglas seguirán fuera de los eventos de la interfaz para poder probarse sin abrir formularios.
 La implementación conservará el proyecto clásico `GestorIncidencias.csproj`, su destino
 .NET Framework 4.7.2 y la configuración C# 7.3, sin dependencias de impresión ni paquetes nuevos.
@@ -422,6 +426,10 @@ El workflow será una fase posterior y no se crea en este plan.
 | RF-043–RF-044 | Pruebas de ciclo Activo/Inactivo y búsqueda parcial por nombre. |
 | RF-045–RF-046 | Pruebas de persistencia XML de empleados, fallos controlados y preservación de datos. |
 | RF-047–RF-050 | Pruebas de integración incidencia-empleado: selección de técnicos activos, compatibilidad legacy de responsable textual y preservación de `ReportadoPor`. |
+| RF-051–RF-057 | Pruebas de cálculo de disponibilidad operativa derivada, recálculo por alta/edición/cambio de estado de incidencias vinculadas y no persistencia de bandera fija. |
+| RF-058 | Pruebas de compatibilidad legacy para asegurar ausencia de vinculación automática por nombre textual de `Responsable`. |
+| RF-059 | Pruebas de orden/priorización de selector técnico y documentación de política pendiente para técnicos ocupados. |
+| RF-060–RF-061 | Verificación de interfaz: columna `Disponibilidad` en `frmEmpleados` y botón `Administrar empleados` en `frmIncidencias` con estilo XAMY y apertura correcta. |
 
 Verificación manual adicional:
 

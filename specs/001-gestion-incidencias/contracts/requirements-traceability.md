@@ -25,6 +25,10 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 | RF-043–RF-044 | Implementado en T095 a nivel controlador: ausencia de eliminación física, inactivación/activación y búsqueda parcial por nombre sin distinguir mayúsculas/minúsculas. |
 | RF-045–RF-046 | Implementado en T094 con `IEmpleadoRepository` + `XmlEmpleadoRepository` y verificado con `XmlEmpleadoRepositoryTests`: carga con archivo ausente, persistencia/recuperación completa de campos, XML corrupto, errores de guardado y preservación de datos previos sin falso éxito. Verificación real: compilación correcta y MSTest 140/140 aprobadas. |
 | RF-047–RF-050 | Planificado para pruebas de integración en `IncidenciaControllerTests` y formularios de incidencia: selección exclusiva de técnicos activos, compatibilidad con responsable textual legacy e independencia de `ReportadoPor`. Estado: pendiente (T098–T099). |
+| RF-051–RF-054 | Planificado: validación de separación estado laboral/disponibilidad operativa y cálculo de `Libre`/`Ocupado` desde incidencias abiertas vinculadas por `ResponsableEmpleadoId`. Estado: pendiente (T100–T102). |
+| RF-055–RF-057 | Planificado: recálculo por transición a `Resuelta`, por cambio de técnico responsable y sin persistencia de bandera fija de disponibilidad. Estado: pendiente (T101–T102). |
+| RF-058–RF-059 | Planificado: compatibilidad legacy sin inferencia por nombre y priorización visual de técnicos activos/libres con política de ocupados documentada. Estado: pendiente (T103–T104). |
+| RF-060–RF-061 | Planificado: columna `Disponibilidad` en `frmEmpleados` y botón `Administrar empleados` en `frmIncidencias` con identidad XAMY. Estado: pendiente (T096, T098, T104). |
 
 ## Evidencia del bloque de consulta (US2)
 
@@ -266,3 +270,11 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 - Verificación real aportada por el estudiante en Visual Studio: compilación sin errores y suite MSTest completa 160/160 aprobadas (baseline previo 140; incremento de 20 ejecuciones).
 - Registro de advertencia: Test Explorer mostró 1 advertencia no identificada sin impacto en el resultado (0 fallidas).
 - Diferenciación de evidencia: se documenta ejecución automatizada real de pruebas; no se declara validación manual de formularios ni integración de T096–T099.
+
+## Evolución planificada de disponibilidad operativa y acceso a empleados (US10 / T100-T104)
+
+- Se incorpora a especificación la separación entre estado laboral (`Activo/Inactivo`) y disponibilidad operativa (`Libre/Ocupado/No calculada`).
+- La disponibilidad operativa se define como cálculo derivado desde incidencias reales abiertas (`Pendiente`/`En proceso`) vinculadas por `ResponsableEmpleadoId`; no se persiste como estado fijo en `Empleado`.
+- Se mantiene compatibilidad legacy: no se vinculan automáticamente responsables históricos por comparación textual de nombres.
+- Se añade requisito de interfaz para `frmEmpleados` (columna `Disponibilidad`) y para `frmIncidencias` (botón corporativo `Administrar empleados`).
+- Estado de implementación: pendiente, sin evidencia de ejecución aún en esta iteración documental.

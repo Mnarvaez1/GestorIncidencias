@@ -58,6 +58,8 @@ Estos contratos describen comportamientos verificables para las futuras pruebas 
 - Editar empleado conservando identificador y fecha de creación.
 - No eliminar empleados; la desactivación se resuelve con estado inactivo.
 - Buscar empleados por coincidencia parcial de nombre sin distinguir mayúsculas/minúsculas.
+- Distinguir estado laboral (`Activo/Inactivo`) de disponibilidad operativa (`Libre/Ocupado/No calculada`).
+- La disponibilidad operativa no se persiste como bandera fija; se deriva de incidencias vinculadas.
 
 ## Integración responsable técnico
 
@@ -65,6 +67,12 @@ Estos contratos describen comportamientos verificables para las futuras pruebas 
 - Al registrar o editar una incidencia nueva, responsable debe seleccionarse solo desde empleados técnicos activos.
 - Si una incidencia histórica contiene responsable textual sin vínculo a empleado, se conserva y se muestra sin bloqueo.
 - Si un empleado técnico cambia a inactivo, no se altera automáticamente el responsable ya almacenado en incidencias históricas.
+- Para disponibilidad, una incidencia abierta es `Pendiente` o `En proceso`; `Resuelta` se excluye de carga activa.
+- Al registrar/editar incidencia con `ResponsableEmpleadoId`, recalcular disponibilidad del técnico vinculado.
+- Al reasignar técnico, recalcular disponibilidad del técnico saliente y del entrante según incidencias abiertas reales.
+- Al marcar una incidencia como `Resuelta`, recalcular disponibilidad del técnico para dejarlo `Libre` solo si no mantiene otras incidencias abiertas.
+- No inferir vínculos automáticos para incidencias legacy comparando nombres de `Responsable`.
+- En selector técnico, priorizar visualmente técnicos activos y libres; la política de bloqueo/permiso para seleccionar técnicos ocupados se documenta como decisión pendiente de aprobación funcional.
 
 ## Persistencia de empleados
 
