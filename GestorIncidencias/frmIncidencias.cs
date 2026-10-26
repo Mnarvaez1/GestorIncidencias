@@ -268,11 +268,21 @@ namespace GestorIncidencias
 
             CargarFilas(filtradas);
 
+
             if (filtradas.Count == 0)
             {
-                lblEstadoOperacion.Text = "No se encontraron incidencias para los criterios indicados.";
+                if (!tieneTexto && !filtroEstado.HasValue)
+                {
+                    lblEstadoOperacion.Text = "No hay incidencias registradas.";
+                }
+                else
+                {
+                    lblEstadoOperacion.Text = "No se encontraron incidencias para los criterios indicados.";
+                }
+
                 return;
             }
+
 
             if (tieneTexto || filtroEstado.HasValue)
             {
