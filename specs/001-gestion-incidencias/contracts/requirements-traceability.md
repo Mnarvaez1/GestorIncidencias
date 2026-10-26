@@ -105,3 +105,9 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - RF-027 a RF-030: cobertura de persistencia XML completada en T059–T060 y regresión de integración de controlador verificada en T061–T063.
 - RF-031 a RF-038: pendiente cubrir en formularios y reportes (T064–T070), sin declarar implementación aún.
 - RF-020 se mantiene con cobertura parcial hasta completar la validación funcional final de interfaz.
+
+## Evidencia de carga inicial en formulario principal (US6 / T044)
+
+- Revisión técnica (sin cambios de código): `Program.Main` mantiene adquisición/liberación de `SingleInstanceGuard` y abre `frmIncidencias` una sola vez; `frmIncidencias.Load` ejecuta `RecargarGrilla()` y la consulta se realiza mediante `IncidenciaController.Consultar()`.
+- Manejo de error de carga verificado en UI: ante `consulta.Exito=false`, `frmIncidencias` comunica `consulta.Mensaje` o el fallback en español `"No se pudieron cargar las incidencias."`, sin anunciar éxito falso.
+- Verificación ejecutada en esta sesión: compilación correcta de la solución y ejecución de suite MSTest completa (99/99 superadas).

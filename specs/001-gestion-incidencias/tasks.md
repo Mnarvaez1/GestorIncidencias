@@ -186,7 +186,7 @@ propiedades inmutables.
   mutar los controles ni anunciar éxito falso.
 - [x] T043 [US5] Conectar `txtBuscar.TextChanged` y `cboFiltroEstado.SelectedIndexChanged` para
   refrescar búsqueda/filtro mientras se escribe, sin mover reglas de negocio a los eventos.
-- [ ] T044 [US6] En `frmIncidencias.Load`, usar el controlador y bloqueo ya preparados por
+- [x] T044 [US6] En `frmIncidencias.Load`, usar el controlador y bloqueo ya preparados por
   `Program.Main`, cargar datos y mostrar errores de carga; no adquirir un segundo mutex.
 - [ ] T045 [US1]–[US7] Revisar mensajes en español para validaciones, errores de almacenamiento,
   archivo dañado, listas vacías y búsquedas sin resultados.
