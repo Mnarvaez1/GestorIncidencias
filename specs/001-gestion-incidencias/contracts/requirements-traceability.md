@@ -125,3 +125,15 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
   - `CambiarEstadoConFalloDeCargaDebeConservarMensajeDeErrorReal`
 - Cobertura automatizada relacionada preservada: validaciones de `IncidenciaValidatorTests`; errores de almacenamiento y conservación de datos en `IncidenciaControllerTests`; XML dañado/archivo bloqueado en `XmlIncidenciaRepositoryTests` (siempre con archivos temporales aislados).
 - Evidencia de ejecución completa aportada por el operador en Visual Studio: suite MSTest 105 ejecutadas, 105 aprobadas, 0 fallidas, 0 omitidas, 0 advertencias.
+
+## Evidencia de vista previa de reporte (US8 / T067)
+
+- Implementación realizada en `frmVistaPreviaReporte.cs`, `frmVistaPreviaReporte.Designer.cs` y `frmVistaPreviaReporte.resx`, registrados en `GestorIncidencias.csproj` como formulario WinForms compatible con diseñador.
+- Cobertura funcional implementada:
+  - RF-032: encabezado empresarial y fecha/hora de generación en la vista previa.
+  - RF-033: recepción de colección real vía constructor `frmVistaPreviaReporte(IList<Incidencia>)` sin inventar incidencias; se clona la entrada para visualización segura.
+  - RF-034: tabla `dgvIncidenciasReporte` con columnas ID, título, `ReportadoPor`, responsable, prioridad, estado y fecha.
+  - RF-035: estado vacío comprensible (`lblEstadoVacio`) cuando la colección no contiene incidencias.
+- Regla legacy preservada: `ReportadoPor` ausente se representa solo de forma visual como `No informado (registro legado)` dentro del formulario de reporte, sin mutar datos fuente.
+- Verificación auténtica aportada por el operador: apertura correcta en Ver diseñador, compilación correcta (2 proyectos, 0 errores) y regresión MSTest completa (105/105 aprobadas).
+- Alcance explícitamente no incluido en T067: conexión del botón `btnVistaPreviaReporte` y exportación HTML (T065/T068 en adelante).

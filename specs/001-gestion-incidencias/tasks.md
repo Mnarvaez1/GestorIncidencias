@@ -267,7 +267,7 @@ propiedades inmutables.
 
 **Objetivo**: implementar `frmVistaPreviaReporte` y exportación HTML local sin dependencias de impresión.
 
-- [ ] T067 [US8] Crear `frmVistaPreviaReporte.Designer.cs`, `frmVistaPreviaReporte.cs` y
+- [x] T067 [US8] Crear `frmVistaPreviaReporte.Designer.cs`, `frmVistaPreviaReporte.cs` y
   `frmVistaPreviaReporte.resx` con encabezado empresarial, fecha/hora, tabla de incidencias y
   estado vacío comprensible (RF-032, RF-033, RF-034, RF-035).
 - [ ] T068 [US8] Implementar exportación a HTML UTF-8 con escape de contenido y datos reales
