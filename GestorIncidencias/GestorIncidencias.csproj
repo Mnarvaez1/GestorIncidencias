@@ -56,6 +56,12 @@
     <Compile Include="Controlador\IncidenciaValidator.cs" />
     <Compile Include="Controlador\SingleInstanceGuard.cs" />
     <Compile Include="Controlador\XmlIncidenciaRepository.cs" />
+    <Compile Include="frmEditarIncidencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEditarIncidencia.Designer.cs">
+      <DependentUpon>frmEditarIncidencia.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmIncidencias.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmEditarIncidencia.resx">
+      <DependentUpon>frmEditarIncidencia.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmIncidencias.resx">
       <DependentUpon>frmIncidencias.cs</DependentUpon>
     </EmbeddedResource>

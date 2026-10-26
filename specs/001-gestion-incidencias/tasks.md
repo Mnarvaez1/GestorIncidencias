@@ -177,7 +177,7 @@ propiedades inmutables.
 - [x] T039 [US1] Modificar `frmIncidencias.Designer.cs` para declarar y disponer `DataGridView`,
   cajas de texto, combos, botones, etiquetas y layout; comprobar que los controles se muestran
   en el diseñador de Visual Studio 2026.
-- [ ] T040 [US1] Mantener `Formularios/frmIncidencias.cs` o la ruta actual compatible con el
+- [x] T040 [US1] Mantener `Formularios/frmIncidencias.cs` o la ruta actual compatible con el
   `.csproj`, conectar eventos de alta, edición y cancelación con el controlador y conservar
   `frmIncidencias` como formulario iniciado por `Program.cs`.
 - [ ] T041 [US2] Conectar la lista a `dgvIncidencias`, mostrar identificador, título, descripción,
