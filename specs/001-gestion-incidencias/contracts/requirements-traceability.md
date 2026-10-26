@@ -137,3 +137,15 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 - Regla legacy preservada: `ReportadoPor` ausente se representa solo de forma visual como `No informado (registro legado)` dentro del formulario de reporte, sin mutar datos fuente.
 - Verificación auténtica aportada por el operador: apertura correcta en Ver diseñador, compilación correcta (2 proyectos, 0 errores) y regresión MSTest completa (105/105 aprobadas).
 - Alcance explícitamente no incluido en T067: conexión del botón `btnVistaPreviaReporte` y exportación HTML (T065/T068 en adelante).
+
+## Evidencia de exportación HTML (US8 / T068)
+
+- Implementación realizada en `frmVistaPreviaReporte.cs` y `frmVistaPreviaReporte.Designer.cs` con botón `Exportar HTML` y flujo de guardado mediante `SaveFileDialog`.
+- Cobertura funcional implementada:
+  - RF-036: exportación a archivo `.html` en UTF-8 (`File.WriteAllText(..., Encoding.UTF8)`) usando exclusivamente la colección de incidencias recibida por el formulario.
+  - RF-036: documento con encabezado empresarial, fecha/hora de generación, contador y tabla con ID, título, `ReportadoPor`, responsable, prioridad, estado y fecha.
+  - RF-036: escape de contenido dinámico mediante `WebUtility.HtmlEncode` para `<`, `>`, `&`, comillas y caracteres especiales.
+  - RF-037: sin uso de `PrintDocument`, `PrintPreviewDialog`, `PrintPreviewControl` ni `PrintDialog`.
+- Seguridad y consistencia: `ReportadoPor` ausente se representa como `No informado (registro legado)` solo en salida visual/HTML, sin modificar datos originales en memoria.
+- Manejo de flujo y errores en español: cancelación de diálogo y fallos de escritura informados al operador; éxito comunicado solo después de guardado confirmado.
+- Verificación real en esta ejecución: compilación correcta de la solución (2 proyectos, 0 errores).

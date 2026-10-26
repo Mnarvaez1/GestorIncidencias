@@ -270,7 +270,7 @@ propiedades inmutables.
 - [x] T067 [US8] Crear `frmVistaPreviaReporte.Designer.cs`, `frmVistaPreviaReporte.cs` y
   `frmVistaPreviaReporte.resx` con encabezado empresarial, fecha/hora, tabla de incidencias y
   estado vacío comprensible (RF-032, RF-033, RF-034, RF-035).
-- [ ] T068 [US8] Implementar exportación a HTML UTF-8 con escape de contenido y datos reales
+- [x] T068 [US8] Implementar exportación a HTML UTF-8 con escape de contenido y datos reales
   filtrados, sin usar `PrintDocument`, `PrintPreviewDialog`, `PrintPreviewControl` ni
   `PrintDialog` (RF-036, RF-037).
 - [ ] T069 [US8] Añadir pruebas automatizadas para generación/exportación de reporte y casos de

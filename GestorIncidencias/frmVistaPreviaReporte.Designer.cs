@@ -47,6 +47,7 @@ namespace GestorIncidencias
             this.colEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colFechaCreacion = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnlAcciones = new System.Windows.Forms.Panel();
+            this.btnExportarHtml = new System.Windows.Forms.Button();
             this.btnCerrar = new System.Windows.Forms.Button();
             this.pnlEncabezado.SuspendLayout();
             this.pnlResumen.SuspendLayout();
@@ -254,6 +255,7 @@ namespace GestorIncidencias
             // pnlAcciones
             //
             this.pnlAcciones.BackColor = System.Drawing.Color.White;
+            this.pnlAcciones.Controls.Add(this.btnExportarHtml);
             this.pnlAcciones.Controls.Add(this.btnCerrar);
             this.pnlAcciones.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnlAcciones.Location = new System.Drawing.Point(0, 628);
@@ -261,6 +263,21 @@ namespace GestorIncidencias
             this.pnlAcciones.Padding = new System.Windows.Forms.Padding(24, 10, 24, 14);
             this.pnlAcciones.Size = new System.Drawing.Size(1180, 72);
             this.pnlAcciones.TabIndex = 3;
+            //
+            // btnExportarHtml
+            //
+            this.btnExportarHtml.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnExportarHtml.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(59)))), ((int)(((byte)(92)))));
+            this.btnExportarHtml.FlatAppearance.BorderSize = 0;
+            this.btnExportarHtml.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExportarHtml.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnExportarHtml.ForeColor = System.Drawing.Color.White;
+            this.btnExportarHtml.Location = new System.Drawing.Point(854, 16);
+            this.btnExportarHtml.Name = "btnExportarHtml";
+            this.btnExportarHtml.Size = new System.Drawing.Size(164, 38);
+            this.btnExportarHtml.TabIndex = 0;
+            this.btnExportarHtml.Text = "Exportar HTML";
+            this.btnExportarHtml.UseVisualStyleBackColor = false;
             //
             // btnCerrar
             //
@@ -273,7 +290,7 @@ namespace GestorIncidencias
             this.btnCerrar.Location = new System.Drawing.Point(1024, 16);
             this.btnCerrar.Name = "btnCerrar";
             this.btnCerrar.Size = new System.Drawing.Size(124, 38);
-            this.btnCerrar.TabIndex = 0;
+            this.btnCerrar.TabIndex = 1;
             this.btnCerrar.Text = "Cerrar";
             this.btnCerrar.UseVisualStyleBackColor = false;
             //
@@ -315,6 +332,7 @@ namespace GestorIncidencias
         private System.Windows.Forms.DataGridView dgvIncidenciasReporte;
         private System.Windows.Forms.Label lblEstadoVacio;
         private System.Windows.Forms.Panel pnlAcciones;
+        private System.Windows.Forms.Button btnExportarHtml;
         private System.Windows.Forms.Button btnCerrar;
         private System.Windows.Forms.DataGridViewTextBoxColumn colIdentificador;
         private System.Windows.Forms.DataGridViewTextBoxColumn colTitulo;
