@@ -46,3 +46,30 @@ Este contrato define el comportamiento esperado de `IIncidenciaRepository` sin m
 
 - Fase roja: `T055-rojo.trx` (63 pruebas, 52 correctas, 11 fallidas en semántica de persistencia previa).
 - Fase verde: `T055-verde.trx` (63 pruebas, 63 correctas).
+
+## Extensión prevista para repositorio de empleados
+
+Este bloque define el comportamiento esperado del futuro `IEmpleadoRepository` y su implementación XML, sin alterar el contrato actual de incidencias.
+
+### Compatibilidad de esquema de empleados
+
+- El repositorio de empleados DEBE aceptar ausencia de archivo como estado inicial vacío.
+- El repositorio de empleados DEBE detectar XML dañado y devolver `Exito=false` sin sobrescribir automáticamente el archivo original.
+- El guardado de empleados DEBE persistir identificador, nombre completo, indicador técnico, estado activo/inactivo y fecha de creación.
+
+### Cargar empleados
+
+- `Cargar()` devuelve la colección completa persistida de empleados.
+- La colección devuelta y cada empleado deben ser copias independientes del almacenamiento.
+- La carga inválida DEBE bloquear confirmación positiva de operaciones de negocio dependientes.
+
+### Guardar empleados
+
+- `Guardar(IList<Empleado> empleados)` recibe la colección completa que quedará almacenada.
+- El contenido persistido se reemplaza por completo con la colección recibida.
+- El guardado no agrega elementos por acumulación ni altera identificadores existentes.
+
+### Integración con incidencias y legado
+
+- La persistencia de incidencias legacy con responsable textual DEBE mantenerse compatible aunque no exista vínculo a empleado.
+- El repositorio de empleados NO DEBE reescribir incidencias históricas para forzar asignaciones retroactivas.

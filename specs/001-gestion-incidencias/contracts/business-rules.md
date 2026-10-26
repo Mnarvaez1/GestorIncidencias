@@ -50,3 +50,25 @@ Estos contratos describen comportamientos verificables para las futuras pruebas 
 - Un guardado fallido conserva el estado anterior y no devuelve confirmación positiva.
 - El guardado nuevo persiste `ReportadoPor` para registros creados o editados en el nuevo modelo.
 - La carga de XML de siete campos conserva datos existentes y aplica representación legacy de `ReportadoPor` solo a nivel de visualización.
+
+## Empleados
+
+- Registrar empleado con nombre completo recortado (2 a 120), indicador de técnico y estado inicial activo.
+- Asignar identificador positivo, único y no reutilizable para cada nuevo empleado.
+- Editar empleado conservando identificador y fecha de creación.
+- No eliminar empleados; la desactivación se resuelve con estado inactivo.
+- Buscar empleados por coincidencia parcial de nombre sin distinguir mayúsculas/minúsculas.
+
+## Integración responsable técnico
+
+- `ReportadoPor` permanece independiente del responsable técnico y no depende del catálogo de empleados.
+- Al registrar o editar una incidencia nueva, responsable debe seleccionarse solo desde empleados técnicos activos.
+- Si una incidencia histórica contiene responsable textual sin vínculo a empleado, se conserva y se muestra sin bloqueo.
+- Si un empleado técnico cambia a inactivo, no se altera automáticamente el responsable ya almacenado en incidencias históricas.
+
+## Persistencia de empleados
+
+- Carga válida de empleados devuelve colección y siguiente identificador seguro.
+- Archivo de empleados ausente inicia colección vacía sin error técnico.
+- Archivo de empleados dañado devuelve error y bloquea sobrescritura automática.
+- Guardado de empleados fallido conserva datos anteriores y no devuelve confirmación positiva.

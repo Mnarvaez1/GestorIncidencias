@@ -221,12 +221,37 @@ Como operador, quiero que el archivo HTML exportado tenga la misma estética eje
 
 **Estado de validación informado**: el estudiante reporta compilación sin errores, validación visual en diseñador/F5 y regresión MSTest 111/111, además de comprobación manual del HTML exportado en escenarios Todos, Pendiente y sin coincidencias.
 
+### Evolución funcional solicitada - Módulo de administración de empleados
+
+Como operador, quiero administrar empleados y seleccionar técnicos activos como responsables de incidencias para mejorar consistencia operativa sin perder compatibilidad con datos históricos.
+
+**Criterios de evolución**:
+
+1. El sistema incorpora una entidad `Empleado` con identificador único estable, nombre completo, bandera de técnico de soporte y estado Activo/Inactivo.
+2. El sistema permite registrar, consultar, editar y buscar empleados por nombre sin eliminar registros históricos.
+3. Solo empleados técnicos y activos pueden seleccionarse como responsables al registrar o editar incidencias.
+4. El sistema conserva compatibilidad con incidencias históricas cuyo responsable está almacenado solo como texto.
+5. `ReportadoPor` se mantiene como dato independiente del técnico responsable.
+6. La persistencia de empleados se realiza en XML local seguro, con manejo de fallos sin falso éxito.
+7. La evolución mantiene compatibilidad con Visual Studio Designer y no altera reglas existentes de incidencias fuera de la integración prevista.
+
+**Decisiones funcionales propuestas (requieren aprobación antes de codificar)**:
+
+- DF-EMP-01: conservar `Incidencia.Responsable` como texto visible para retrocompatibilidad y añadir vínculo opcional a empleado técnico (id nullable) en una etapa de integración.
+- DF-EMP-02: cuando un técnico pase a Inactivo, las incidencias históricas conservan su nombre textual y no se reasignan automáticamente.
+- DF-EMP-03: si el vínculo opcional no existe (legacy o carga antigua), el sistema mantiene comportamiento actual por texto sin bloquear edición/consulta.
+- DF-EMP-04: no se implementa eliminación física de empleados; el ciclo de vida se resuelve con Activo/Inactivo.
+
 ## Casos límite
 
 - `ReportadoPor` con 2 y 80 caracteres: válido.
 - `ReportadoPor` con 1 u 81 caracteres: inválido.
 - `ReportadoPor` nulo, vacío o solo espacios en alta/edición nueva: inválido.
 - Registro legado sin `ReportadoPor`: representación visible `No informado (registro legado)` sin asignar una persona inventada.
+- Empleado con nombre de 2 y 120 caracteres: válido.
+- Empleado con nombre de 1 o 121 caracteres: inválido.
+- Técnico inactivo: no elegible para nuevas asignaciones como responsable.
+- Incidencia legacy con responsable textual no presente en catálogo de empleados: se muestra y conserva sin bloqueo.
 - Exportación HTML con caracteres especiales (`<`, `>`, `&`, comillas): contenido escapado correcto.
 - Vista previa con cero incidencias: estado vacío sin excepciones.
 - Vista previa y exportación sin componentes de impresión: funcionamiento completo.
@@ -271,6 +296,18 @@ Como operador, quiero que el archivo HTML exportado tenga la misma estética eje
 - **RF-036**: El sistema DEBE permitir exportar el reporte a HTML local en UTF-8 con contenido escapado.
 - **RF-037**: El sistema NO DEBE usar `PrintDocument`, `PrintPreviewDialog`, `PrintPreviewControl` ni `PrintDialog`.
 - **RF-038**: El sistema DEBE mantener el diseño base T039, compactar/alinear filtro de estado y mantener visible el área inferior de mensajes.
+- **RF-039**: El sistema DEBE permitir registrar empleados con identificador único positivo, nombre completo, indicador de técnico de soporte y estado Activo/Inactivo.
+- **RF-040**: El sistema DEBE validar nombre completo de empleado con recorte previo y longitud entre 2 y 120 caracteres.
+- **RF-041**: El sistema DEBE listar empleados con identificador, nombre, rol técnico (Sí/No) y estado (Activo/Inactivo).
+- **RF-042**: El sistema DEBE permitir editar nombre e indicador técnico, y activar/inactivar empleados mediante su estado, conservando su identificador.
+- **RF-043**: El sistema NO DEBE eliminar físicamente empleados; la baja funcional se realizará solo mediante estado Inactivo.
+- **RF-044**: El sistema DEBE buscar empleados por coincidencia parcial en nombre sin distinguir mayúsculas/minúsculas.
+- **RF-045**: El sistema DEBE persistir empleados en XML local y recuperarlos manteniendo identificadores y estados.
+- **RF-046**: Si falla la persistencia de empleados, el sistema DEBE informar el error y conservar los datos anteriores sin falso éxito.
+- **RF-047**: El sistema DEBE permitir seleccionar únicamente empleados técnicos activos como responsables al registrar o editar incidencias.
+- **RF-048**: El sistema DEBE conservar incidencias históricas cuyo responsable solo exista como texto, sin exigir conversión forzada a empleado.
+- **RF-049**: El sistema DEBE mantener `ReportadoPor` independiente del responsable técnico y de la entidad empleado.
+- **RF-050**: El sistema DEBE cargar datos legacy de incidencias y empleados sin perder trazabilidad ni romper consultas/reportes existentes.
 
 ## Entidades principales
 
@@ -279,6 +316,8 @@ Como operador, quiero que el archivo HTML exportado tenga la misma estética eje
 - **Estado de incidencia**: Pendiente, En proceso o Resuelta.
 - **Filtro de estado**: selección Todos, Pendiente, En proceso o Resuelta.
 - **Reporte de incidencias**: proyección temporal para vista previa y exportación HTML basada en el resultado actual de búsqueda/filtro.
+- **Empleado**: registro administrativo con identificador, nombre completo, perfil técnico y estado activo/inactivo.
+- **Responsable técnico vinculado**: referencia opcional de incidencia a empleado técnico para integraciones futuras, manteniendo texto legacy.
 
 ## Criterios de éxito
 
@@ -291,6 +330,9 @@ Como operador, quiero que el archivo HTML exportado tenga la misma estética eje
 - **CE-007**: XML antiguo sin `ReportadoPor` se interpreta de forma explícita y trazable sin inventar personas.
 - **CE-008**: La vista previa muestra datos reales con timestamp y permite exportar HTML UTF-8 escapado.
 - **CE-009**: El formulario principal conserva diseño base T039 y compatibilidad con diseñador tras mejoras visuales.
+- **CE-010**: El operador administra empleados (alta, consulta, edición, búsqueda y estado Activo/Inactivo) sin eliminación física ni pérdida de identificadores.
+- **CE-011**: Solo técnicos activos aparecen como candidatos a responsable en alta/edición de incidencia.
+- **CE-012**: Las incidencias históricas con responsable textual permanecen visibles y editables sin migración forzada.
 
 ## Supuestos y dependencias
 

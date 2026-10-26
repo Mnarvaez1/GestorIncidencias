@@ -1,6 +1,6 @@
 # Matriz de trazabilidad
 
-La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automatizadas o verificaciones manuales.
+La implementación relaciona cada requisito RF-001 en adelante con pruebas automatizadas o verificaciones manuales.
 
 | Requisitos | Verificación prevista |
 |---|---|
@@ -20,6 +20,11 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 | RF-021 | `CargarConXmlDanadoDebeFallarYBloquearSobrescrituraAutomatica`, `CargarConTiposDeDatosInvalidosDebeFallar`, `CargarConIdentificadoresDuplicadosDebeFallarYPreservarArchivoOriginal`, `CargarConPrioridadInvalidaDebeFallar`, `CargarConEstadoInvalidoDebeFallar` y `GuardarConArchivoBloqueadoDebeFallarYPreservarDatosAnteriores` (MSTest) validan detección de corrupción, bloqueo de sobrescritura y preservación ante fallos de persistencia. Resultado: correcto en `T037-verificacion-inicial.trx`. |
 | RF-022 | Pruebas unitarias de validación en `IncidenciaValidatorTests` (límites, recorte, prioridad). Resultado: correcto en `T022-verde.trx`. |
 | RF-023 | `ConsultarSinRegistrosDevuelveColeccionVacia` (MSTest) valida estado vacío sin error técnico. Resultado: correcto en `T022-verde.trx`. |
+| RF-039–RF-040 | Planificado para `EmpleadoValidatorTests` y `EmpleadoControllerTests`: alta de empleado con identificador único, recorte y límites de nombre (2..120). Estado: pendiente de implementación (T092–T095). |
+| RF-041–RF-042 | Planificado para `EmpleadoControllerTests` y verificación de interfaz en `frmEmpleados`/`frmEditarEmpleado`: consulta y edición conservando identificador estable. Estado: pendiente (T095–T097). |
+| RF-043–RF-044 | Planificado para pruebas de estado Activo/Inactivo y búsqueda parcial por nombre en controlador + UI. Estado: pendiente (T095–T097). |
+| RF-045–RF-046 | Planificado para `XmlEmpleadoRepositoryTests`: persistencia XML, carga segura, fallo controlado y preservación de datos previos. Estado: pendiente (T094, T099). |
+| RF-047–RF-050 | Planificado para pruebas de integración en `IncidenciaControllerTests` y formularios de incidencia: selección exclusiva de técnicos activos, compatibilidad con responsable textual legacy e independencia de `ReportadoPor`. Estado: pendiente (T098–T099). |
 
 ## Evidencia del bloque de consulta (US2)
 
@@ -212,3 +217,10 @@ La implementación relaciona cada requisito RF-001 a RF-023 con pruebas automati
 ## Pendiente intencional de cierre documental global (US8 / US9 / T070)
 
 - T070 permanece abierto por alcance explícito: requiere actualización adicional de `quickstart.md` y consolidación final de cobertura RF-024 a RF-038 en un cierre posterior.
+
+## Evolución planificada módulo Empleados pendiente de implementación (US10 / T084-T099)
+
+- Se documenta el inicio SDD del módulo Empleados en fases 1-3 (requerimientos, especificación y plan técnico) sin cambios de código en esta iteración.
+- Se definen RF-039 a RF-050, entidad `Empleado`, contratos de negocio/persistencia y estrategia de compatibilidad con responsables legacy en texto.
+- Se mantiene `ReportadoPor` como campo independiente del técnico asignado.
+- La cobertura de estos RF queda en estado pendiente hasta ejecutar las tareas de implementación T092–T099 y su regresión MSTest asociada.

@@ -10,6 +10,12 @@ compatibilidad con XML antiguos de siete campos, mejorar la experiencia visual d
 principal y añadir una vista previa de reportes en `frmVistaPreviaReporte` con exportación HTML
 UTF-8 escapada.
 
+En esta iteración documental también se define el arranque del módulo de administración de
+empleados (fases SDD 1-3): requisitos, modelo, contratos y planificación técnica sin crear código.
+El módulo cubrirá alta/consulta/edición/búsqueda de empleados, gestión Activo/Inactivo,
+selección de técnicos activos como responsables y compatibilidad con responsables históricos
+almacenados como texto en incidencias legacy.
+
 Las reglas seguirán fuera de los eventos de la interfaz para poder probarse sin abrir formularios.
 La implementación conservará el proyecto clásico `GestorIncidencias.csproj`, su destino
 .NET Framework 4.7.2 y la configuración C# 7.3, sin dependencias de impresión ni paquetes nuevos.
@@ -92,7 +98,7 @@ specs/001-gestion-incidencias/
 ├── contracts/
 │   ├── business-rules.md                # Contratos verificables de reglas de negocio
 │   ├── repository-contract.md           # Contrato operativo de carga/guardado y confirmación
-│   └── requirements-traceability.md     # Trazabilidad RF-001 a RF-023
+│   └── requirements-traceability.md     # Trazabilidad RF-001 en adelante (incluye empleados)
 └── checklists/requirements.md            # Checklist de calidad de la especificación
 ```
 
@@ -102,18 +108,29 @@ specs/001-gestion-incidencias/
 GestorIncidencias/
 ├── Entidades/
 │   ├── Incidencia.cs                     # Entidad simple con propiedades get/set
+│   ├── Empleado.cs                       # Entidad de empleado con rol técnico y estado
 │   ├── Prioridad.cs                      # Valores Baja, Media y Alta
 │   └── EstadoIncidencia.cs               # Pendiente, EnProceso y Resuelta
 ├── Controlador/
 │   ├── IncidenciaController.cs           # Casos de uso, edición, estados, consulta
+│   ├── EmpleadoController.cs             # Casos de uso de alta, edición, consulta y búsqueda
+│   ├── EmpleadoValidator.cs              # Validaciones de nombre y reglas del empleado
 │   ├── IncidenciaValidator.cs            # Validaciones compartidas de alta y edición
 │   ├── IncidenciaRepository.cs           # Contrato de carga y guardado local
 │   ├── XmlIncidenciaRepository.cs        # XML, temporal, respaldo y datos dañados
+│   ├── EmpleadoRepository.cs             # Contrato de persistencia de empleados
+│   ├── XmlEmpleadoRepository.cs          # Persistencia XML segura para empleados
 │   ├── ResultadoOperacion.cs             # Resultado y mensaje sin depender de WinForms
 │   └── SingleInstanceGuard.cs            # Bloqueo adquirido y liberado por Program.Main
 ├── Formularios/
 │   ├── frmIncidencias.cs                 # Eventos y coordinación con el controlador
 │   ├── frmIncidencias.Designer.cs        # Controles, layout y eventos de UI
+│   ├── frmEditarIncidencia.cs            # Edición de incidencia con responsable técnico activo
+│   ├── frmEditarIncidencia.Designer.cs   # Controles de edición compatibles con diseñador
+│   ├── frmEmpleados.cs                   # Administración y búsqueda de empleados
+│   ├── frmEmpleados.Designer.cs          # Diseño WinForms del módulo empleados
+│   ├── frmEditarEmpleado.cs              # Alta/edición de empleado
+│   ├── frmEditarEmpleado.Designer.cs     # Diseño WinForms de alta/edición empleado
 │   └── frmIncidencias.resx               # Recursos del formulario
 ├── Program.cs                            # Arranque existente; mantiene frmIncidencias
 ├── App.config                             # Configuración existente, solo si fuera necesario
@@ -125,7 +142,10 @@ GestorIncidencias.Tests/
 ├── Controlador/
 │   ├── IncidenciaValidatorTests.cs       # Límites y errores de validación
 │   ├── IncidenciaControllerTests.cs      # Registro, edición, estados, búsqueda y orden
-│   └── XmlIncidenciaRepositoryTests.cs   # Persistencia aislada y fallos de almacenamiento
+│   ├── XmlIncidenciaRepositoryTests.cs   # Persistencia aislada y fallos de almacenamiento
+│   ├── EmpleadoValidatorTests.cs         # Reglas de validación del empleado
+│   ├── EmpleadoControllerTests.cs        # Alta, edición, búsqueda y estado Activo/Inactivo
+│   └── XmlEmpleadoRepositoryTests.cs     # Persistencia XML segura del catálogo
 ├── packages.config                        # Versiones NuGet fijadas para MSTest
 └── GestorIncidencias.Tests.csproj         # Proyecto clásico .NET Framework 4.7.2
 
@@ -397,6 +417,11 @@ El workflow será una fase posterior y no se crea en este plan.
 | RF-033–RF-036 | Pruebas de datos reales filtrados en reporte, estado vacío y exportación HTML UTF-8 escapada. |
 | RF-037 | Revisión de implementación y pruebas para confirmar ausencia de APIs de impresión prohibidas. |
 | RF-038 | Verificación manual del layout T039+ (filtro compacto/alineado, área de mensajes visible, botón de vista previa). |
+| RF-039–RF-040 | Pruebas unitarias de alta y validación de nombre de empleado (recorte y límites). |
+| RF-041–RF-042 | Pruebas de consulta/edición de empleado con conservación de identificador y fecha. |
+| RF-043–RF-044 | Pruebas de ciclo Activo/Inactivo y búsqueda parcial por nombre. |
+| RF-045–RF-046 | Pruebas de persistencia XML de empleados, fallos controlados y preservación de datos. |
+| RF-047–RF-050 | Pruebas de integración incidencia-empleado: selección de técnicos activos, compatibilidad legacy de responsable textual y preservación de `ReportadoPor`. |
 
 Verificación manual adicional:
 

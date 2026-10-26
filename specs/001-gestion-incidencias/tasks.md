@@ -337,6 +337,52 @@ propiedades inmutables.
 - [x] T083 [US8] [US9] Actualizar `contracts/requirements-traceability.md` con la evolución de
   plantilla HTML ejecutiva, dejando pendiente su validación manual y regresión MSTest por el estudiante.
 
+## Fase 21: SDD Fase 1 — Requerimientos módulo Empleados
+
+**Objetivo**: formalizar alcance funcional del módulo de empleados sin implementar código.
+
+- [x] T084 Analizar y documentar en `spec.md` el alcance del módulo Empleados (alta, consulta,
+  edición, técnico de soporte, estado Activo/Inactivo, búsqueda, integración con responsable,
+  persistencia y exclusiones de nómina/salarios/asistencia) creando RF nuevos sin renumerar RF-001..RF-038.
+- [x] T085 Documentar en `spec.md` las decisiones funcionales del módulo Empleados que requieren
+  aprobación previa a codificación (compatibilidad de responsable textual legacy y estrategia de vínculo opcional).
+
+## Fase 22: SDD Fase 2 — Especificación módulo Empleados
+
+**Objetivo**: definir artefactos de diseño funcional y contratos verificables del módulo.
+
+- [x] T086 Actualizar `data-model.md` con entidad `Empleado` (campos, tipos, validaciones,
+  identificadores estables, estado Activo/Inactivo y relación con incidencia/responsable).
+- [x] T087 Actualizar `contracts/business-rules.md` con reglas de negocio de empleados,
+  selección de técnicos activos, independencia de `ReportadoPor` y casos de error.
+- [x] T088 Actualizar `contracts/repository-contract.md` con contrato de persistencia XML segura
+  para empleados, manejo de fallos y compatibilidad con incidencias legacy.
+- [x] T089 Actualizar `contracts/requirements-traceability.md` incorporando RF del módulo
+  Empleados con verificación prevista y estado pendiente hasta implementación.
+
+## Fase 23: SDD Fase 3 — Plan técnico módulo Empleados
+
+**Objetivo**: planificar implementación futura compatible con arquitectura y diseñador WinForms.
+
+- [x] T090 Actualizar `plan.md` con la arquitectura propuesta del módulo Empleados (`Entidades/Empleado.cs`,
+  validaciones, repositorio XML, controlador, formularios `frmEmpleados` y `frmEditarEmpleado`,
+  integración con `frmIncidencias` y `frmEditarIncidencia`, y pruebas MSTest).
+- [x] T091 Actualizar `tasks.md` con backlog técnico de implementación de Empleados (T092 en adelante),
+  dependencias por orden de ejecución y criterios de verificación, sin cerrar tareas ni alterar T070.
+
+## Fase 24: Implementación futura módulo Empleados (pendiente)
+
+**Objetivo**: reservar la secuencia de trabajo para fases de codificación posteriores a aprobación.
+
+- [ ] T092 [US10] Crear `Entidades/Empleado.cs` y pruebas de entidad asociadas.
+- [ ] T093 [US10] Crear `Controlador/EmpleadoValidator.cs` y `EmpleadoValidatorTests.cs` con ciclo TDD.
+- [ ] T094 [US10] Crear contratos/repositorio de empleados (`EmpleadoRepository.cs`, `XmlEmpleadoRepository.cs`) y pruebas de persistencia XML segura.
+- [ ] T095 [US10] Crear `Controlador/EmpleadoController.cs` con pruebas de alta, consulta, edición, búsqueda y estado Activo/Inactivo.
+- [ ] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY.
+- [ ] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
+- [ ] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias`, además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
+- [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070.
+
 ## Dependencias y orden de ejecución
 
 ### Dependencias por fase
@@ -356,6 +402,10 @@ propiedades inmutables.
 - **Fase 13**: depende de Fase 12 para integrar controlador con datos ya persistibles.
 - **Fase 14**: depende de Fase 13 para conectar UI con reglas y datos ampliados.
 - **Fase 15**: depende de Fase 14 para consumir búsqueda/filtro reales en vista previa y cierre documental.
+- **Fase 21**: documental, inicia alcance del módulo Empleados y habilita fases 22 y 23.
+- **Fase 22**: depende de Fase 21 y bloquea planificación detallada e implementación del módulo Empleados.
+- **Fase 23**: depende de Fase 22 y produce el backlog ejecutable del módulo Empleados.
+- **Fase 24**: depende de aprobación formal de fases 21-23 y habilita implementación posterior (fuera de este alcance).
 
 ### Primer bloque de implementación
 
