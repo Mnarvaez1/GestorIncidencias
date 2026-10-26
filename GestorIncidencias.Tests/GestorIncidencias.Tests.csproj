@@ -40,6 +40,7 @@
     <Compile Include="Controlador\IncidenciaValidatorTests.cs" />
     <Compile Include="Controlador\VistaPreviaReporteHtmlTests.cs" />
     <Compile Include="Controlador\XmlIncidenciaRepositoryTests.cs" />
+    <Compile Include="Entidades\EmpleadoTests.cs" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
