@@ -255,7 +255,7 @@ propiedades inmutables.
 
 **Objetivo**: actualizar `frmIncidencias` sobre base T039 sin romper compatibilidad de diseñador.
 
-- [ ] T064 [US9] Modificar `frmIncidencias.Designer.cs` para agregar controles de `ReportadoPor`,
+- [x] T064 [US9] Modificar `frmIncidencias.Designer.cs` para agregar controles de `ReportadoPor`,
   compactar/alinear filtro de estado, asegurar visibilidad del área de mensajes e incorporar el
   botón `Vista previa de reporte` (RF-031, RF-038).
 - [ ] T065 [US1] [US9] Conectar en `frmIncidencias.cs` alta/edición con `ReportadoPor`, refresco
