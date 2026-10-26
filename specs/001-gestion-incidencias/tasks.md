@@ -180,7 +180,7 @@ propiedades inmutables.
 - [x] T040 [US1] Mantener `Formularios/frmIncidencias.cs` o la ruta actual compatible con el
   `.csproj`, conectar eventos de alta, edición y cancelación con el controlador y conservar
   `frmIncidencias` como formulario iniciado por `Program.cs`.
-- [ ] T041 [US2] Conectar la lista a `dgvIncidencias`, mostrar identificador, título, descripción,
+- [x] T041 [US2] Conectar la lista a `dgvIncidencias`, mostrar identificador, título, descripción,
   responsable, prioridad, estado y fecha, y comunicar el estado vacío.
 - [ ] T042 [US4] Conectar el cambio de estado independiente y mostrar errores de transición sin
   mutar los controles ni anunciar éxito falso.
