@@ -375,7 +375,7 @@ propiedades inmutables.
 **Objetivo**: reservar la secuencia de trabajo para fases de codificación posteriores a aprobación.
 
 - [x] T092 [US10] Crear `Entidades/Empleado.cs` y pruebas de entidad asociadas.
-- [ ] T093 [US10] Crear `Controlador/EmpleadoValidator.cs` y `EmpleadoValidatorTests.cs` con ciclo TDD.
+- [x] T093 [US10] Crear `Controlador/EmpleadoValidator.cs` y `EmpleadoValidatorTests.cs` con ciclo TDD.
 - [ ] T094 [US10] Crear contratos/repositorio de empleados (`EmpleadoRepository.cs`, `XmlEmpleadoRepository.cs`) y pruebas de persistencia XML segura.
 - [ ] T095 [US10] Crear `Controlador/EmpleadoController.cs` con pruebas de alta, consulta, edición, búsqueda y estado Activo/Inactivo.
 - [ ] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY.

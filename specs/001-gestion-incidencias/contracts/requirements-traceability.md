@@ -20,7 +20,7 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 | RF-021 | `CargarConXmlDanadoDebeFallarYBloquearSobrescrituraAutomatica`, `CargarConTiposDeDatosInvalidosDebeFallar`, `CargarConIdentificadoresDuplicadosDebeFallarYPreservarArchivoOriginal`, `CargarConPrioridadInvalidaDebeFallar`, `CargarConEstadoInvalidoDebeFallar` y `GuardarConArchivoBloqueadoDebeFallarYPreservarDatosAnteriores` (MSTest) validan detección de corrupción, bloqueo de sobrescritura y preservación ante fallos de persistencia. Resultado: correcto en `T037-verificacion-inicial.trx`. |
 | RF-022 | Pruebas unitarias de validación en `IncidenciaValidatorTests` (límites, recorte, prioridad). Resultado: correcto en `T022-verde.trx`. |
 | RF-023 | `ConsultarSinRegistrosDevuelveColeccionVacia` (MSTest) valida estado vacío sin error técnico. Resultado: correcto en `T022-verde.trx`. |
-| RF-039–RF-040 | Avance parcial en T092: entidad `Empleado` y pruebas de entidad (`EmpleadoTests`) verifican asignación de campos, estabilidad de `Identificador`/`FechaCreacion` y aceptación de longitudes límite 2 y 120. Validación de negocio completa (recorte, rechazo y unicidad entre registros) sigue pendiente en `EmpleadoValidatorTests`/`EmpleadoControllerTests` (T093–T095). |
+| RF-039–RF-040 | Avance T092+T093: entidad `Empleado` y `EmpleadoValidator` con `EmpleadoValidatorTests` validan empleado no nulo, identificador positivo, nombre obligatorio y longitud 2..120 tras recorte. La unicidad entre registros y reglas de casos de uso permanecen pendientes en `EmpleadoControllerTests` (T095). |
 | RF-041–RF-042 | Planificado para `EmpleadoControllerTests` y verificación de interfaz en `frmEmpleados`/`frmEditarEmpleado`: consulta y edición conservando identificador estable. Estado: pendiente (T095–T097). |
 | RF-043–RF-044 | Planificado para pruebas de estado Activo/Inactivo y búsqueda parcial por nombre en controlador + UI. Estado: pendiente (T095–T097). |
 | RF-045–RF-046 | Planificado para `XmlEmpleadoRepositoryTests`: persistencia XML, carga segura, fallo controlado y preservación de datos previos. Estado: pendiente (T094, T099). |
@@ -232,3 +232,14 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 - Integración de proyecto confirmada: ambos archivos registrados en `GestorIncidencias.csproj` y `GestorIncidencias.Tests.csproj`.
 - Verificación real aportada por el estudiante en Visual Studio: compilación correcta (0 errores) y regresión MSTest completa 115/115 aprobadas (incluye 4 ejecuciones nuevas asociadas a `EmpleadoTests`).
 - Alcance explícito de T092: solo entidad y pruebas de entidad; no incluye aún validador, controlador, persistencia XML ni formularios de empleados.
+
+## Evidencia de validación de empleados (US10 / T093)
+
+- Implementación realizada: `GestorIncidencias/Controlador/EmpleadoValidator.cs`.
+- Pruebas añadidas: `GestorIncidencias.Tests/Controlador/EmpleadoValidatorTests.cs`.
+- Reglas verificadas por pruebas diseñadas para TDD: rechazo de empleado nulo, identificador positivo, `NombreCompleto` obligatorio, evaluación de longitud 2..120 después de `Trim()`, mensajes en español y validación sin mutar `Identificador`/`FechaCreacion` de la entidad evaluada.
+- Integración de proyecto confirmada por el estudiante: `Controlador\EmpleadoValidator.cs` registrado en `GestorIncidencias.csproj` y `Controlador\EmpleadoValidatorTests.cs` registrado en `GestorIncidencias.Tests.csproj`.
+- Verificación real aportada por el estudiante en Visual Studio: compilación sin errores y suite MSTest completa 128/128 aprobadas (baseline previo 115, incremento de 13 ejecuciones).
+- Registro de advertencia: Test Explorer mostró una advertencia no identificada sin impacto en resultado (0 fallidas).
+- Nota de TDD: en esta evidencia se registra diseño y ejecución de pruebas automatizadas; no se declara ni inventa evidencia separada de ciclos RED/GREEN más allá de la ejecución real confirmada.
+- Alcance explícito de T093: no incluye repositorio/persistencia XML de empleados, `EmpleadoController` ni formularios (`frmEmpleados`, `frmEditarEmpleado`).
