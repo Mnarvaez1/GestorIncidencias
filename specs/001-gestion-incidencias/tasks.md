@@ -379,7 +379,7 @@ propiedades inmutables.
 - [x] T094 [US10] Crear contratos/repositorio de empleados (`EmpleadoRepository.cs`, `XmlEmpleadoRepository.cs`) y pruebas de persistencia XML segura.
 - [x] T095 [US10] Crear `Controlador/EmpleadoController.cs` con pruebas de alta, consulta, edición, búsqueda y estado Activo/Inactivo.
 - [x] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY, mostrando en `dgvEmpleados` cinco columnas visuales: Identificador, Nombre completo, Técnico de soporte (Sí/No), Estado laboral (Activo/Inactivo) y Disponibilidad (Libre/Ocupado/No calculada), sin mostrar `Libre` ficticio antes de integración real.
-- [ ] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
+- [x] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
 - [ ] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias` (botón corporativo `Administrar empleados`), además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
 - [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070.
 
