@@ -53,6 +53,7 @@
             this.pnlAcciones = new System.Windows.Forms.Panel();
             this.btnSalir = new System.Windows.Forms.Button();
             this.btnVistaPreviaReporte = new System.Windows.Forms.Button();
+            this.btnAdministrarEmpleados = new System.Windows.Forms.Button();
             this.btnCambiarEstado = new System.Windows.Forms.Button();
             this.btnModificarIncidencia = new System.Windows.Forms.Button();
             this.btnNuevaIncidencia = new System.Windows.Forms.Button();
@@ -308,6 +309,7 @@
             // 
             this.pnlAcciones.Controls.Add(this.btnSalir);
             this.pnlAcciones.Controls.Add(this.btnVistaPreviaReporte);
+            this.pnlAcciones.Controls.Add(this.btnAdministrarEmpleados);
             this.pnlAcciones.Controls.Add(this.btnCambiarEstado);
             this.pnlAcciones.Controls.Add(this.btnModificarIncidencia);
             this.pnlAcciones.Controls.Add(this.btnNuevaIncidencia);
@@ -349,6 +351,21 @@
             this.btnVistaPreviaReporte.TabIndex = 3;
             this.btnVistaPreviaReporte.Text = "Vista previa de reporte";
             this.btnVistaPreviaReporte.UseVisualStyleBackColor = false;
+            //
+            // btnAdministrarEmpleados
+            //
+            this.btnAdministrarEmpleados.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(39)))), ((int)(((byte)(41)))));
+            this.btnAdministrarEmpleados.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnAdministrarEmpleados.FlatAppearance.BorderSize = 1;
+            this.btnAdministrarEmpleados.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAdministrarEmpleados.Font = new System.Drawing.Font("Segoe UI Semibold", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAdministrarEmpleados.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(197)))), ((int)(((byte)(161)))), ((int)(((byte)(92)))));
+            this.btnAdministrarEmpleados.Location = new System.Drawing.Point(598, 16);
+            this.btnAdministrarEmpleados.Name = "btnAdministrarEmpleados";
+            this.btnAdministrarEmpleados.Size = new System.Drawing.Size(225, 36);
+            this.btnAdministrarEmpleados.TabIndex = 5;
+            this.btnAdministrarEmpleados.Text = "Administrar empleados";
+            this.btnAdministrarEmpleados.UseVisualStyleBackColor = false;
             //
             // btnCambiarEstado
             //
@@ -475,5 +492,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn colEstado;
         private System.Windows.Forms.DataGridViewTextBoxColumn colFechaCreacion;
         private System.Windows.Forms.Button btnVistaPreviaReporte;
+        private System.Windows.Forms.Button btnAdministrarEmpleados;
     }
 }

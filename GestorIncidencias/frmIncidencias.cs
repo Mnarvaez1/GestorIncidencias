@@ -22,10 +22,21 @@ namespace GestorIncidencias
             btnModificarIncidencia.Click += BtnModificarIncidencia_Click;
             btnCambiarEstado.Click += BtnCambiarEstado_Click;
             btnVistaPreviaReporte.Click += BtnVistaPreviaReporte_Click;
+            btnAdministrarEmpleados.Click += BtnAdministrarEmpleados_Click;
             btnSalir.Click += BtnSalir_Click;
             txtBuscar.TextChanged += TxtBuscar_TextChanged;
             cboFiltroEstado.SelectedIndexChanged += CboFiltroEstado_SelectedIndexChanged;
             Load += FrmIncidencias_Load;
+        }
+
+        private void BtnAdministrarEmpleados_Click(object sender, EventArgs e)
+        {
+            using (var formulario = new frmEmpleados())
+            {
+                formulario.ShowDialog(this);
+            }
+
+            lblEstadoOperacion.Text = "Administración de empleados cerrada.";
         }
 
         private void BtnSalir_Click(object sender, EventArgs e)
