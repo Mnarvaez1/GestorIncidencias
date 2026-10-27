@@ -21,14 +21,14 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 | RF-022 | Pruebas unitarias de validación en `IncidenciaValidatorTests` (límites, recorte, prioridad). Resultado: correcto en `T022-verde.trx`. |
 | RF-023 | `ConsultarSinRegistrosDevuelveColeccionVacia` (MSTest) valida estado vacío sin error técnico. Resultado: correcto en `T022-verde.trx`. |
 | RF-039–RF-040 | Implementado en T095 con `EmpleadoController` + `EmpleadoControllerTests`: registro con identificador monotónico (`max(ID)+1`), validación de nombre con `EmpleadoValidator` y rechazo de entradas inválidas sin éxito falso. Verificación real: compilación correcta y MSTest 160/160 aprobadas. |
-| RF-041–RF-042 | Implementado parcialmente en T095 a nivel controlador: consulta de empleados, edición de `NombreCompleto`/`EsTecnicoSoporte`/`Activo` y conservación de `Identificador`/`FechaCreacion`; la verificación de interfaz sigue pendiente para T096–T097. |
+| RF-041–RF-042 | Implementado parcialmente en T095 a nivel controlador y en T096 a nivel visual inicial: `frmEmpleados` muestra administración base con columnas de identificador, nombre, rol técnico, estado laboral y disponibilidad; edición funcional completa sigue pendiente en T097. |
 | RF-043–RF-044 | Implementado en T095 a nivel controlador: ausencia de eliminación física, inactivación/activación y búsqueda parcial por nombre sin distinguir mayúsculas/minúsculas. |
 | RF-045–RF-046 | Implementado en T094 con `IEmpleadoRepository` + `XmlEmpleadoRepository` y verificado con `XmlEmpleadoRepositoryTests`: carga con archivo ausente, persistencia/recuperación completa de campos, XML corrupto, errores de guardado y preservación de datos previos sin falso éxito. Verificación real: compilación correcta y MSTest 140/140 aprobadas. |
 | RF-047–RF-050 | Planificado para pruebas de integración en `IncidenciaControllerTests` y formularios de incidencia: selección exclusiva de técnicos activos, compatibilidad con responsable textual legacy e independencia de `ReportadoPor`. Estado: pendiente (T098–T099). |
 | RF-051–RF-054 | Planificado: validación de separación estado laboral/disponibilidad operativa y cálculo de `Libre`/`Ocupado` desde incidencias abiertas vinculadas por `ResponsableEmpleadoId`. Estado: pendiente (T100–T102). |
 | RF-055–RF-057 | Planificado: recálculo por transición a `Resuelta`, por cambio de técnico responsable y sin persistencia de bandera fija de disponibilidad. Estado: pendiente (T101–T102). |
 | RF-058–RF-059 | Planificado: compatibilidad legacy sin inferencia por nombre y priorización visual de técnicos activos/libres con política de ocupados documentada. Estado: pendiente (T103–T104). |
-| RF-060–RF-061 | Planificado: columna `Disponibilidad` en `frmEmpleados` y botón `Administrar empleados` en `frmIncidencias` con identidad XAMY. Estado: pendiente (T096, T098, T104). |
+| RF-060–RF-061 | Avance parcial: T096 implementa `frmEmpleados` con columna `Disponibilidad` y diseño XAMY aprobado; el botón `Administrar empleados` en `frmIncidencias` permanece pendiente para T098. |
 
 ## Evidencia del bloque de consulta (US2)
 
@@ -278,3 +278,14 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 - Se mantiene compatibilidad legacy: no se vinculan automáticamente responsables históricos por comparación textual de nombres.
 - Se añade requisito de interfaz para `frmEmpleados` (columna `Disponibilidad`) y para `frmIncidencias` (botón corporativo `Administrar empleados`).
 - Estado de implementación: pendiente, sin evidencia de ejecución aún en esta iteración documental.
+
+## Evidencia de interfaz de administración de empleados (US10 / T096)
+
+- Implementación realizada: `GestorIncidencias/frmEmpleados.cs`, `GestorIncidencias/frmEmpleados.Designer.cs` y `GestorIncidencias/frmEmpleados.resx`.
+- Integración de proyecto confirmada por el estudiante: formulario registrado en `GestorIncidencias.csproj` clásico.
+- Diseño validado por inspección y aprobación del estudiante: encabezado corporativo XAMY, paleta negro carbón/dorado/crema/blanco, barra de búsqueda alineada y panel de acciones con botones `Nuevo empleado`, `Modificar`, `Activar/Inactivar` y `Cerrar`.
+- Configuración de `dgvEmpleados` validada para T096: cinco columnas visuales (`Identificador`, `Nombre completo`, `Técnico de soporte`, `Estado laboral`, `Disponibilidad`), sin mostrar `FechaCreacion` en grilla.
+- Decisión funcional documentada: `FechaCreacion` se conserva en entidad/persistencia para trazabilidad, pero no se muestra en la tabla de administración de T096.
+- Estado de disponibilidad en esta fase: sin cálculo automático implementado; debe representarse `No calculada` hasta integración real de T100–T104.
+- Verificación real aportada por el estudiante en Visual Studio: compilación correcta (0 errores), suite MSTest 160/160 aprobadas (0 fallidas, 0 advertencias) y apertura previa del formulario en Ver diseñador.
+- Diferenciación de evidencia: no se declara validación funcional completa de registro/edición ni cálculo automático de disponibilidad, aún pendientes en T097 y T100–T104.
