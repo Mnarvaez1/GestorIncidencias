@@ -10,6 +10,7 @@ Estos contratos describen comportamientos verificables para las futuras pruebas 
 - Devolver errores identificables por campo cuando una validación falla.
 - Asignar identificador positivo, fecha y estado Pendiente.
 - Validar `ReportadoPor` y responsable con longitud de 2 a 80 caracteres tras recorte.
+- Permitir registro sin técnico cuando se seleccione explícitamente `Sin asignar`, persistiendo `ResponsableEmpleadoId=null` y `Responsable` textual coherente.
 
 ## Edición
 
@@ -65,6 +66,7 @@ Estos contratos describen comportamientos verificables para las futuras pruebas 
 
 - `ReportadoPor` permanece independiente del responsable técnico y no depende del catálogo de empleados.
 - Al registrar o editar una incidencia nueva, responsable debe seleccionarse solo desde empleados técnicos activos.
+- En alta y edición también debe existir la opción explícita `Sin asignar`, independiente de la disponibilidad de técnicos.
 - Si una incidencia histórica contiene responsable textual sin vínculo a empleado, se conserva y se muestra sin bloqueo.
 - Si un empleado técnico cambia a inactivo, no se altera automáticamente el responsable ya almacenado en incidencias históricas.
 - Para disponibilidad, una incidencia abierta es `Pendiente` o `En proceso`; `Resuelta` se excluye de carga activa.
@@ -73,6 +75,8 @@ Estos contratos describen comportamientos verificables para las futuras pruebas 
 - Al marcar una incidencia como `Resuelta`, recalcular disponibilidad del técnico para dejarlo `Libre` solo si no mantiene otras incidencias abiertas.
 - No inferir vínculos automáticos para incidencias legacy comparando nombres de `Responsable`.
 - En selector técnico, priorizar visualmente técnicos activos y libres; la política de bloqueo/permiso para seleccionar técnicos ocupados se documenta como decisión pendiente de aprobación funcional.
+- Si se intenta asignar/reasignar con `ResponsableEmpleadoId` informado, validar siempre existencia, rol técnico, estado activo y disponibilidad libre; no aceptar IDs inválidos ni permitir bypass de validación usando flujos sin asignación.
+- Una incidencia sin técnico no ocupa disponibilidad de ningún empleado hasta que se le asigne un técnico válido.
 
 ## Persistencia de empleados
 

@@ -10,6 +10,7 @@ namespace GestorIncidencias
     public partial class frmIncidencias : Form
     {
         private const string ReportadoPorLegacy = "No informado (registro legado)";
+        private const string ResponsableSinAsignar = "Sin asignar";
         private const string FiltroActivas = "Activas";
         private readonly IncidenciaController controlador;
 
@@ -352,7 +353,7 @@ namespace GestorIncidencias
                     incidencia.Titulo,
                     incidencia.Descripcion,
                     incidencia.ReportadoPor,
-                    incidencia.Responsable,
+                    NormalizarResponsableVisual(incidencia),
                     incidencia.Prioridad,
                     incidencia.Estado,
                     incidencia.FechaCreacion);
@@ -518,6 +519,21 @@ namespace GestorIncidencias
             }
 
             return recortado;
+        }
+
+        private static string NormalizarResponsableVisual(Incidencia incidencia)
+        {
+            if (incidencia == null)
+            {
+                return ResponsableSinAsignar;
+            }
+
+            if (!incidencia.ResponsableEmpleadoId.HasValue && string.IsNullOrWhiteSpace(incidencia.Responsable))
+            {
+                return ResponsableSinAsignar;
+            }
+
+            return incidencia.Responsable;
         }
 
         private class OpcionEstado

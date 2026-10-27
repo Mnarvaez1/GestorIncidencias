@@ -1499,6 +1499,257 @@ namespace GestorIncidencias.Tests.Controlador
             return repositorio;
         }
 
+        [TestMethod]
+        public void RegistrarSinTecnicoDebePermitirPendienteConResponsableEmpleadoIdNuloYReportadoPorConservado()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, new EmpleadoRepositoryDoble()),
+                "Error de conexión",
+                "La conexión falla al iniciar.",
+                "María",
+                "Sin asignar",
+                Prioridad.Alta,
+                null);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(EstadoIncidencia.Pendiente, resultado.Datos.Estado);
+            Assert.IsNull(resultado.Datos.ResponsableEmpleadoId);
+            Assert.AreEqual("Sin asignar", resultado.Datos.Responsable);
+            Assert.AreEqual("María", resultado.Datos.ReportadoPor);
+            Assert.AreEqual(1, repositorio.Registros.Count);
+        }
+
+        [TestMethod]
+        public void RegistrarSinTecnicoConTodosOcupadosDebePermitirAlta()
+        {
+            var fecha = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Abierta",
+                Descripcion = "Descripción válida abierta.",
+                ReportadoPor = "Marta",
+                Responsable = "Michael",
+                ResponsableEmpleadoId = 7,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fecha
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, true));
+
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                "Nueva incidencia",
+                "Descripción válida para alta.",
+                "María",
+                "Sin asignar",
+                Prioridad.Alta,
+                null);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNull(resultado.Datos.ResponsableEmpleadoId);
+            Assert.AreEqual(2, repositorio.Registros.Count);
+        }
+
+        [TestMethod]
+        public void RegistrarSinTecnicoSinEmpleadosDebePermitirAlta()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var empleados = new EmpleadoRepositoryDoble();
+
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                "Nueva incidencia",
+                "Descripción válida para alta.",
+                "María",
+                "Sin asignar",
+                Prioridad.Media,
+                null);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNull(resultado.Datos.ResponsableEmpleadoId);
+            Assert.AreEqual("Sin asignar", repositorio.Registros[0].Responsable);
+        }
+
+        [TestMethod]
+        public void RegistrarSinTecnicoConTodosInactivosDebePermitirAlta()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, false));
+            empleados.Registros.Add(CrearEmpleado(8, "Laura", true, false));
+
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                "Nueva incidencia",
+                "Descripción válida para alta.",
+                "María",
+                "Sin asignar",
+                Prioridad.Baja,
+                null);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNull(resultado.Datos.ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void EditarIncidenciaSinAsignarSinReasignarDebePermitirYConservarNulo()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 40,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Sin asignar",
+                ResponsableEmpleadoId = null,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, new EmpleadoRepositoryDoble()),
+                40,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Sin asignar",
+                Prioridad.Alta,
+                null);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNull(repositorio.Registros[0].ResponsableEmpleadoId);
+            Assert.AreEqual("Sin asignar", repositorio.Registros[0].Responsable);
+        }
+
+        [TestMethod]
+        public void EditarIncidenciaSinAsignarYAsignarATecnicoLibreDebePermitir()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 41,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Sin asignar",
+                ResponsableEmpleadoId = null,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, true));
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                41,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Michael",
+                Prioridad.Alta,
+                7);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(7, repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void EditarIncidenciaSinAsignarYAsignarATecnicoOcupadoDebeRechazar()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 41,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Sin asignar",
+                ResponsableEmpleadoId = null,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 42,
+                Titulo = "Abierta",
+                Descripcion = "Descripción válida abierta.",
+                ReportadoPor = "Marta",
+                Responsable = "Michael",
+                ResponsableEmpleadoId = 7,
+                Prioridad = Prioridad.Alta,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal.AddMinutes(1)
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, true));
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                41,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Michael",
+                Prioridad.Alta,
+                7);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("No se puede reasignar a un técnico ocupado. Seleccione un técnico activo y libre.", resultado.Mensaje);
+            Assert.IsNull(repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void EditarConResponsableEmpleadoIdActualInvalidoYSinAsignarDebeRechazarParaEvitarBypass()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 55,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Responsable inválido",
+                ResponsableEmpleadoId = 999,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.Pendiente,
+                FechaCreacion = fechaOriginal
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, true));
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                55,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Sin asignar",
+                Prioridad.Alta,
+                null);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("No se pudo validar el técnico responsable para la asignación indicada.", resultado.Mensaje);
+            Assert.AreEqual(999, repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
         private static IncidenciaController CrearControlador(IncidenciaRepositoryDoble repositorio)
         {
             return new IncidenciaController(repositorio);

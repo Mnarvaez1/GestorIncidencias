@@ -399,6 +399,12 @@ propiedades inmutables.
 
 - [x] T105 [US11] Implementar y probar opción de filtro `Activas` en `frmIncidencias` (predeterminada al iniciar), mostrando solo incidencias `Pendiente` y `En proceso`, manteniendo `Todos/Pendiente/En proceso/Resuelta`, combinando búsqueda+filtro y preservando histórico/reportes sin cambios de persistencia XML.
 
+## Fase 27: Incidencias sin técnico asignado (pendiente)
+
+**Objetivo**: permitir registrar incidencias sin técnico asignado (`Sin asignar`) manteniendo el bloqueo de asignaciones a técnicos ocupados y la compatibilidad XML legacy.
+
+- [x] T106 [US10] Implementar y cubrir con MSTest la opción `Sin asignar` en alta/edición de incidencias, persistiendo `ResponsableEmpleadoId=null`, conservando `ReportadoPor`, manteniendo bloqueo para técnicos ocupados/inactivos/no técnicos y validando compatibilidad en listado/filtros/reportes/XML sin cerrar T099, T104 ni T070. Validación confirmada por el operador: 244/244 MSTest aprobadas; registro sin técnico en estado Pendiente, persistencia tras reiniciar, asignación posterior a técnico Libre, Informe Ejecutivo y bloqueo de técnicos Ocupados comprobados.
+
 ## Dependencias y orden de ejecución
 
 ### Dependencias por fase
@@ -424,6 +430,7 @@ propiedades inmutables.
 - **Fase 24**: depende de aprobación formal de fases 21-23 y habilita implementación posterior (fuera de este alcance).
 - **Fase 25**: depende de Fase 24 (T095+), y de la integración de formularios T096–T098 para exponer disponibilidad operativa en UI y selector técnico.
 - **Fase 26**: depende de cierre funcional de T098; no altera persistencia ni reemplaza reglas de transición de estado.
+- **Fase 27**: depende de T098, T100-T103 y T105; mantiene T104 como regresión pendiente y no altera el formato XML.
 
 ### Primer bloque de implementación
 

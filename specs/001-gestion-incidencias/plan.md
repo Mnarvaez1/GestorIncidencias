@@ -44,6 +44,18 @@ una validación específica de estado activo sin duplicar rutas de consulta. Tam
 que el flujo de selección no deje referencias inválidas cuando una fila desaparezca del conjunto
 visible por efecto del filtro.
 
+## Evolución T106: registro de incidencias sin técnico asignado
+
+T106 introduce la opción funcional `Sin asignar` en `frmEditarIncidencia` para permitir altas y
+ediciones sin vínculo técnico cuando no exista un técnico elegible o cuando el operador decida
+registrar la incidencia sin asignación inmediata.
+
+La representación de dominio se mantiene compatible con el modelo actual: `ResponsableEmpleadoId`
+en `null` y `Responsable` textual coherente (`Sin asignar`), sin cambiar el formato XML ni crear
+identificadores sintéticos. Las reglas de bloqueo existentes para asignaciones con técnico se
+mantienen: si hay `ResponsableEmpleadoId`, debe corresponder a técnico activo, de soporte y libre
+(excepto conservación del mismo técnico histórico durante edición).
+
 ## Estado comprobado y decisiones previstas
 
 ### Comprobado en el repositorio

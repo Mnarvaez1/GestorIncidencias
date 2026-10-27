@@ -12,11 +12,11 @@ Modelo ampliado para `ReportadoPor`, compatibilidad XML legacy y vista previa de
 | Título | Texto | Sí | Recortado; longitud entre 5 y 100 caracteres. Puede repetirse. |
 | Descripción | Texto | Sí | Recortada; longitud entre 10 y 1000 caracteres. |
 | ReportadoPor | Texto | Sí (en registros nuevos) | Recortado; longitud entre 2 y 80 caracteres. |
-| Responsable | Texto | Sí | Recortado; longitud entre 2 y 80 caracteres. |
+| Responsable | Texto | Sí | Recortado; longitud entre 2 y 80 caracteres. Para incidencias sin vínculo técnico se usará la representación textual `Sin asignar`. |
 | Prioridad | Enumeración | Sí | Baja, Media o Alta; valor inicial Media. |
 | Estado | Enumeración | Sí | Pendiente, En proceso o Resuelta; valor inicial Pendiente. |
 | Fecha de creación | Fecha y hora | Sí | Asignada al registrar; inmutable al editar. |
-| ResponsableEmpleadoId | Entero positivo nullable | No (temporal de integración) | Referencia opcional a `Empleado.Identificador`; solo si el responsable proviene del catálogo de técnicos activos. |
+| ResponsableEmpleadoId | Entero positivo nullable | No (temporal de integración) | Referencia opcional a `Empleado.Identificador`; `null` representa incidencia sin técnico asignado. Si tiene valor, debe corresponder a técnico activo elegible y libre al asignar/reasignar. |
 
 ## Compatibilidad de datos legacy
 
@@ -48,6 +48,7 @@ Modelo ampliado para `ReportadoPor`, compatibilidad XML legacy y vista previa de
 - Al registrar/editar incidencias nuevas, el responsable seleccionable debe ser un empleado con `EsTecnicoSoporte=true` y `Activo=true`.
 - Si la incidencia ya tiene responsable textual legacy sin vínculo (`ResponsableEmpleadoId=null`), el sistema conserva ese valor histórico.
 - Si un empleado técnico pasa a inactivo, las incidencias históricas mantienen su responsable textual existente.
+- Una incidencia nueva puede registrarse sin técnico (`ResponsableEmpleadoId=null`) conservando `Responsable="Sin asignar"` como valor de presentación coherente.
 - Una incidencia se considera abierta para disponibilidad cuando su estado sea `Pendiente` o `En proceso`; `Resuelta` no cuenta como carga activa.
 - La disponibilidad operativa solo se calcula para técnicos activos (`EsTecnicoSoporte=true` y `Activo=true`) con vínculo por `ResponsableEmpleadoId`.
 - No se permite inferir vínculos automáticos desde `Responsable` textual legacy por comparación de nombres.

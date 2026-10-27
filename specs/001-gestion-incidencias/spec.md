@@ -251,6 +251,7 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - Empleado con nombre de 2 y 120 caracteres: válido.
 - Empleado con nombre de 1 o 121 caracteres: inválido.
 - Técnico inactivo: no elegible para nuevas asignaciones como responsable.
+- Registro nuevo sin técnicos libres, inactivos o inexistentes: válido si se selecciona `Sin asignar`.
 - Incidencia legacy con responsable textual no presente en catálogo de empleados: se muestra y conserva sin bloqueo.
 - Exportación HTML con caracteres especiales (`<`, `>`, `&`, comillas): contenido escapado correcto.
 - Vista previa con cero incidencias: estado vacío sin excepciones.
@@ -322,6 +323,12 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **RF-062**: `frmIncidencias` DEBE incorporar la opción de filtro `Activas`, seleccionada por defecto al abrir el formulario, para mostrar únicamente incidencias en estado `Pendiente` y `En proceso`, manteniendo `Todos`, `Pendiente`, `En proceso` y `Resuelta` para consulta histórica.
 - **RF-063**: Con filtro `Activas` seleccionado, al cambiar una incidencia a `Resuelta` el sistema DEBE dejar de mostrarla automáticamente en la lista filtrada, sin eliminar ni modificar el registro persistido en XML.
 - **RF-064**: La búsqueda por texto DEBE combinarse correctamente con `Activas` y con los demás filtros de estado existentes, preservando el comportamiento actual de vista previa e informe HTML basado en el conjunto filtrado visible.
+- **RF-065**: El sistema DEBE permitir registrar incidencias sin técnico asignado, conservando validaciones de título, descripción, `ReportadoPor` y prioridad, persistiendo `ResponsableEmpleadoId=null`.
+- **RF-066**: En `frmEditarIncidencia`, el selector de responsable DEBE ofrecer `Sin asignar` como opción explícita, disponible incluso cuando existan técnicos libres y seleccionada por defecto en altas nuevas.
+- **RF-067**: Cuando se seleccione un técnico con `ResponsableEmpleadoId`, el sistema DEBE mantener el bloqueo de asignación para técnicos ocupados, inactivos o no técnicos, y DEBE rechazar identificadores inválidos sin permitir bypass por el modo sin asignar.
+- **RF-068**: El sistema DEBE permitir editar una incidencia `Sin asignar` manteniéndola sin técnico, y DEBE permitir asignarla posteriormente solo a un técnico activo y libre; conservar el mismo técnico histórico en edición seguirá permitido.
+- **RF-069**: Las incidencias `Sin asignar` DEBEN mostrarse correctamente en listado, filtros (incluyendo `Activas`) y operaciones de edición/cambio de estado sin romper historial.
+- **RF-070**: Informes, vista previa y exportación HTML DEBEN soportar incidencias `Sin asignar` sin errores, mostrando una representación textual coherente del responsable.
 
 ## Entidades principales
 
@@ -354,6 +361,8 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **CE-015**: El acceso `Administrar empleados` desde `frmIncidencias` abre el formulario de gestión sin alterar flujos existentes de incidencias.
 - **CE-016**: `Activas` aparece como filtro predeterminado y lista únicamente incidencias `Pendiente`/`En proceso`, ocultando automáticamente las que pasan a `Resuelta` sin eliminarlas del repositorio.
 - **CE-017**: Los filtros `Todos`, `Pendiente`, `En proceso` y `Resuelta` continúan operativos para consulta histórica y se combinan con búsqueda sin romper vista previa ni exportación HTML.
+- **CE-018**: El operador puede registrar incidencias nuevas aunque no existan técnicos elegibles, guardándolas como `Sin asignar` en estado `Pendiente` y viéndolas en `Activas`.
+- **CE-019**: El bloqueo de asignar técnicos ocupados/inactivos/no técnicos permanece vigente para altas y reasignaciones con vínculo técnico.
 
 ## Supuestos y dependencias
 

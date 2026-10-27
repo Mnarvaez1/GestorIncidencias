@@ -11,6 +11,7 @@ namespace GestorIncidencias
     public partial class frmEditarIncidencia : Form
     {
         private const string ReportadoPorLegacy = "No informado (registro legado)";
+        private const string ResponsableSinAsignar = "Sin asignar";
         private readonly EmpleadoController controladorEmpleados;
         private readonly IncidenciaController controladorIncidencias;
         private readonly bool modoEdicion;
@@ -189,6 +190,8 @@ namespace GestorIncidencias
                 return;
             }
 
+            cboResponsableTecnico.Items.Add(OpcionTecnicoResponsable.CrearSinAsignar());
+
             foreach (var tecnico in tecnicosElegibles)
             {
                 cboResponsableTecnico.Items.Add(new OpcionTecnicoResponsable(tecnico.Identificador, tecnico.NombreCompleto, false));
@@ -202,33 +205,34 @@ namespace GestorIncidencias
 
             if (tecnicosElegibles.Count == 0)
             {
-                cboResponsableTecnico.Enabled = false;
-                lblAvisoResponsable.Text = "No hay técnicos activos disponibles para nuevas asignaciones.";
-                lblResponsableActual.Text = "Debe registrar y activar técnicos de soporte para asignar responsable.";
+                cboResponsableTecnico.Enabled = true;
+                cboResponsableTecnico.SelectedIndex = 0;
+                lblAvisoResponsable.Text = "No hay técnicos activos y libres para nuevas asignaciones. Puede registrar la incidencia como Sin asignar.";
+                lblResponsableActual.Text = "Registre o habilite técnicos de soporte para asignar responsable posteriormente.";
                 return;
             }
 
             cboResponsableTecnico.Enabled = true;
-            cboResponsableTecnico.SelectedIndex = -1;
-            lblAvisoResponsable.Text = "Seleccione un técnico activo para asignar el responsable.";
+            cboResponsableTecnico.SelectedIndex = 0;
+            lblAvisoResponsable.Text = "Puede seleccionar un técnico activo y libre o registrar la incidencia como Sin asignar.";
             lblResponsableActual.Text = "";
         }
 
         private void InicializarSelectorModoEdicion()
         {
             var responsableActual = string.IsNullOrWhiteSpace(incidenciaOriginal.Responsable)
-                ? "(sin responsable)"
+                ? ResponsableSinAsignar
                 : incidenciaOriginal.Responsable;
 
             lblResponsableActual.Text = "Responsable actual: " + responsableActual;
 
             if (tecnicosElegibles.Count == 0)
             {
-                cboResponsableTecnico.Enabled = false;
+                cboResponsableTecnico.Enabled = true;
                 cboResponsableTecnico.Items.Add(
                     new OpcionTecnicoResponsable(incidenciaOriginal.ResponsableEmpleadoId, responsableActual, true));
-                cboResponsableTecnico.SelectedIndex = 0;
-                lblAvisoResponsable.Text = "No hay técnicos activos para reasignar. Se conservará el responsable actual.";
+                cboResponsableTecnico.SelectedIndex = incidenciaOriginal.ResponsableEmpleadoId.HasValue ? 1 : 0;
+                lblAvisoResponsable.Text = "No hay técnicos activos y libres para reasignar. Puede conservar el responsable actual o dejar Sin asignar.";
                 return;
             }
 
@@ -240,7 +244,7 @@ namespace GestorIncidencias
             {
                 SeleccionarTecnicoPorId(tecnicoActual.Identificador);
                 cboResponsableTecnico.Enabled = true;
-                lblAvisoResponsable.Text = "Puede conservar o reasignar el técnico responsable.";
+                lblAvisoResponsable.Text = "Puede conservar, reasignar o dejar la incidencia Sin asignar.";
                 return;
             }
 
@@ -257,7 +261,7 @@ namespace GestorIncidencias
                 cboResponsableTecnico.SelectedIndex = 0;
                 cboResponsableTecnico.Enabled = true;
                 lblAvisoResponsable.Text =
-                    "El responsable actual está ocupado para nuevas asignaciones. Puede conservarlo o reasignar a un técnico libre.";
+                    "El responsable actual está ocupado para nuevas asignaciones. Puede conservarlo, reasignar a un técnico libre o dejar Sin asignar.";
                 return;
             }
 
@@ -267,7 +271,12 @@ namespace GestorIncidencias
             cboResponsableTecnico.SelectedIndex = 0;
             cboResponsableTecnico.Enabled = true;
             lblAvisoResponsable.Text =
-                "El responsable actual no es elegible para nuevas asignaciones. Puede conservarlo o reasignar a un técnico activo.";
+                "El responsable actual no es elegible para nuevas asignaciones. Puede conservarlo, reasignar o dejar Sin asignar.";
+
+            if (!incidenciaOriginal.ResponsableEmpleadoId.HasValue)
+            {
+                cboResponsableTecnico.SelectedIndex = 0;
+            }
         }
 
         private void SeleccionarTecnicoPorId(int identificadorTecnico)
@@ -361,8 +370,15 @@ namespace GestorIncidencias
                     return true;
                 }
 
-                error = "Debe seleccionar un técnico de soporte activo para asignar el responsable.";
+                error = "Debe seleccionar un técnico activo y libre o la opción Sin asignar.";
                 return false;
+            }
+
+            if (opcionSeleccionada.EsSinAsignar)
+            {
+                responsable = ResponsableSinAsignar;
+                responsableEmpleadoId = null;
+                return true;
             }
 
             if (opcionSeleccionada.EsHistorico)
@@ -492,11 +508,22 @@ namespace GestorIncidencias
 
         private class OpcionTecnicoResponsable
         {
-            public OpcionTecnicoResponsable(int? identificadorEmpleado, string nombre, bool esHistorico)
+            public OpcionTecnicoResponsable(int? identificadorEmpleado, string nombre, bool esHistorico, bool esSinAsignar)
             {
                 IdentificadorEmpleado = identificadorEmpleado;
                 Nombre = nombre;
                 EsHistorico = esHistorico;
+                EsSinAsignar = esSinAsignar;
+            }
+
+            public OpcionTecnicoResponsable(int? identificadorEmpleado, string nombre, bool esHistorico)
+                : this(identificadorEmpleado, nombre, esHistorico, false)
+            {
+            }
+
+            public static OpcionTecnicoResponsable CrearSinAsignar()
+            {
+                return new OpcionTecnicoResponsable(null, ResponsableSinAsignar, false, true);
             }
 
             public int? IdentificadorEmpleado { get; private set; }
@@ -505,11 +532,18 @@ namespace GestorIncidencias
 
             public bool EsHistorico { get; private set; }
 
+            public bool EsSinAsignar { get; private set; }
+
             public override string ToString()
             {
                 if (EsHistorico)
                 {
                     return "Conservar responsable actual: " + Nombre;
+                }
+
+                if (EsSinAsignar)
+                {
+                    return Nombre;
                 }
 
                 return Nombre;

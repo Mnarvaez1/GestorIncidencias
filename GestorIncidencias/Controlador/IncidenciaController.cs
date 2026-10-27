@@ -8,6 +8,7 @@ namespace GestorIncidencias.Controlador
     public class IncidenciaController
     {
         private const string ReportadoPorLegacy = "No informado (registro legado)";
+        private const string ResponsableSinAsignar = "Sin asignar";
         private readonly IIncidenciaRepository repositorio;
         private readonly IEmpleadoRepository repositorioEmpleados;
 
@@ -61,6 +62,8 @@ namespace GestorIncidencias.Controlador
             bool validarReportadoPor,
             int? responsableEmpleadoId)
         {
+            NormalizarResponsable(ref responsable, responsableEmpleadoId);
+
             var validador = new IncidenciaValidator();
             var validacion = validarReportadoPor
                 ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor, responsableEmpleadoId)
@@ -267,6 +270,8 @@ namespace GestorIncidencias.Controlador
                 return Error("No existe una incidencia con el identificador indicado.");
             }
 
+            NormalizarResponsable(ref responsable, actualizarResponsableEmpleadoId ? responsableEmpleadoId : incidencia.ResponsableEmpleadoId);
+
             var validador = new IncidenciaValidator();
             var responsableEmpleadoIdValidacion = actualizarResponsableEmpleadoId
                 ? responsableEmpleadoId
@@ -406,6 +411,11 @@ namespace GestorIncidencias.Controlador
         {
             if (!responsableEmpleadoId.HasValue)
             {
+                if (!EsResponsableSinAsignarValido(responsableEmpleadoIdActual))
+                {
+                    return Error("No se pudo validar el técnico responsable para la asignación indicada.");
+                }
+
                 return new ResultadoOperacion<Incidencia> { Exito = true };
             }
 
@@ -458,6 +468,43 @@ namespace GestorIncidencias.Controlador
             }
 
             return new ResultadoOperacion<Incidencia> { Exito = true };
+        }
+
+        private static void NormalizarResponsable(ref string responsable, int? responsableEmpleadoId)
+        {
+            if (responsableEmpleadoId.HasValue)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(responsable) ||
+                string.Equals(responsable.Trim(), ResponsableSinAsignar, StringComparison.OrdinalIgnoreCase))
+            {
+                responsable = ResponsableSinAsignar;
+            }
+        }
+
+        private bool EsResponsableSinAsignarValido(int? responsableEmpleadoIdActual)
+        {
+            if (!responsableEmpleadoIdActual.HasValue)
+            {
+                return true;
+            }
+
+            if (repositorioEmpleados == null)
+            {
+                return false;
+            }
+
+            var consultaEmpleados = repositorioEmpleados.Cargar();
+            if (!consultaEmpleados.Exito || consultaEmpleados.Datos == null)
+            {
+                return false;
+            }
+
+            return consultaEmpleados.Datos.Any(e =>
+                e != null &&
+                e.Identificador == responsableEmpleadoIdActual.Value);
         }
     }
 }
