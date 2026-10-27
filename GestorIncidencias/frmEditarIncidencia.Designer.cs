@@ -33,9 +33,11 @@
             this.lblSubtitulo = new System.Windows.Forms.Label();
             this.lblTitulo = new System.Windows.Forms.Label();
             this.pnlFormulario = new System.Windows.Forms.Panel();
+            this.lblAvisoResponsable = new System.Windows.Forms.Label();
+            this.lblResponsableActual = new System.Windows.Forms.Label();
+            this.cboResponsableTecnico = new System.Windows.Forms.ComboBox();
             this.cboPrioridad = new System.Windows.Forms.ComboBox();
             this.lblPrioridad = new System.Windows.Forms.Label();
-            this.txtResponsable = new System.Windows.Forms.TextBox();
             this.lblResponsable = new System.Windows.Forms.Label();
             this.txtReportadoPor = new System.Windows.Forms.TextBox();
             this.lblReportadoPor = new System.Windows.Forms.Label();
@@ -98,9 +100,11 @@
             // pnlFormulario
             //
             this.pnlFormulario.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(243)))), ((int)(((byte)(236)))));
+            this.pnlFormulario.Controls.Add(this.lblAvisoResponsable);
+            this.pnlFormulario.Controls.Add(this.lblResponsableActual);
+            this.pnlFormulario.Controls.Add(this.cboResponsableTecnico);
             this.pnlFormulario.Controls.Add(this.cboPrioridad);
             this.pnlFormulario.Controls.Add(this.lblPrioridad);
-            this.pnlFormulario.Controls.Add(this.txtResponsable);
             this.pnlFormulario.Controls.Add(this.lblResponsable);
             this.pnlFormulario.Controls.Add(this.txtReportadoPor);
             this.pnlFormulario.Controls.Add(this.lblReportadoPor);
@@ -114,6 +118,38 @@
             this.pnlFormulario.Padding = new System.Windows.Forms.Padding(24, 20, 24, 12);
             this.pnlFormulario.Size = new System.Drawing.Size(860, 476);
             this.pnlFormulario.TabIndex = 1;
+            //
+            // lblAvisoResponsable
+            //
+            this.lblAvisoResponsable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAvisoResponsable.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(119)))), ((int)(((byte)(115)))), ((int)(((byte)(107)))));
+            this.lblAvisoResponsable.Location = new System.Drawing.Point(432, 405);
+            this.lblAvisoResponsable.Name = "lblAvisoResponsable";
+            this.lblAvisoResponsable.Size = new System.Drawing.Size(400, 66);
+            this.lblAvisoResponsable.TabIndex = 12;
+            //
+            // lblResponsableActual
+            //
+            this.lblResponsableActual.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblResponsableActual.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(72)))), ((int)(((byte)(72)))), ((int)(((byte)(72)))));
+            this.lblResponsableActual.Location = new System.Drawing.Point(432, 322);
+            this.lblResponsableActual.Name = "lblResponsableActual";
+            this.lblResponsableActual.Size = new System.Drawing.Size(400, 20);
+            this.lblResponsableActual.TabIndex = 11;
+            //
+            // cboResponsableTecnico
+            //
+            this.cboResponsableTecnico.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cboResponsableTecnico.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboResponsableTecnico.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cboResponsableTecnico.FormattingEnabled = true;
+            this.cboResponsableTecnico.Location = new System.Drawing.Point(436, 367);
+            this.cboResponsableTecnico.Name = "cboResponsableTecnico";
+            this.cboResponsableTecnico.Size = new System.Drawing.Size(396, 33);
+            this.cboResponsableTecnico.TabIndex = 10;
             //
             // cboPrioridad
             //
@@ -140,17 +176,6 @@
             this.lblPrioridad.Size = new System.Drawing.Size(84, 25);
             this.lblPrioridad.TabIndex = 8;
             this.lblPrioridad.Text = "Prioridad";
-            //
-            // txtResponsable
-            //
-            this.txtResponsable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtResponsable.BackColor = System.Drawing.Color.White;
-            this.txtResponsable.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtResponsable.Location = new System.Drawing.Point(436, 367);
-            this.txtResponsable.Name = "txtResponsable";
-            this.txtResponsable.Size = new System.Drawing.Size(396, 31);
-            this.txtResponsable.TabIndex = 7;
             //
             // lblResponsable
             //
@@ -306,9 +331,11 @@
         private System.Windows.Forms.Label lblSubtitulo;
         private System.Windows.Forms.Label lblTitulo;
         private System.Windows.Forms.Panel pnlFormulario;
+        private System.Windows.Forms.Label lblAvisoResponsable;
+        private System.Windows.Forms.Label lblResponsableActual;
+        private System.Windows.Forms.ComboBox cboResponsableTecnico;
         private System.Windows.Forms.ComboBox cboPrioridad;
         private System.Windows.Forms.Label lblPrioridad;
-        private System.Windows.Forms.TextBox txtResponsable;
         private System.Windows.Forms.Label lblResponsable;
         private System.Windows.Forms.TextBox txtReportadoPor;
         private System.Windows.Forms.Label lblReportadoPor;

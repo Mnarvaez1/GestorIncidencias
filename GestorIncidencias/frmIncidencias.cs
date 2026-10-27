@@ -89,7 +89,8 @@ namespace GestorIncidencias
                     formulario.DescripcionIncidencia,
                     NormalizarReportadoPor(formulario.ReportadoPor),
                     formulario.Responsable,
-                    formulario.PrioridadSeleccionada);
+                    formulario.PrioridadSeleccionada,
+                    formulario.ResponsableEmpleadoId);
 
                 if (!registro.Exito)
                 {
@@ -129,7 +130,8 @@ namespace GestorIncidencias
                     formulario.DescripcionIncidencia,
                     NormalizarReportadoPor(formulario.ReportadoPor),
                     formulario.Responsable,
-                    formulario.PrioridadSeleccionada);
+                    formulario.PrioridadSeleccionada,
+                    formulario.ResponsableEmpleadoId);
 
                 if (!edicion.Exito)
                 {
@@ -418,6 +420,7 @@ namespace GestorIncidencias
                     Descripcion = incidencia.Descripcion,
                     ReportadoPor = incidencia.ReportadoPor,
                     Responsable = incidencia.Responsable,
+                    ResponsableEmpleadoId = incidencia.ResponsableEmpleadoId,
                     Prioridad = incidencia.Prioridad,
                     Estado = incidencia.Estado,
                     FechaCreacion = incidencia.FechaCreacion

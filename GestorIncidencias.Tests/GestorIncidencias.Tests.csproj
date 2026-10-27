@@ -38,6 +38,7 @@
     <Compile Include="Controlador\EmpleadoControllerTests.cs" />
     <Compile Include="Controlador\EmpleadoRepositoryDoble.cs" />
     <Compile Include="Controlador\EmpleadoValidatorTests.cs" />
+    <Compile Include="Controlador\FrmEditarIncidenciaTecnicosTests.cs" />
     <Compile Include="Controlador\IncidenciaControllerTests.cs" />
     <Compile Include="Controlador\IncidenciaRepositoryDoble.cs" />
     <Compile Include="Controlador\IncidenciaValidatorTests.cs" />
