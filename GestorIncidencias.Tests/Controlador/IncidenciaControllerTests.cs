@@ -1099,6 +1099,104 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(EstadoIncidencia.Pendiente, repositorio.Registros[0].Estado);
         }
 
+        [TestMethod]
+        public void FiltroActivasIncluyePendienteYEnProcesoYExcluyeResuelta()
+        {
+            var pendiente = CrearIncidenciaParaFiltro(1, "Pendiente", "Ana", EstadoIncidencia.Pendiente);
+            var enProceso = CrearIncidenciaParaFiltro(2, "En proceso", "Luis", EstadoIncidencia.EnProceso);
+            var resuelta = CrearIncidenciaParaFiltro(3, "Resuelta", "Marta", EstadoIncidencia.Resuelta);
+
+            Assert.IsTrue(CumpleFiltroEstadoEnFormulario(pendiente, null, true));
+            Assert.IsTrue(CumpleFiltroEstadoEnFormulario(enProceso, null, true));
+            Assert.IsFalse(CumpleFiltroEstadoEnFormulario(resuelta, null, true));
+        }
+
+        [TestMethod]
+        public void FiltroTodosIncluyeLosTresEstados()
+        {
+            var incidencias = new[]
+            {
+                CrearIncidenciaParaFiltro(1, "Pendiente", "Ana", EstadoIncidencia.Pendiente),
+                CrearIncidenciaParaFiltro(2, "En proceso", "Luis", EstadoIncidencia.EnProceso),
+                CrearIncidenciaParaFiltro(3, "Resuelta", "Marta", EstadoIncidencia.Resuelta)
+            };
+
+            var visibles = incidencias
+                .Where(i => CumpleFiltroEstadoEnFormulario(i, null, false))
+                .ToList();
+
+            Assert.AreEqual(3, visibles.Count);
+            Assert.IsTrue(visibles.Any(i => i.Estado == EstadoIncidencia.Pendiente));
+            Assert.IsTrue(visibles.Any(i => i.Estado == EstadoIncidencia.EnProceso));
+            Assert.IsTrue(visibles.Any(i => i.Estado == EstadoIncidencia.Resuelta));
+        }
+
+        [TestMethod]
+        public void FiltroResueltaPermiteConsultarHistorial()
+        {
+            var incidencias = new[]
+            {
+                CrearIncidenciaParaFiltro(1, "Pendiente", "Ana", EstadoIncidencia.Pendiente),
+                CrearIncidenciaParaFiltro(2, "Resuelta uno", "Luis", EstadoIncidencia.Resuelta),
+                CrearIncidenciaParaFiltro(3, "Resuelta dos", "Marta", EstadoIncidencia.Resuelta)
+            };
+
+            var visibles = incidencias
+                .Where(i => CumpleFiltroEstadoEnFormulario(i, EstadoIncidencia.Resuelta, false))
+                .ToList();
+
+            Assert.AreEqual(2, visibles.Count);
+            Assert.IsTrue(visibles.All(i => i.Estado == EstadoIncidencia.Resuelta));
+        }
+
+        [TestMethod]
+        public void BusquedaYFiltroActivasSeCombinanConAnd()
+        {
+            var incidencias = new[]
+            {
+                CrearIncidenciaParaFiltro(1, "Error login", "Ana", EstadoIncidencia.Pendiente),
+                CrearIncidenciaParaFiltro(2, "Error timeout", "Luis", EstadoIncidencia.Resuelta),
+                CrearIncidenciaParaFiltro(3, "Mejora visual", "Error QA", EstadoIncidencia.EnProceso)
+            };
+
+            var visibles = incidencias
+                .Where(i =>
+                    CumpleFiltroEstadoEnFormulario(i, null, true) &&
+                    (ContieneTextoEnFormulario(i.Titulo, "error") ||
+                     ContieneTextoEnFormulario(i.ReportadoPor, "error") ||
+                     ContieneTextoEnFormulario(i.Responsable, "error")))
+                .ToList();
+
+            Assert.AreEqual(2, visibles.Count);
+            Assert.IsTrue(visibles.Any(i => i.Identificador == 1));
+            Assert.IsTrue(visibles.Any(i => i.Identificador == 3));
+            Assert.IsFalse(visibles.Any(i => i.Estado == EstadoIncidencia.Resuelta));
+        }
+
+        [TestMethod]
+        public void FiltrarNoModificaNiEliminaIncidenciasOriginales()
+        {
+            var original = new[]
+            {
+                CrearIncidenciaParaFiltro(1, "Pendiente", "Ana", EstadoIncidencia.Pendiente),
+                CrearIncidenciaParaFiltro(2, "Resuelta", "Luis", EstadoIncidencia.Resuelta)
+            };
+
+            var copiaEstados = original.Select(i => i.Estado).ToArray();
+            var copiaIds = original.Select(i => i.Identificador).ToArray();
+            var copiaTitulos = original.Select(i => i.Titulo).ToArray();
+
+            var visibles = original
+                .Where(i => CumpleFiltroEstadoEnFormulario(i, null, true))
+                .ToList();
+
+            Assert.AreEqual(1, visibles.Count);
+            CollectionAssert.AreEqual(copiaEstados, original.Select(i => i.Estado).ToArray());
+            CollectionAssert.AreEqual(copiaIds, original.Select(i => i.Identificador).ToArray());
+            CollectionAssert.AreEqual(copiaTitulos, original.Select(i => i.Titulo).ToArray());
+            Assert.AreEqual(2, original.Length);
+        }
+
         private static IncidenciaRepositoryDoble CrearRepositorioParaBusqueda()
         {
             var repositorio = new IncidenciaRepositoryDoble();
@@ -1261,6 +1359,50 @@ namespace GestorIncidencias.Tests.Controlador
             return (ResultadoOperacion<Incidencia>)metodo.Invoke(
                 controlador,
                 new object[] { identificador, titulo, descripcion, reportadoPor, responsable, prioridad, responsableEmpleadoId });
+        }
+
+        private static Incidencia CrearIncidenciaParaFiltro(
+            int identificador,
+            string titulo,
+            string responsable,
+            EstadoIncidencia estado)
+        {
+            return new Incidencia
+            {
+                Identificador = identificador,
+                Titulo = titulo,
+                Descripcion = "Descripción válida para filtro.",
+                ReportadoPor = "Reporta " + responsable,
+                Responsable = responsable,
+                Prioridad = Prioridad.Media,
+                Estado = estado,
+                FechaCreacion = new DateTime(2026, 11, 5, 9, 0, 0).AddMinutes(identificador)
+            };
+        }
+
+        private static bool CumpleFiltroEstadoEnFormulario(
+            Incidencia incidencia,
+            EstadoIncidencia? filtroEstado,
+            bool filtroActivas)
+        {
+            var metodo = typeof(frmIncidencias).GetMethod(
+                "CumpleFiltroEstado",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            Assert.IsNotNull(metodo, "Se esperaba método interno CumpleFiltroEstado para T105.");
+
+            return (bool)metodo.Invoke(null, new object[] { incidencia, filtroEstado, filtroActivas });
+        }
+
+        private static bool ContieneTextoEnFormulario(string valor, string texto)
+        {
+            var metodo = typeof(frmIncidencias).GetMethod(
+                "ContieneTexto",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+            Assert.IsNotNull(metodo, "Se esperaba método interno ContieneTexto para T105.");
+
+            return (bool)metodo.Invoke(null, new object[] { valor, texto });
         }
     }
 }

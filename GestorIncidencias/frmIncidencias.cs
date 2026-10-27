@@ -10,6 +10,7 @@ namespace GestorIncidencias
     public partial class frmIncidencias : Form
     {
         private const string ReportadoPorLegacy = "No informado (registro legado)";
+        private const string FiltroActivas = "Activas";
         private readonly IncidenciaController controlador;
 
         public frmIncidencias()
@@ -59,6 +60,7 @@ namespace GestorIncidencias
 
         private void FrmIncidencias_Load(object sender, EventArgs e)
         {
+            EstablecerFiltroPredeterminadoActivas();
             RecargarGrilla();
         }
 
@@ -296,12 +298,13 @@ namespace GestorIncidencias
             var incidencias = consulta.Datos ?? new List<Incidencia>();
             var texto = (txtBuscar.Text ?? string.Empty).Trim();
             var filtroEstado = ObtenerFiltroEstadoSeleccionado();
+            var filtroActivas = EsFiltroActivasSeleccionado();
             var tieneTexto = texto.Length > 0;
 
 
             var filtradas = incidencias
                 .Where(i =>
-                    (!filtroEstado.HasValue || i.Estado == filtroEstado.Value) &&
+                    CumpleFiltroEstado(i, filtroEstado, filtroActivas) &&
                     (!tieneTexto ||
                      ContieneTexto(i.Titulo, texto) ||
                      ContieneTexto(i.ReportadoPor, texto) ||
@@ -314,7 +317,7 @@ namespace GestorIncidencias
 
             if (filtradas.Count == 0)
             {
-                if (!tieneTexto && !filtroEstado.HasValue)
+                if (!tieneTexto && !filtroEstado.HasValue && !filtroActivas)
                 {
                     lblEstadoOperacion.Text = "No hay incidencias registradas.";
                 }
@@ -327,7 +330,7 @@ namespace GestorIncidencias
             }
 
 
-            if (tieneTexto || filtroEstado.HasValue)
+            if (tieneTexto || filtroEstado.HasValue || filtroActivas)
             {
                 lblEstadoOperacion.Text = "Consulta completada correctamente.";
                 return;
@@ -361,6 +364,7 @@ namespace GestorIncidencias
             var seleccionado = cboFiltroEstado.SelectedItem as string;
 
             if (string.IsNullOrWhiteSpace(seleccionado) ||
+                string.Equals(seleccionado, FiltroActivas, StringComparison.OrdinalIgnoreCase) ||
                 string.Equals(seleccionado, "Todos", StringComparison.OrdinalIgnoreCase))
             {
                 return null;
@@ -378,6 +382,53 @@ namespace GestorIncidencias
             }
 
             return null;
+        }
+
+        private bool EsFiltroActivasSeleccionado()
+        {
+            var seleccionado = cboFiltroEstado.SelectedItem as string;
+            return string.Equals(seleccionado, FiltroActivas, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool CumpleFiltroEstado(
+            Incidencia incidencia,
+            EstadoIncidencia? filtroEstado,
+            bool filtroActivas)
+        {
+            if (incidencia == null)
+            {
+                return false;
+            }
+
+            if (filtroActivas)
+            {
+                return incidencia.Estado == EstadoIncidencia.Pendiente ||
+                       incidencia.Estado == EstadoIncidencia.EnProceso;
+            }
+
+            return !filtroEstado.HasValue || incidencia.Estado == filtroEstado.Value;
+        }
+
+        private void EstablecerFiltroPredeterminadoActivas()
+        {
+            if (cboFiltroEstado.Items.Count == 0)
+            {
+                return;
+            }
+
+            for (var i = 0; i < cboFiltroEstado.Items.Count; i++)
+            {
+                var opcion = cboFiltroEstado.Items[i] as string;
+                if (!string.Equals(opcion, FiltroActivas, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                cboFiltroEstado.SelectedIndex = i;
+                return;
+            }
+
+            cboFiltroEstado.SelectedIndex = 0;
         }
 
         private static bool ContieneTexto(string valor, string texto)

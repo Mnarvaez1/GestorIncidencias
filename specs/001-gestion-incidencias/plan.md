@@ -24,6 +24,26 @@ Las reglas seguirán fuera de los eventos de la interfaz para poder probarse sin
 La implementación conservará el proyecto clásico `GestorIncidencias.csproj`, su destino
 .NET Framework 4.7.2 y la configuración C# 7.3, sin dependencias de impresión ni paquetes nuevos.
 
+## Evolución T105: filtro visual Activas en frmIncidencias
+
+T105 introduce una extensión de filtrado visual en `frmIncidencias` sin alterar persistencia XML,
+transiciones de estado ni contratos de repositorio. Se añadirá la opción `Activas` al
+`cboFiltroEstado`, seleccionada por defecto al abrir el formulario.
+
+La semántica de `Activas` será: incluir incidencias en `Pendiente` y `En proceso`, excluir
+`Resuelta`. El resto de opciones (`Todos`, `Pendiente`, `En proceso`, `Resuelta`) se mantiene
+sin cambios para preservar consulta histórica.
+
+La búsqueda por texto seguirá combinándose con el filtro de estado mediante condición AND. El
+refresco tras registrar, editar o cambiar estado conservará el filtro activo, por lo que una
+incidencia que pase a `Resuelta` dejará de verse automáticamente cuando el filtro sea `Activas`,
+sin eliminación física en XML.
+
+Para minimizar riesgo, se reutilizará la lógica actual de `AplicarBusquedaYFiltro`, incorporando
+una validación específica de estado activo sin duplicar rutas de consulta. También se comprobará
+que el flujo de selección no deje referencias inválidas cuando una fila desaparezca del conjunto
+visible por efecto del filtro.
+
 ## Estado comprobado y decisiones previstas
 
 ### Comprobado en el repositorio

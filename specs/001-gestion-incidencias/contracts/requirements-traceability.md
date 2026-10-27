@@ -29,7 +29,7 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 | RF-055–RF-057 | Planificado: recálculo por transición a `Resuelta`, por cambio de técnico responsable y sin persistencia de bandera fija de disponibilidad. Estado: pendiente (T101–T102). |
 | RF-058–RF-059 | Planificado: compatibilidad legacy sin inferencia por nombre y priorización visual de técnicos activos/libres con política de ocupados documentada. Estado: pendiente (T103–T104). |
 | RF-060–RF-061 | Implementado: `frmEmpleados` mantiene columna `Disponibilidad` en `No calculada` hasta T100–T104 y `frmIncidencias` incorpora acceso corporativo `Administrar empleados` sin alterar `ReportadoPor`. Evidencia real reportada: verificación manual de flujo y MSTest 176/176 aprobadas. |
-| RF-062–RF-064 | Planificado para T105: filtro visual `Activas` por defecto (Pendiente + En proceso), ocultamiento automático al pasar a `Resuelta` sin borrar XML, y combinación correcta de búsqueda+filtro preservando vista previa/exportación HTML. Estado: pendiente. |
+| RF-062–RF-064 | Implementado en T105: `frmIncidencias` incorpora filtro visual `Activas` como predeterminado (Pendiente + En proceso), oculta automáticamente incidencias al pasar a `Resuelta` sin eliminar registros en XML y mantiene combinación búsqueda+filtro con continuidad de vista previa/exportación HTML sobre el conjunto visible. Evidencia real confirmada: compilación sin errores, MSTest 181/181 aprobadas, 0 errores, 0 advertencias y verificación manual del operador. |
 
 ## Evidencia del bloque de consulta (US2)
 

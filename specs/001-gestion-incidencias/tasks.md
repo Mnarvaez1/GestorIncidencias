@@ -397,7 +397,7 @@ propiedades inmutables.
 
 **Objetivo**: incorporar filtro visual `Activas` en `frmIncidencias` sin alterar persistencia ni transiciones de estado.
 
-- [ ] T105 [US11] Implementar y probar opción de filtro `Activas` en `frmIncidencias` (predeterminada al iniciar), mostrando solo incidencias `Pendiente` y `En proceso`, manteniendo `Todos/Pendiente/En proceso/Resuelta`, combinando búsqueda+filtro y preservando histórico/reportes sin cambios de persistencia XML.
+- [x] T105 [US11] Implementar y probar opción de filtro `Activas` en `frmIncidencias` (predeterminada al iniciar), mostrando solo incidencias `Pendiente` y `En proceso`, manteniendo `Todos/Pendiente/En proceso/Resuelta`, combinando búsqueda+filtro y preservando histórico/reportes sin cambios de persistencia XML.
 
 ## Dependencias y orden de ejecución
 
