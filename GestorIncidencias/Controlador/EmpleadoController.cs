@@ -130,6 +130,63 @@ namespace GestorIncidencias.Controlador
             };
         }
 
+        public ResultadoOperacion<DisponibilidadOperativa> ConsultarDisponibilidad(
+            int identificador,
+            IList<Incidencia> incidencias)
+        {
+            var carga = repositorio.Cargar();
+            if (!carga.Exito || carga.Datos == null)
+            {
+                return new ResultadoOperacion<DisponibilidadOperativa>
+                {
+                    Exito = false,
+                    Mensaje = carga.Mensaje ?? "No se pudieron cargar los empleados.",
+                    Errores = carga.Errores,
+                    Datos = DisponibilidadOperativa.NoCalculada
+                };
+            }
+
+            var empleado = carga.Datos.FirstOrDefault(e => e.Identificador == identificador);
+            if (empleado == null)
+            {
+                return new ResultadoOperacion<DisponibilidadOperativa>
+                {
+                    Exito = false,
+                    Mensaje = "No existe un empleado con el identificador indicado.",
+                    Errores = new List<string> { "No existe un empleado con el identificador indicado." },
+                    Datos = DisponibilidadOperativa.NoCalculada
+                };
+            }
+
+            return new ResultadoOperacion<DisponibilidadOperativa>
+            {
+                Exito = true,
+                Mensaje = "Disponibilidad calculada correctamente.",
+                Datos = CalcularDisponibilidadOperativa(empleado, incidencias)
+            };
+        }
+
+        private static DisponibilidadOperativa CalcularDisponibilidadOperativa(
+            Empleado empleado,
+            IList<Incidencia> incidencias)
+        {
+            if (empleado == null || !empleado.EsTecnicoSoporte || !empleado.Activo)
+            {
+                return DisponibilidadOperativa.NoCalculada;
+            }
+
+            var fuente = incidencias ?? new List<Incidencia>();
+            var tieneIncidenciasAbiertas = fuente.Any(i =>
+                i != null
+                && i.ResponsableEmpleadoId.HasValue
+                && i.ResponsableEmpleadoId.Value == empleado.Identificador
+                && (i.Estado == EstadoIncidencia.Pendiente || i.Estado == EstadoIncidencia.EnProceso));
+
+            return tieneIncidenciasAbiertas
+                ? DisponibilidadOperativa.Ocupado
+                : DisponibilidadOperativa.Libre;
+        }
+
         public ResultadoOperacion<Empleado> Editar(int identificador, string nombreCompleto, bool esTecnicoSoporte, bool activo)
         {
             var carga = repositorio.Cargar();

@@ -387,7 +387,7 @@ propiedades inmutables.
 
 **Objetivo**: incorporar cálculo dinámico de disponibilidad de técnicos basado en incidencias vinculadas sin persistir estado fijo.
 
-- [ ] T100 [US10] Extender contratos/modelo operativo en código para distinguir estado laboral y disponibilidad derivada (`Libre`/`Ocupado`/`No calculada`) sin persistencia fija en `Empleado`.
+- [x] T100 [US10] Extender contratos/modelo operativo en código para distinguir estado laboral y disponibilidad derivada (`Libre`/`Ocupado`/`No calculada`) sin persistencia fija en `Empleado`.
 - [ ] T101 [US10] Añadir pruebas MSTest de disponibilidad en controlador para incidencias abiertas (`Pendiente`/`En proceso`), cierre `Resuelta` y recálculo por reasignación de `ResponsableEmpleadoId`.
 - [ ] T102 [US10] Implementar en la capa de casos de uso el recálculo de disponibilidad desde incidencias reales vinculadas por `ResponsableEmpleadoId`, sin inferencias por nombre legacy.
 - [ ] T103 [US10] Integrar priorización visual de técnicos activos/libres en selector de responsable y documentar explícitamente la política aplicada cuando el técnico esté ocupado.

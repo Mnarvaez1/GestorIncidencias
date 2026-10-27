@@ -299,6 +299,185 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual("Ana Torres", repositorio.Registros[0].NombreCompleto);
         }
 
+        [TestMethod]
+        public void ConsultarDisponibilidadTecnicoSinIncidenciasDebeSerLibre()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, new List<Incidencia>());
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Libre, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadConPendienteDebeSerOcupado()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.Pendiente)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Ocupado, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadConEnProcesoDebeSerOcupado()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.EnProceso)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Ocupado, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadConResueltaDebeSerLibre()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.Resuelta)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Libre, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadConMultiplesYUnaAbiertaDebeSerOcupado()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.Resuelta),
+                CrearIncidencia(2, 1, EstadoIncidencia.EnProceso)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Ocupado, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadConTodasResueltasDebeSerLibre()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.Resuelta),
+                CrearIncidencia(2, 1, EstadoIncidencia.Resuelta)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Libre, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadNoDebeAfectarsePorIncidenciasDeOtrosTecnicos()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+            repositorio.Registros.Add(CrearEmpleado(2, "Luis Pérez", true, true, new DateTime(2026, 11, 1, 9, 1, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 2, EstadoIncidencia.Pendiente)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Libre, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadConIncidenciasLegacySinResponsableEmpleadoIdDebeSerLibre()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, null, EstadoIncidencia.Pendiente)
+            };
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Libre, resultado.Datos);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadNoDebeModificarEmpleadosNiIncidencias()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.Pendiente)
+            };
+
+            var nombreAntes = repositorio.Registros[0].NombreCompleto;
+            var estadoAntes = incidencias[0].Estado;
+            var responsableAntes = incidencias[0].ResponsableEmpleadoId;
+
+            var resultado = CrearControlador(repositorio).ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(nombreAntes, repositorio.Registros[0].NombreCompleto);
+            Assert.AreEqual(estadoAntes, incidencias[0].Estado);
+            Assert.AreEqual(responsableAntes, incidencias[0].ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void ConsultarDisponibilidadDebeCambiarCuandoCambiaEstadoDeIncidencia()
+        {
+            var repositorio = new EmpleadoRepositoryDoble();
+            repositorio.Registros.Add(CrearEmpleado(1, "Ana Torres", true, true, new DateTime(2026, 11, 1, 9, 0, 0)));
+
+            var incidencias = new List<Incidencia>
+            {
+                CrearIncidencia(1, 1, EstadoIncidencia.EnProceso)
+            };
+
+            var controlador = CrearControlador(repositorio);
+            var ocupada = controlador.ConsultarDisponibilidad(1, incidencias);
+            incidencias[0].Estado = EstadoIncidencia.Resuelta;
+            var libre = controlador.ConsultarDisponibilidad(1, incidencias);
+
+            Assert.IsTrue(ocupada.Exito);
+            Assert.IsTrue(libre.Exito);
+            Assert.AreEqual(DisponibilidadOperativa.Ocupado, ocupada.Datos);
+            Assert.AreEqual(DisponibilidadOperativa.Libre, libre.Datos);
+        }
+
         private static EmpleadoController CrearControlador(EmpleadoRepositoryDoble repositorio)
         {
             return new EmpleadoController(repositorio);
@@ -307,6 +486,22 @@ namespace GestorIncidencias.Tests.Controlador
         private static Empleado CrearEmpleado(int id, string nombre, bool esTecnico, bool activo, DateTime fechaCreacion)
         {
             return new Empleado(id, nombre, esTecnico, activo, fechaCreacion);
+        }
+
+        private static Incidencia CrearIncidencia(int id, int? responsableEmpleadoId, EstadoIncidencia estado)
+        {
+            return new Incidencia
+            {
+                Identificador = id,
+                Titulo = "Titulo",
+                Descripcion = "Descripcion valida",
+                ReportadoPor = "Reportero",
+                Responsable = "Tecnico",
+                ResponsableEmpleadoId = responsableEmpleadoId,
+                Prioridad = Prioridad.Media,
+                Estado = estado,
+                FechaCreacion = new DateTime(2026, 11, 1, 9, 0, 0)
+            };
         }
     }
 }

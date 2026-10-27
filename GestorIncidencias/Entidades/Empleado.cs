@@ -2,6 +2,13 @@ using System;
 
 namespace GestorIncidencias.Entidades
 {
+    public enum DisponibilidadOperativa
+    {
+        Libre,
+        Ocupado,
+        NoCalculada
+    }
+
     public class Empleado
     {
         public Empleado(int identificador, string nombreCompleto, bool esTecnicoSoporte, bool activo, DateTime fechaCreacion)
