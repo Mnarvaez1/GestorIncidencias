@@ -380,7 +380,7 @@ propiedades inmutables.
 - [x] T095 [US10] Crear `Controlador/EmpleadoController.cs` con pruebas de alta, consulta, edición, búsqueda y estado Activo/Inactivo.
 - [x] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY, mostrando en `dgvEmpleados` cinco columnas visuales: Identificador, Nombre completo, Técnico de soporte (Sí/No), Estado laboral (Activo/Inactivo) y Disponibilidad (Libre/Ocupado/No calculada), sin mostrar `Libre` ficticio antes de integración real.
 - [x] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
-- [ ] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias` (botón corporativo `Administrar empleados`), además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
+- [x] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias` (botón corporativo `Administrar empleados`), además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
 - [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070.
 
 ## Fase 25: Disponibilidad operativa automática de técnicos (pendiente)
@@ -392,6 +392,12 @@ propiedades inmutables.
 - [ ] T102 [US10] Implementar en la capa de casos de uso el recálculo de disponibilidad desde incidencias reales vinculadas por `ResponsableEmpleadoId`, sin inferencias por nombre legacy.
 - [ ] T103 [US10] Integrar priorización visual de técnicos activos/libres en selector de responsable y documentar explícitamente la política aplicada cuando el técnico esté ocupado.
 - [ ] T104 [US10] Actualizar pruebas de regresión e evidencia de trazabilidad para RF-051 a RF-061 manteniendo T070 pendiente.
+
+## Fase 26: Evolución de filtrado visual Activas (pendiente)
+
+**Objetivo**: incorporar filtro visual `Activas` en `frmIncidencias` sin alterar persistencia ni transiciones de estado.
+
+- [ ] T105 [US11] Implementar y probar opción de filtro `Activas` en `frmIncidencias` (predeterminada al iniciar), mostrando solo incidencias `Pendiente` y `En proceso`, manteniendo `Todos/Pendiente/En proceso/Resuelta`, combinando búsqueda+filtro y preservando histórico/reportes sin cambios de persistencia XML.
 
 ## Dependencias y orden de ejecución
 
@@ -417,6 +423,7 @@ propiedades inmutables.
 - **Fase 23**: depende de Fase 22 y produce el backlog ejecutable del módulo Empleados.
 - **Fase 24**: depende de aprobación formal de fases 21-23 y habilita implementación posterior (fuera de este alcance).
 - **Fase 25**: depende de Fase 24 (T095+), y de la integración de formularios T096–T098 para exponer disponibilidad operativa en UI y selector técnico.
+- **Fase 26**: depende de cierre funcional de T098; no altera persistencia ni reemplaza reglas de transición de estado.
 
 ### Primer bloque de implementación
 

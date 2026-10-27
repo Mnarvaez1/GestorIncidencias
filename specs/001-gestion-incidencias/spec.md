@@ -319,6 +319,9 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **RF-059**: En la selección de responsables técnicos, el sistema DEBE priorizar visualmente técnicos activos y libres, documentando el manejo de selección de técnicos ocupados como regla pendiente de aprobación funcional.
 - **RF-060**: `frmEmpleados` DEBE mostrar la columna `Disponibilidad` junto a Nombre, Rol y Estado laboral; si no existe integración real con incidencias vinculadas, DEBE mostrarse `No calculada` en lugar de `Libre` ficticio.
 - **RF-061**: `frmIncidencias` DEBE incorporar un botón corporativo `Administrar empleados` que abra `frmEmpleados`, manteniendo estilo visual XAMY negro/dorado/crema y sin alterar `ReportadoPor`.
+- **RF-062**: `frmIncidencias` DEBE incorporar la opción de filtro `Activas`, seleccionada por defecto al abrir el formulario, para mostrar únicamente incidencias en estado `Pendiente` y `En proceso`, manteniendo `Todos`, `Pendiente`, `En proceso` y `Resuelta` para consulta histórica.
+- **RF-063**: Con filtro `Activas` seleccionado, al cambiar una incidencia a `Resuelta` el sistema DEBE dejar de mostrarla automáticamente en la lista filtrada, sin eliminar ni modificar el registro persistido en XML.
+- **RF-064**: La búsqueda por texto DEBE combinarse correctamente con `Activas` y con los demás filtros de estado existentes, preservando el comportamiento actual de vista previa e informe HTML basado en el conjunto filtrado visible.
 
 ## Entidades principales
 
@@ -326,6 +329,7 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **Prioridad**: clasificación Baja, Media o Alta.
 - **Estado de incidencia**: Pendiente, En proceso o Resuelta.
 - **Filtro de estado**: selección Todos, Pendiente, En proceso o Resuelta.
+- **Filtro de estado ampliado**: selección `Activas`, Todos, Pendiente, En proceso o Resuelta, donde `Activas` agrupa Pendiente + En proceso como filtro visual.
 - **Reporte de incidencias**: proyección temporal para vista previa y exportación HTML basada en el resultado actual de búsqueda/filtro.
 - **Empleado**: registro administrativo con identificador, nombre completo, perfil técnico y estado activo/inactivo.
 - **Responsable técnico vinculado**: referencia opcional de incidencia a empleado técnico para integraciones futuras, manteniendo texto legacy.
@@ -348,6 +352,8 @@ Como operador, quiero administrar empleados y seleccionar técnicos activos como
 - **CE-013**: La disponibilidad operativa se recalcula sin persistir bandera fija y refleja correctamente incidencias abiertas/cerradas vinculadas por `ResponsableEmpleadoId`.
 - **CE-014**: El módulo de empleados muestra estado laboral y disponibilidad operativa como conceptos diferenciados sin inferencias legacy por nombre.
 - **CE-015**: El acceso `Administrar empleados` desde `frmIncidencias` abre el formulario de gestión sin alterar flujos existentes de incidencias.
+- **CE-016**: `Activas` aparece como filtro predeterminado y lista únicamente incidencias `Pendiente`/`En proceso`, ocultando automáticamente las que pasan a `Resuelta` sin eliminarlas del repositorio.
+- **CE-017**: Los filtros `Todos`, `Pendiente`, `En proceso` y `Resuelta` continúan operativos para consulta histórica y se combinan con búsqueda sin romper vista previa ni exportación HTML.
 
 ## Supuestos y dependencias
 
