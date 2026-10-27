@@ -8,10 +8,17 @@ namespace GestorIncidencias.Controlador
     public class EmpleadoController
     {
         private readonly IEmpleadoRepository repositorio;
+        private readonly IIncidenciaRepository repositorioIncidencias;
 
         public EmpleadoController(IEmpleadoRepository repositorio)
+            : this(repositorio, null)
+        {
+        }
+
+        public EmpleadoController(IEmpleadoRepository repositorio, IIncidenciaRepository repositorioIncidencias)
         {
             this.repositorio = repositorio;
+            this.repositorioIncidencias = repositorioIncidencias;
         }
 
         public ResultadoOperacion<Empleado> Registrar(string nombreCompleto, bool esTecnicoSoporte)
@@ -164,6 +171,34 @@ namespace GestorIncidencias.Controlador
                 Mensaje = "Disponibilidad calculada correctamente.",
                 Datos = CalcularDisponibilidadOperativa(empleado, incidencias)
             };
+        }
+
+        public ResultadoOperacion<DisponibilidadOperativa> ConsultarDisponibilidad(int identificador)
+        {
+            if (repositorioIncidencias == null)
+            {
+                return new ResultadoOperacion<DisponibilidadOperativa>
+                {
+                    Exito = false,
+                    Mensaje = "No se configuró el repositorio de incidencias para calcular disponibilidad.",
+                    Errores = new List<string> { "No se configuró el repositorio de incidencias para calcular disponibilidad." },
+                    Datos = DisponibilidadOperativa.NoCalculada
+                };
+            }
+
+            var cargaIncidencias = repositorioIncidencias.Cargar();
+            if (!cargaIncidencias.Exito || cargaIncidencias.Datos == null)
+            {
+                return new ResultadoOperacion<DisponibilidadOperativa>
+                {
+                    Exito = false,
+                    Mensaje = cargaIncidencias.Mensaje ?? "No se pudieron cargar las incidencias.",
+                    Errores = cargaIncidencias.Errores,
+                    Datos = DisponibilidadOperativa.NoCalculada
+                };
+            }
+
+            return ConsultarDisponibilidad(identificador, cargaIncidencias.Datos);
         }
 
         private static DisponibilidadOperativa CalcularDisponibilidadOperativa(
