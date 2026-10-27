@@ -465,6 +465,40 @@ namespace GestorIncidencias.Tests.Controlador
         }
 
         [TestMethod]
+        public void RegistrarConTecnicoOcupadoEnProcesoDebeRechazarAsignacionNueva()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 1,
+                Titulo = "Abierta en proceso",
+                Descripcion = "Descripción válida abierta.",
+                ReportadoPor = "María",
+                Responsable = "Michael",
+                ResponsableEmpleadoId = 7,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = new DateTime(2026, 10, 20, 9, 0, 0)
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, true));
+
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                "Nueva abierta",
+                "Descripción válida nueva.",
+                "Laura",
+                "Michael",
+                Prioridad.Alta,
+                7);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("El técnico seleccionado está ocupado y no puede recibir una nueva incidencia.", resultado.Mensaje);
+            Assert.AreEqual(1, repositorio.Registros.Count);
+        }
+
+        [TestMethod]
         public void RegistrarConTecnicoInactivoDebeRechazarAsignacionNueva()
         {
             var repositorio = new IncidenciaRepositoryDoble();
@@ -633,6 +667,80 @@ namespace GestorIncidencias.Tests.Controlador
 
             Assert.IsTrue(resultado.Exito);
             Assert.AreEqual(7, repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void EditarReasignandoATecnicoInactivoDebeRechazar()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Laura",
+                ResponsableEmpleadoId = 8,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Michael", true, false));
+            empleados.Registros.Add(CrearEmpleado(8, "Laura", true, true));
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                10,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Michael",
+                Prioridad.Alta,
+                7);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("El técnico seleccionado está inactivo y no puede recibir nuevas asignaciones.", resultado.Mensaje);
+            Assert.AreEqual(8, repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void EditarReasignandoAEmpleadoNoTecnicoDebeRechazar()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Laura",
+                ResponsableEmpleadoId = 8,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var empleados = new EmpleadoRepositoryDoble();
+            empleados.Registros.Add(CrearEmpleado(7, "Pedro", false, true));
+            empleados.Registros.Add(CrearEmpleado(8, "Laura", true, true));
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio, empleados),
+                10,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Pedro",
+                Prioridad.Alta,
+                7);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual("El empleado seleccionado no está habilitado como técnico de soporte.", resultado.Mensaje);
+            Assert.AreEqual(8, repositorio.Registros[0].ResponsableEmpleadoId);
         }
 
         [TestMethod]

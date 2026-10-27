@@ -381,7 +381,7 @@ propiedades inmutables.
 - [x] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY, mostrando en `dgvEmpleados` cinco columnas visuales: Identificador, Nombre completo, Técnico de soporte (Sí/No), Estado laboral (Activo/Inactivo) y Disponibilidad (Libre/Ocupado/No calculada), sin mostrar `Libre` ficticio antes de integración real.
 - [x] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
 - [x] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias` (botón corporativo `Administrar empleados`), además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
-- [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070.
+- [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070. Pendiente aclarar la diferencia histórica entre 244 pruebas reportadas anteriormente y los 227 casos identificados actualmente; no se considera resuelta.
 
 ## Fase 25: Disponibilidad operativa automática de técnicos (pendiente)
 
@@ -391,7 +391,7 @@ propiedades inmutables.
 - [x] T101 [US10] Añadir pruebas MSTest de disponibilidad en controlador para incidencias abiertas (`Pendiente`/`En proceso`), cierre `Resuelta` y recálculo por reasignación de `ResponsableEmpleadoId`.
 - [x] T102 [US10] Implementar en la capa de casos de uso el recálculo de disponibilidad desde incidencias reales vinculadas por `ResponsableEmpleadoId`, sin inferencias por nombre legacy.
 - [x] T103 [US10] Integrar priorización visual de técnicos activos/libres en selector de responsable y documentar explícitamente la política aplicada cuando el técnico esté ocupado.
-- [ ] T104 [US10] Actualizar pruebas de regresión e evidencia de trazabilidad para RF-051 a RF-061 manteniendo T070 pendiente.
+- [x] T104 [US10] Actualizar pruebas de regresión y evidencia de trazabilidad para RF-051 a RF-061 manteniendo T070 pendiente. Pruebas recuperadas desde Git stash y validadas por el usuario en Visual Studio: 227/227 MSTest aprobadas, 0 errores y 0 advertencias.
 
 ## Fase 26: Evolución de filtrado visual Activas (pendiente)
 
