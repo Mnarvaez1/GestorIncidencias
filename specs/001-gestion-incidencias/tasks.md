@@ -381,7 +381,7 @@ propiedades inmutables.
 - [x] T096 [US10] Implementar `frmEmpleados.cs` y `frmEmpleados.Designer.cs` con controles nativos WinForms y paleta XAMY, mostrando en `dgvEmpleados` cinco columnas visuales: Identificador, Nombre completo, Técnico de soporte (Sí/No), Estado laboral (Activo/Inactivo) y Disponibilidad (Libre/Ocupado/No calculada), sin mostrar `Libre` ficticio antes de integración real.
 - [x] T097 [US10] Implementar `frmEditarEmpleado.cs` y `frmEditarEmpleado.Designer.cs` para alta/edición con validación visual coherente.
 - [x] T098 [US10] Integrar selección de técnicos activos y acceso al módulo `frmEmpleados` desde `frmIncidencias` (botón corporativo `Administrar empleados`), además de `frmEditarIncidencia`, preservando compatibilidad con responsables legacy en texto.
-- [ ] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070. Pendiente aclarar la diferencia histórica entre 244 pruebas reportadas anteriormente y los 227 casos identificados actualmente; no se considera resuelta.
+- [x] T099 [US10] Ejecutar regresión MSTest completa y actualizar evidencia en `requirements-traceability.md` sin cerrar T070. Validación confirmada por el usuario: última compilación sin errores, 227/227 MSTest aprobadas, 0 fallos y 0 advertencias; verificación manual de incidencias, empleados, disponibilidad Libre/Ocupado, Sin asignar, persistencia e informes. La diferencia respecto a una ejecución histórica de 244 pruebas sigue sin reconciliarse; no se afirma equivalencia ni causa.
 
 ## Fase 25: Disponibilidad operativa automática de técnicos (pendiente)
 
