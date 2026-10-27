@@ -109,12 +109,14 @@ La implementación relaciona cada requisito RF-001 en adelante con pruebas autom
 - Fase verde T063: `T063-targeted-verde.trx` (11 pruebas, 11 correctas) y `T063-suite-completa-verde.trx` (99 pruebas, 99 correctas).
 - Alcance verificado: captura, validación, edición y proyección de `ReportadoPor` en `IncidenciaController`, conservando invariantes y compatibilidad con registros legacy.
 
-## Cobertura pendiente de la ampliación aprobada (RF-024 a RF-038)
+## Cobertura y cierre de la ampliación aprobada (RF-024 a RF-038 / T070)
 
 - RF-024 y RF-025: cobertura inicial completada en validador mediante T057–T058.
 - RF-026: cobertura de controlador completada en T062–T063.
 - RF-027 a RF-030: cobertura de persistencia XML completada en T059–T060 y regresión de integración de controlador verificada en T061–T063.
-- RF-031 a RF-038: pendiente cubrir en formularios y reportes (T064–T070), sin declarar implementación aún.
+- RF-031 a RF-038: cubiertos por T064–T070; incluyen botón y vista previa, conjunto filtrado, campos del informe, estado vacío, exportación HTML UTF-8 escapada, ausencia de componentes de impresión y verificación visual/manual.
+- Cierre T070: el usuario confirma aplicación comprobada manualmente y regresión local de 227/227 MSTest aprobadas, sin errores ni advertencias. GitHub Actions CI fue exitoso en el commit `210a76e`; no se registra cantidad de pruebas en CI porque los registros detallados no se han verificado.
+- Observación pendiente de reconciliación: una ejecución histórica informó 244 pruebas y la auditoría actual identifica 227 casos (182 `[TestMethod]` y 45 `[DataRow]`). No se identificaron pruebas eliminadas; no se ha establecido la causa de la diferencia ni se afirma equivalencia entre recuentos.
 - RF-020 se mantiene con cobertura parcial hasta completar la validación funcional final de interfaz.
 
 ## Evidencia de carga inicial en formulario principal (US6 / T044)

@@ -275,8 +275,12 @@ propiedades inmutables.
   `PrintDialog` (RF-036, RF-037).
 - [x] T069 [US8] Añadir pruebas automatizadas para generación/exportación de reporte y casos de
   cero incidencias; conservar aislamiento de archivos temporales.
-- [ ] T070 [US8] [US9] Actualizar `contracts/requirements-traceability.md` y `quickstart.md` con
-  la cobertura RF-024 a RF-038 y evidencias manuales/automáticas de la ampliación.
+- [x] T070 [US8] [US9] Actualizar `contracts/requirements-traceability.md` y `quickstart.md` con
+  la cobertura RF-024 a RF-038 y evidencias manuales/automáticas de la ampliación. Evidencia
+  final confirmada por el usuario: 227/227 MSTest aprobadas localmente, sin errores ni advertencias;
+  aplicación comprobada manualmente. CI de GitHub Actions exitoso en commit `210a76e`; no se
+  atribuye cantidad de pruebas a CI porque sus registros detallados no se han verificado.
+  La diferencia histórica 244/227 permanece sin reconciliar.
 
 ## Fase 16: Evolución visual de reporte ejecutivo (P2)
 
