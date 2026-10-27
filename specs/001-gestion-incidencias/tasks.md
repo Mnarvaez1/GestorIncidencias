@@ -390,7 +390,7 @@ propiedades inmutables.
 - [x] T100 [US10] Extender contratos/modelo operativo en código para distinguir estado laboral y disponibilidad derivada (`Libre`/`Ocupado`/`No calculada`) sin persistencia fija en `Empleado`.
 - [x] T101 [US10] Añadir pruebas MSTest de disponibilidad en controlador para incidencias abiertas (`Pendiente`/`En proceso`), cierre `Resuelta` y recálculo por reasignación de `ResponsableEmpleadoId`.
 - [x] T102 [US10] Implementar en la capa de casos de uso el recálculo de disponibilidad desde incidencias reales vinculadas por `ResponsableEmpleadoId`, sin inferencias por nombre legacy.
-- [ ] T103 [US10] Integrar priorización visual de técnicos activos/libres en selector de responsable y documentar explícitamente la política aplicada cuando el técnico esté ocupado.
+- [x] T103 [US10] Integrar priorización visual de técnicos activos/libres en selector de responsable y documentar explícitamente la política aplicada cuando el técnico esté ocupado.
 - [ ] T104 [US10] Actualizar pruebas de regresión e evidencia de trazabilidad para RF-051 a RF-061 manteniendo T070 pendiente.
 
 ## Fase 26: Evolución de filtrado visual Activas (pendiente)

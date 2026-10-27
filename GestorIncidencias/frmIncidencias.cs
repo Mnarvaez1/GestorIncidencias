@@ -17,7 +17,9 @@ namespace GestorIncidencias
         {
             InitializeComponent();
 
-            controlador = new IncidenciaController(new XmlIncidenciaRepository());
+            var repositorioIncidencias = new XmlIncidenciaRepository();
+            var repositorioEmpleados = new XmlEmpleadoRepository();
+            controlador = new IncidenciaController(repositorioIncidencias, repositorioEmpleados);
 
             btnNuevaIncidencia.Click += BtnNuevaIncidencia_Click;
             btnModificarIncidencia.Click += BtnModificarIncidencia_Click;

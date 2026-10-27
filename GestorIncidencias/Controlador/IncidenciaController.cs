@@ -9,10 +9,17 @@ namespace GestorIncidencias.Controlador
     {
         private const string ReportadoPorLegacy = "No informado (registro legado)";
         private readonly IIncidenciaRepository repositorio;
+        private readonly IEmpleadoRepository repositorioEmpleados;
 
         public IncidenciaController(IIncidenciaRepository repositorio)
+            : this(repositorio, null)
+        {
+        }
+
+        public IncidenciaController(IIncidenciaRepository repositorio, IEmpleadoRepository repositorioEmpleados)
         {
             this.repositorio = repositorio;
+            this.repositorioEmpleados = repositorioEmpleados;
         }
 
         public ResultadoOperacion<Incidencia> Registrar(
@@ -62,6 +69,15 @@ namespace GestorIncidencias.Controlador
             if (!validacion.Exito)
             {
                 return validacion;
+            }
+
+            var validacionResponsable = ValidarAsignacionResponsable(
+                responsableEmpleadoId,
+                null,
+                "El técnico seleccionado está ocupado y no puede recibir una nueva incidencia.");
+            if (!validacionResponsable.Exito)
+            {
+                return validacionResponsable;
             }
 
             if (!repositorio.PuedeGuardar)
@@ -264,6 +280,15 @@ namespace GestorIncidencias.Controlador
                 return validacion;
             }
 
+            var validacionResponsable = ValidarAsignacionResponsable(
+                responsableEmpleadoIdValidacion,
+                incidencia.ResponsableEmpleadoId,
+                "No se puede reasignar a un técnico ocupado. Seleccione un técnico activo y libre.");
+            if (!validacionResponsable.Exito)
+            {
+                return validacionResponsable;
+            }
+
             if (!repositorio.PuedeGuardar)
             {
                 return Error("El repositorio no permite guardar incidencias.");
@@ -372,6 +397,67 @@ namespace GestorIncidencias.Controlador
                 Mensaje = mensaje,
                 Errores = new List<string> { mensaje }
             };
+        }
+
+        private ResultadoOperacion<Incidencia> ValidarAsignacionResponsable(
+            int? responsableEmpleadoId,
+            int? responsableEmpleadoIdActual,
+            string mensajeOcupado)
+        {
+            if (!responsableEmpleadoId.HasValue)
+            {
+                return new ResultadoOperacion<Incidencia> { Exito = true };
+            }
+
+            if (responsableEmpleadoIdActual.HasValue && responsableEmpleadoIdActual.Value == responsableEmpleadoId.Value)
+            {
+                return new ResultadoOperacion<Incidencia> { Exito = true };
+            }
+
+            if (repositorioEmpleados == null)
+            {
+                return new ResultadoOperacion<Incidencia> { Exito = true };
+            }
+
+            var consultaEmpleados = repositorioEmpleados.Cargar();
+            if (!consultaEmpleados.Exito || consultaEmpleados.Datos == null)
+            {
+                return Error(consultaEmpleados.Mensaje ?? "No se pudo validar el técnico responsable.");
+            }
+
+            var tecnico = consultaEmpleados.Datos.FirstOrDefault(e =>
+                e != null &&
+                e.Identificador == responsableEmpleadoId.Value);
+
+            if (tecnico == null)
+            {
+                return Error("No existe un empleado técnico con el identificador indicado para la asignación.");
+            }
+
+            if (!tecnico.EsTecnicoSoporte)
+            {
+                return Error("El empleado seleccionado no está habilitado como técnico de soporte.");
+            }
+
+            if (!tecnico.Activo)
+            {
+                return Error("El técnico seleccionado está inactivo y no puede recibir nuevas asignaciones.");
+            }
+
+            var disponibilidad = new EmpleadoController(repositorioEmpleados, repositorio)
+                .ConsultarDisponibilidad(tecnico.Identificador);
+
+            if (!disponibilidad.Exito)
+            {
+                return Error(disponibilidad.Mensaje ?? "No se pudo validar la disponibilidad del técnico responsable.");
+            }
+
+            if (disponibilidad.Datos != DisponibilidadOperativa.Libre)
+            {
+                return Error(mensajeOcupado);
+            }
+
+            return new ResultadoOperacion<Incidencia> { Exito = true };
         }
     }
 }

@@ -12,6 +12,7 @@ namespace GestorIncidencias
     {
         private const string ReportadoPorLegacy = "No informado (registro legado)";
         private readonly EmpleadoController controladorEmpleados;
+        private readonly IncidenciaController controladorIncidencias;
         private readonly bool modoEdicion;
         private readonly Incidencia incidenciaOriginal;
 
@@ -33,7 +34,10 @@ namespace GestorIncidencias
 
             if (!EsModoDiseno())
             {
-                controladorEmpleados = new EmpleadoController(new XmlEmpleadoRepository());
+                var repositorioEmpleados = new XmlEmpleadoRepository();
+                var repositorioIncidencias = new XmlIncidenciaRepository();
+                controladorEmpleados = new EmpleadoController(repositorioEmpleados, repositorioIncidencias);
+                controladorIncidencias = new IncidenciaController(repositorioIncidencias, repositorioEmpleados);
             }
 
             btnGuardar.Click += BtnGuardar_Click;
@@ -149,6 +153,7 @@ namespace GestorIncidencias
 
             tecnicosElegibles = (consulta.Datos ?? new List<Empleado>())
                 .Where(e => e != null && e.Activo && e.EsTecnicoSoporte)
+                .Where(e => EstaDisponibleParaAsignacionNueva(e, null))
                 .OrderBy(e => e.NombreCompleto)
                 .ThenBy(e => e.Identificador)
                 .ToList();
@@ -236,6 +241,23 @@ namespace GestorIncidencias
                 SeleccionarTecnicoPorId(tecnicoActual.Identificador);
                 cboResponsableTecnico.Enabled = true;
                 lblAvisoResponsable.Text = "Puede conservar o reasignar el técnico responsable.";
+                return;
+            }
+
+            var tecnicoActualNoElegible = incidenciaOriginal.ResponsableEmpleadoId.HasValue
+                ? (consultaTodosTecnicosActivos() ?? new List<Empleado>())
+                    .FirstOrDefault(t => t.Identificador == incidenciaOriginal.ResponsableEmpleadoId.Value)
+                : null;
+
+            if (tecnicoActualNoElegible != null)
+            {
+                cboResponsableTecnico.Items.Insert(
+                    0,
+                    new OpcionTecnicoResponsable(tecnicoActualNoElegible.Identificador, tecnicoActualNoElegible.NombreCompleto, true));
+                cboResponsableTecnico.SelectedIndex = 0;
+                cboResponsableTecnico.Enabled = true;
+                lblAvisoResponsable.Text =
+                    "El responsable actual está ocupado para nuevas asignaciones. Puede conservarlo o reasignar a un técnico libre.";
                 return;
             }
 
@@ -376,9 +398,70 @@ namespace GestorIncidencias
                 return false;
             }
 
+            if (controladorIncidencias == null)
+            {
+                error = "No se pudo validar la disponibilidad del técnico seleccionado.";
+                return false;
+            }
+
+            var resultadoDisponibilidad = controladorEmpleados.ConsultarDisponibilidad(tecnicoVigente.Identificador);
+            if (!resultadoDisponibilidad.Exito)
+            {
+                error = resultadoDisponibilidad.Mensaje ?? "No se pudo validar la disponibilidad del técnico seleccionado.";
+                return false;
+            }
+
+            var conservaMismoResponsable =
+                modoEdicion
+                && incidenciaOriginal != null
+                && incidenciaOriginal.ResponsableEmpleadoId.HasValue
+                && incidenciaOriginal.ResponsableEmpleadoId.Value == tecnicoVigente.Identificador;
+
+            if (!conservaMismoResponsable && resultadoDisponibilidad.Datos != DisponibilidadOperativa.Libre)
+            {
+                error = "El técnico seleccionado está ocupado y no puede recibir una nueva asignación.";
+                return false;
+            }
+
             responsable = tecnicoVigente.NombreCompleto;
             responsableEmpleadoId = tecnicoVigente.Identificador;
             return true;
+        }
+
+        private bool EstaDisponibleParaAsignacionNueva(Empleado tecnico, int? responsableEmpleadoIdActual)
+        {
+            if (controladorEmpleados == null || tecnico == null)
+            {
+                return false;
+            }
+
+            var disponibilidad = controladorEmpleados.ConsultarDisponibilidad(tecnico.Identificador);
+            if (!disponibilidad.Exito)
+            {
+                return false;
+            }
+
+            if (disponibilidad.Datos == DisponibilidadOperativa.Libre)
+            {
+                return true;
+            }
+
+            return responsableEmpleadoIdActual.HasValue && responsableEmpleadoIdActual.Value == tecnico.Identificador;
+        }
+
+        private IList<Empleado> consultaTodosTecnicosActivos()
+        {
+            var consulta = controladorEmpleados.Consultar();
+            if (!consulta.Exito)
+            {
+                return new List<Empleado>();
+            }
+
+            return (consulta.Datos ?? new List<Empleado>())
+                .Where(e => e != null && e.Activo && e.EsTecnicoSoporte)
+                .OrderBy(e => e.NombreCompleto)
+                .ThenBy(e => e.Identificador)
+                .ToList();
         }
 
         private static bool EsModoDiseno()

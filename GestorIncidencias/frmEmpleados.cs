@@ -30,7 +30,7 @@ namespace GestorIncidencias
 
             if (!EsModoDiseno())
             {
-                controlador = new EmpleadoController(new XmlEmpleadoRepository());
+                controlador = new EmpleadoController(new XmlEmpleadoRepository(), new XmlIncidenciaRepository());
             }
 
             Load += FrmEmpleados_Load;
@@ -247,7 +247,7 @@ namespace GestorIncidencias
                     empleado.NombreCompleto,
                     empleado.EsTecnicoSoporte ? "Sí" : "No",
                     empleado.Activo ? "Activo" : "Inactivo",
-                    "No calculada");
+                    ObtenerDisponibilidadVisual(empleado));
 
                 dgvEmpleados.Rows[indice].Tag = empleado;
             }
@@ -336,6 +336,30 @@ namespace GestorIncidencias
             }
 
             return copia;
+        }
+
+        private string ObtenerDisponibilidadVisual(Empleado empleado)
+        {
+            if (controlador == null || empleado == null)
+            {
+                return "No calculada";
+            }
+
+            var disponibilidad = controlador.ConsultarDisponibilidad(empleado.Identificador);
+            if (!disponibilidad.Exito)
+            {
+                return "No calculada";
+            }
+
+            switch (disponibilidad.Datos)
+            {
+                case DisponibilidadOperativa.Libre:
+                    return "Libre";
+                case DisponibilidadOperativa.Ocupado:
+                    return "Ocupado";
+                default:
+                    return "No calculada";
+            }
         }
 
         private static bool EsModoDiseno()
