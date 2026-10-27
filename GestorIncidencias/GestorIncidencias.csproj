@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D409E8A7-6C86-44D5-9597-F11064E67309}</ProjectGuid>
+    <ProjectGuid>{D14BC012-7BE1-465C-7B2D-1B06FD3EAB47}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>GestorIncidencias</RootNamespace>
     <AssemblyName>GestorIncidencias</AssemblyName>
@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,16 +47,68 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controlador\EmpleadoController.cs" />
+    <Compile Include="Controlador\EmpleadoRepository.cs" />
+    <Compile Include="Controlador\EmpleadoValidator.cs" />
+    <Compile Include="Controlador\XmlEmpleadoRepository.cs" />
+    <Compile Include="Entidades\Empleado.cs" />
+    <Compile Include="Entidades\EstadoIncidencia.cs" />
+    <Compile Include="Entidades\Incidencia.cs" />
+    <Compile Include="Entidades\Prioridad.cs" />
+    <Compile Include="Controlador\IncidenciaRepository.cs" />
+    <Compile Include="Controlador\ResultadoOperacion.cs" />
+    <Compile Include="Controlador\IncidenciaController.cs" />
+    <Compile Include="Controlador\IncidenciaValidator.cs" />
+    <Compile Include="Controlador\SingleInstanceGuard.cs" />
+    <Compile Include="Controlador\XmlIncidenciaRepository.cs" />
+    <Compile Include="frmEditarEmpleado.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEditarEmpleado.Designer.cs">
+      <DependentUpon>frmEditarEmpleado.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmEditarIncidencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEditarIncidencia.Designer.cs">
+      <DependentUpon>frmEditarIncidencia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmEmpleados.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmEmpleados.Designer.cs">
+      <DependentUpon>frmEmpleados.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmIncidencias.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmIncidencias.Designer.cs">
       <DependentUpon>frmIncidencias.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmVistaPreviaReporte.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmVistaPreviaReporte.Designer.cs">
+      <DependentUpon>frmVistaPreviaReporte.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmEditarEmpleado.resx">
+      <DependentUpon>frmEditarEmpleado.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmEditarIncidencia.resx">
+      <DependentUpon>frmEditarIncidencia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmEmpleados.resx">
+      <DependentUpon>frmEmpleados.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmIncidencias.resx">
       <DependentUpon>frmIncidencias.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmVistaPreviaReporte.resx">
+      <DependentUpon>frmVistaPreviaReporte.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

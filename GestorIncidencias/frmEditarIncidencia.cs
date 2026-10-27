@@ -1,0 +1,553 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Windows.Forms;
+using GestorIncidencias.Controlador;
+using GestorIncidencias.Entidades;
+
+namespace GestorIncidencias
+{
+    public partial class frmEditarIncidencia : Form
+    {
+        private const string ReportadoPorLegacy = "No informado (registro legado)";
+        private const string ResponsableSinAsignar = "Sin asignar";
+        private readonly EmpleadoController controladorEmpleados;
+        private readonly IncidenciaController controladorIncidencias;
+        private readonly bool modoEdicion;
+        private readonly Incidencia incidenciaOriginal;
+
+        private List<Empleado> tecnicosElegibles;
+        private bool catalogoTecnicosDisponible;
+        private string mensajeErrorCatalogo;
+        private int? responsableEmpleadoIdSeleccionado;
+        private string responsableSeleccionado;
+
+        public frmEditarIncidencia()
+        {
+            InitializeComponent();
+            InicializarPrioridades();
+            ConfigurarModoNuevo();
+
+            tecnicosElegibles = new List<Empleado>();
+            catalogoTecnicosDisponible = false;
+            mensajeErrorCatalogo = string.Empty;
+
+            if (!EsModoDiseno())
+            {
+                var repositorioEmpleados = new XmlEmpleadoRepository();
+                var repositorioIncidencias = new XmlIncidenciaRepository();
+                controladorEmpleados = new EmpleadoController(repositorioEmpleados, repositorioIncidencias);
+                controladorIncidencias = new IncidenciaController(repositorioIncidencias, repositorioEmpleados);
+            }
+
+            btnGuardar.Click += BtnGuardar_Click;
+            btnCancelar.Click += BtnCancelar_Click;
+            Load += FrmEditarIncidencia_Load;
+        }
+
+        public frmEditarIncidencia(Incidencia incidencia)
+            : this()
+        {
+            modoEdicion = true;
+            incidenciaOriginal = ClonarIncidencia(incidencia);
+            ConfigurarModoEdicion(incidencia);
+        }
+
+        public string TituloIncidencia
+        {
+            get { return txtTitulo.Text; }
+        }
+
+        public string DescripcionIncidencia
+        {
+            get { return txtDescripcion.Text; }
+        }
+
+        public string ReportadoPor
+        {
+            get { return txtReportadoPor.Text; }
+        }
+
+        public string Responsable
+        {
+            get { return responsableSeleccionado ?? string.Empty; }
+        }
+
+        public int? ResponsableEmpleadoId
+        {
+            get { return responsableEmpleadoIdSeleccionado; }
+        }
+
+        public Prioridad PrioridadSeleccionada
+        {
+            get
+            {
+                if (cboPrioridad.SelectedItem is Prioridad)
+                {
+                    return (Prioridad)cboPrioridad.SelectedItem;
+                }
+
+                return Prioridad.Media;
+            }
+        }
+
+        private void InicializarPrioridades()
+        {
+            cboPrioridad.DataSource = Enum.GetValues(typeof(Prioridad));
+            cboPrioridad.SelectedItem = Prioridad.Media;
+        }
+
+        private void ConfigurarModoNuevo()
+        {
+            lblTitulo.Text = "Nueva incidencia";
+            Text = "XAMY Technologies - Nueva incidencia";
+            txtTitulo.Text = string.Empty;
+            txtDescripcion.Text = string.Empty;
+            txtReportadoPor.Text = string.Empty;
+            responsableSeleccionado = string.Empty;
+            responsableEmpleadoIdSeleccionado = null;
+            cboPrioridad.SelectedItem = Prioridad.Media;
+        }
+
+        private void ConfigurarModoEdicion(Incidencia incidencia)
+        {
+            if (incidencia == null)
+            {
+                ConfigurarModoNuevo();
+                return;
+            }
+
+            lblTitulo.Text = "Modificar incidencia";
+            Text = "XAMY Technologies - Modificar incidencia";
+            txtTitulo.Text = incidencia.Titulo ?? string.Empty;
+            txtDescripcion.Text = incidencia.Descripcion ?? string.Empty;
+            txtReportadoPor.Text = NormalizarReportadoPorParaEdicion(incidencia.ReportadoPor);
+            responsableSeleccionado = incidencia.Responsable ?? string.Empty;
+            responsableEmpleadoIdSeleccionado = incidencia.ResponsableEmpleadoId;
+            cboPrioridad.SelectedItem = incidencia.Prioridad;
+        }
+
+        private void FrmEditarIncidencia_Load(object sender, EventArgs e)
+        {
+            CargarCatalogoTecnicos();
+            InicializarSelectorResponsable();
+        }
+
+        private void CargarCatalogoTecnicos()
+        {
+            tecnicosElegibles = new List<Empleado>();
+            catalogoTecnicosDisponible = false;
+            mensajeErrorCatalogo = string.Empty;
+
+            if (controladorEmpleados == null)
+            {
+                return;
+            }
+
+            var consulta = controladorEmpleados.Consultar();
+            if (!consulta.Exito)
+            {
+                mensajeErrorCatalogo = consulta.Mensaje ?? "No se pudo cargar el catálogo de empleados.";
+                return;
+            }
+
+            tecnicosElegibles = (consulta.Datos ?? new List<Empleado>())
+                .Where(e => e != null && e.Activo && e.EsTecnicoSoporte)
+                .Where(e => EstaDisponibleParaAsignacionNueva(e, null))
+                .OrderBy(e => e.NombreCompleto)
+                .ThenBy(e => e.Identificador)
+                .ToList();
+
+            catalogoTecnicosDisponible = true;
+        }
+
+        private void InicializarSelectorResponsable()
+        {
+            cboResponsableTecnico.Items.Clear();
+
+            if (!catalogoTecnicosDisponible)
+            {
+                cboResponsableTecnico.Enabled = false;
+
+                if (modoEdicion && incidenciaOriginal != null)
+                {
+                    lblAvisoResponsable.Text =
+                        "No se pudo cargar el catálogo de técnicos. Se conservará el responsable actual si no reasigna.";
+                    lblResponsableActual.Text = string.Format(
+                        "Responsable actual: {0}",
+                        string.IsNullOrWhiteSpace(incidenciaOriginal.Responsable)
+                            ? "(sin responsable)"
+                            : incidenciaOriginal.Responsable);
+                    return;
+                }
+
+                lblAvisoResponsable.Text =
+                    string.IsNullOrWhiteSpace(mensajeErrorCatalogo)
+                        ? "No se pudo cargar el catálogo de técnicos activos."
+                        : mensajeErrorCatalogo;
+                lblResponsableActual.Text = "No hay técnicos disponibles para asignación.";
+                return;
+            }
+
+            cboResponsableTecnico.Items.Add(OpcionTecnicoResponsable.CrearSinAsignar());
+
+            foreach (var tecnico in tecnicosElegibles)
+            {
+                cboResponsableTecnico.Items.Add(new OpcionTecnicoResponsable(tecnico.Identificador, tecnico.NombreCompleto, false));
+            }
+
+            if (modoEdicion && incidenciaOriginal != null)
+            {
+                InicializarSelectorModoEdicion();
+                return;
+            }
+
+            if (tecnicosElegibles.Count == 0)
+            {
+                cboResponsableTecnico.Enabled = true;
+                cboResponsableTecnico.SelectedIndex = 0;
+                lblAvisoResponsable.Text = "No hay técnicos activos y libres para nuevas asignaciones. Puede registrar la incidencia como Sin asignar.";
+                lblResponsableActual.Text = "Registre o habilite técnicos de soporte para asignar responsable posteriormente.";
+                return;
+            }
+
+            cboResponsableTecnico.Enabled = true;
+            cboResponsableTecnico.SelectedIndex = 0;
+            lblAvisoResponsable.Text = "Puede seleccionar un técnico activo y libre o registrar la incidencia como Sin asignar.";
+            lblResponsableActual.Text = "";
+        }
+
+        private void InicializarSelectorModoEdicion()
+        {
+            var responsableActual = string.IsNullOrWhiteSpace(incidenciaOriginal.Responsable)
+                ? ResponsableSinAsignar
+                : incidenciaOriginal.Responsable;
+
+            lblResponsableActual.Text = "Responsable actual: " + responsableActual;
+
+            if (tecnicosElegibles.Count == 0)
+            {
+                cboResponsableTecnico.Enabled = true;
+                cboResponsableTecnico.Items.Add(
+                    new OpcionTecnicoResponsable(incidenciaOriginal.ResponsableEmpleadoId, responsableActual, true));
+                cboResponsableTecnico.SelectedIndex = incidenciaOriginal.ResponsableEmpleadoId.HasValue ? 1 : 0;
+                lblAvisoResponsable.Text = "No hay técnicos activos y libres para reasignar. Puede conservar el responsable actual o dejar Sin asignar.";
+                return;
+            }
+
+            var tecnicoActual = incidenciaOriginal.ResponsableEmpleadoId.HasValue
+                ? tecnicosElegibles.FirstOrDefault(t => t.Identificador == incidenciaOriginal.ResponsableEmpleadoId.Value)
+                : null;
+
+            if (tecnicoActual != null)
+            {
+                SeleccionarTecnicoPorId(tecnicoActual.Identificador);
+                cboResponsableTecnico.Enabled = true;
+                lblAvisoResponsable.Text = "Puede conservar, reasignar o dejar la incidencia Sin asignar.";
+                return;
+            }
+
+            var tecnicoActualNoElegible = incidenciaOriginal.ResponsableEmpleadoId.HasValue
+                ? (consultaTodosTecnicosActivos() ?? new List<Empleado>())
+                    .FirstOrDefault(t => t.Identificador == incidenciaOriginal.ResponsableEmpleadoId.Value)
+                : null;
+
+            if (tecnicoActualNoElegible != null)
+            {
+                cboResponsableTecnico.Items.Insert(
+                    0,
+                    new OpcionTecnicoResponsable(tecnicoActualNoElegible.Identificador, tecnicoActualNoElegible.NombreCompleto, true));
+                cboResponsableTecnico.SelectedIndex = 0;
+                cboResponsableTecnico.Enabled = true;
+                lblAvisoResponsable.Text =
+                    "El responsable actual está ocupado para nuevas asignaciones. Puede conservarlo, reasignar a un técnico libre o dejar Sin asignar.";
+                return;
+            }
+
+            cboResponsableTecnico.Items.Insert(
+                0,
+                new OpcionTecnicoResponsable(incidenciaOriginal.ResponsableEmpleadoId, responsableActual, true));
+            cboResponsableTecnico.SelectedIndex = 0;
+            cboResponsableTecnico.Enabled = true;
+            lblAvisoResponsable.Text =
+                "El responsable actual no es elegible para nuevas asignaciones. Puede conservarlo, reasignar o dejar Sin asignar.";
+
+            if (!incidenciaOriginal.ResponsableEmpleadoId.HasValue)
+            {
+                cboResponsableTecnico.SelectedIndex = 0;
+            }
+        }
+
+        private void SeleccionarTecnicoPorId(int identificadorTecnico)
+        {
+            for (var i = 0; i < cboResponsableTecnico.Items.Count; i++)
+            {
+                var opcion = cboResponsableTecnico.Items[i] as OpcionTecnicoResponsable;
+                if (opcion == null)
+                {
+                    continue;
+                }
+
+                if (opcion.IdentificadorEmpleado == identificadorTecnico)
+                {
+                    cboResponsableTecnico.SelectedIndex = i;
+                    return;
+                }
+            }
+
+            cboResponsableTecnico.SelectedIndex = -1;
+        }
+
+        private static string NormalizarReportadoPorParaEdicion(string reportadoPor)
+        {
+            if (string.IsNullOrWhiteSpace(reportadoPor))
+            {
+                return ReportadoPorLegacy;
+            }
+
+            return reportadoPor;
+        }
+
+        private void BtnGuardar_Click(object sender, EventArgs e)
+        {
+            string responsable;
+            int? responsableEmpleadoId;
+            string error;
+
+            if (!IntentarResolverResponsable(out responsable, out responsableEmpleadoId, out error))
+            {
+                MessageBox.Show(
+                    this,
+                    error,
+                    "Validación de responsable",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            responsableSeleccionado = responsable;
+            responsableEmpleadoIdSeleccionado = responsableEmpleadoId;
+
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+
+        private void BtnCancelar_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+
+        private bool IntentarResolverResponsable(out string responsable, out int? responsableEmpleadoId, out string error)
+        {
+            responsable = string.Empty;
+            responsableEmpleadoId = null;
+            error = string.Empty;
+
+            if (!catalogoTecnicosDisponible)
+            {
+                if (modoEdicion && incidenciaOriginal != null)
+                {
+                    responsable = incidenciaOriginal.Responsable ?? string.Empty;
+                    responsableEmpleadoId = incidenciaOriginal.ResponsableEmpleadoId;
+                    return true;
+                }
+
+                error = string.IsNullOrWhiteSpace(mensajeErrorCatalogo)
+                    ? "No fue posible cargar el catálogo de técnicos activos. Intente nuevamente."
+                    : mensajeErrorCatalogo;
+                return false;
+            }
+
+            var opcionSeleccionada = cboResponsableTecnico.SelectedItem as OpcionTecnicoResponsable;
+            if (opcionSeleccionada == null)
+            {
+                if (modoEdicion && incidenciaOriginal != null && !string.IsNullOrWhiteSpace(incidenciaOriginal.Responsable))
+                {
+                    responsable = incidenciaOriginal.Responsable;
+                    responsableEmpleadoId = incidenciaOriginal.ResponsableEmpleadoId;
+                    return true;
+                }
+
+                error = "Debe seleccionar un técnico activo y libre o la opción Sin asignar.";
+                return false;
+            }
+
+            if (opcionSeleccionada.EsSinAsignar)
+            {
+                responsable = ResponsableSinAsignar;
+                responsableEmpleadoId = null;
+                return true;
+            }
+
+            if (opcionSeleccionada.EsHistorico)
+            {
+                if (incidenciaOriginal == null)
+                {
+                    error = "No se pudo conservar el responsable histórico de la incidencia.";
+                    return false;
+                }
+
+                responsable = incidenciaOriginal.Responsable ?? string.Empty;
+                responsableEmpleadoId = incidenciaOriginal.ResponsableEmpleadoId;
+                return true;
+            }
+
+            var validacionTecnicos = controladorEmpleados.Consultar();
+            if (!validacionTecnicos.Exito)
+            {
+                error = validacionTecnicos.Mensaje ?? "No se pudo validar el técnico seleccionado.";
+                return false;
+            }
+
+            var tecnicoVigente = (validacionTecnicos.Datos ?? new List<Empleado>())
+                .FirstOrDefault(e =>
+                    e != null &&
+                    e.Identificador == opcionSeleccionada.IdentificadorEmpleado &&
+                    e.Activo &&
+                    e.EsTecnicoSoporte);
+
+            if (tecnicoVigente == null)
+            {
+                error = "El técnico seleccionado ya no está activo o no está habilitado como soporte.";
+                return false;
+            }
+
+            if (controladorIncidencias == null)
+            {
+                error = "No se pudo validar la disponibilidad del técnico seleccionado.";
+                return false;
+            }
+
+            var resultadoDisponibilidad = controladorEmpleados.ConsultarDisponibilidad(tecnicoVigente.Identificador);
+            if (!resultadoDisponibilidad.Exito)
+            {
+                error = resultadoDisponibilidad.Mensaje ?? "No se pudo validar la disponibilidad del técnico seleccionado.";
+                return false;
+            }
+
+            var conservaMismoResponsable =
+                modoEdicion
+                && incidenciaOriginal != null
+                && incidenciaOriginal.ResponsableEmpleadoId.HasValue
+                && incidenciaOriginal.ResponsableEmpleadoId.Value == tecnicoVigente.Identificador;
+
+            if (!conservaMismoResponsable && resultadoDisponibilidad.Datos != DisponibilidadOperativa.Libre)
+            {
+                error = "El técnico seleccionado está ocupado y no puede recibir una nueva asignación.";
+                return false;
+            }
+
+            responsable = tecnicoVigente.NombreCompleto;
+            responsableEmpleadoId = tecnicoVigente.Identificador;
+            return true;
+        }
+
+        private bool EstaDisponibleParaAsignacionNueva(Empleado tecnico, int? responsableEmpleadoIdActual)
+        {
+            if (controladorEmpleados == null || tecnico == null)
+            {
+                return false;
+            }
+
+            var disponibilidad = controladorEmpleados.ConsultarDisponibilidad(tecnico.Identificador);
+            if (!disponibilidad.Exito)
+            {
+                return false;
+            }
+
+            if (disponibilidad.Datos == DisponibilidadOperativa.Libre)
+            {
+                return true;
+            }
+
+            return responsableEmpleadoIdActual.HasValue && responsableEmpleadoIdActual.Value == tecnico.Identificador;
+        }
+
+        private IList<Empleado> consultaTodosTecnicosActivos()
+        {
+            var consulta = controladorEmpleados.Consultar();
+            if (!consulta.Exito)
+            {
+                return new List<Empleado>();
+            }
+
+            return (consulta.Datos ?? new List<Empleado>())
+                .Where(e => e != null && e.Activo && e.EsTecnicoSoporte)
+                .OrderBy(e => e.NombreCompleto)
+                .ThenBy(e => e.Identificador)
+                .ToList();
+        }
+
+        private static bool EsModoDiseno()
+        {
+            return LicenseManager.UsageMode == LicenseUsageMode.Designtime;
+        }
+
+        private static Incidencia ClonarIncidencia(Incidencia incidencia)
+        {
+            if (incidencia == null)
+            {
+                return null;
+            }
+
+            return new Incidencia
+            {
+                Identificador = incidencia.Identificador,
+                Titulo = incidencia.Titulo,
+                Descripcion = incidencia.Descripcion,
+                ReportadoPor = incidencia.ReportadoPor,
+                Responsable = incidencia.Responsable,
+                ResponsableEmpleadoId = incidencia.ResponsableEmpleadoId,
+                Prioridad = incidencia.Prioridad,
+                Estado = incidencia.Estado,
+                FechaCreacion = incidencia.FechaCreacion
+            };
+        }
+
+        private class OpcionTecnicoResponsable
+        {
+            public OpcionTecnicoResponsable(int? identificadorEmpleado, string nombre, bool esHistorico, bool esSinAsignar)
+            {
+                IdentificadorEmpleado = identificadorEmpleado;
+                Nombre = nombre;
+                EsHistorico = esHistorico;
+                EsSinAsignar = esSinAsignar;
+            }
+
+            public OpcionTecnicoResponsable(int? identificadorEmpleado, string nombre, bool esHistorico)
+                : this(identificadorEmpleado, nombre, esHistorico, false)
+            {
+            }
+
+            public static OpcionTecnicoResponsable CrearSinAsignar()
+            {
+                return new OpcionTecnicoResponsable(null, ResponsableSinAsignar, false, true);
+            }
+
+            public int? IdentificadorEmpleado { get; private set; }
+
+            public string Nombre { get; private set; }
+
+            public bool EsHistorico { get; private set; }
+
+            public bool EsSinAsignar { get; private set; }
+
+            public override string ToString()
+            {
+                if (EsHistorico)
+                {
+                    return "Conservar responsable actual: " + Nombre;
+                }
+
+                if (EsSinAsignar)
+                {
+                    return Nombre;
+                }
+
+                return Nombre;
+            }
+        }
+    }
+}
