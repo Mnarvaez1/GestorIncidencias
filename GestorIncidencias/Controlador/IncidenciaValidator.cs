@@ -20,9 +20,30 @@ namespace GestorIncidencias.Controlador
             string descripcion,
             string responsable,
             Prioridad prioridad,
+            int? responsableEmpleadoId)
+        {
+            return ValidarInterno(titulo, descripcion, responsable, prioridad, null, false, responsableEmpleadoId);
+        }
+
+        public ResultadoOperacion<Incidencia> Validar(
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad,
             string reportadoPor)
         {
             return ValidarInterno(titulo, descripcion, responsable, prioridad, reportadoPor, true);
+        }
+
+        public ResultadoOperacion<Incidencia> Validar(
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad,
+            string reportadoPor,
+            int? responsableEmpleadoId)
+        {
+            return ValidarInterno(titulo, descripcion, responsable, prioridad, reportadoPor, true, responsableEmpleadoId);
         }
 
         private static ResultadoOperacion<Incidencia> ValidarInterno(
@@ -31,7 +52,8 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad,
             string reportadoPor,
-            bool validarReportadoPor)
+            bool validarReportadoPor,
+            int? responsableEmpleadoId = null)
         {
             titulo = (titulo ?? string.Empty).Trim();
             descripcion = (descripcion ?? string.Empty).Trim();
@@ -61,6 +83,11 @@ namespace GestorIncidencias.Controlador
             if (!Enum.IsDefined(typeof(Prioridad), prioridad))
             {
                 return Error("La prioridad debe ser Baja, Media o Alta.");
+            }
+
+            if (responsableEmpleadoId.HasValue && responsableEmpleadoId.Value <= 0)
+            {
+                return Error("El identificador del responsable empleado debe ser un número positivo.");
             }
 
             return new ResultadoOperacion<Incidencia>

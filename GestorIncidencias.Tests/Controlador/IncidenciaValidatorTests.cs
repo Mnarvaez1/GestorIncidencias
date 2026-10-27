@@ -195,6 +195,47 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.IsFalse(resultado.Exito);
         }
 
+        [TestMethod]
+        public void ResponsableEmpleadoIdPositivoDebeAceptarse()
+        {
+            var resultado = ValidarConResponsableEmpleadoId(
+                "abcde",
+                "Descripción válida",
+                "Ana",
+                Prioridad.Media,
+                3);
+
+            Assert.IsTrue(resultado.Exito);
+        }
+
+        [TestMethod]
+        public void ResponsableEmpleadoIdNuloDebeAceptarse()
+        {
+            var resultado = ValidarConResponsableEmpleadoId(
+                "abcde",
+                "Descripción válida",
+                "Ana",
+                Prioridad.Media,
+                null);
+
+            Assert.IsTrue(resultado.Exito);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(-1)]
+        public void ResponsableEmpleadoIdNoPositivoDebeRechazarse(int responsableEmpleadoId)
+        {
+            var resultado = ValidarConResponsableEmpleadoId(
+                "abcde",
+                "Descripción válida",
+                "Ana",
+                Prioridad.Media,
+                responsableEmpleadoId);
+
+            Assert.IsFalse(resultado.Exito);
+        }
+
         private static IncidenciaValidator CrearValidador()
         {
             return new IncidenciaValidator();
@@ -226,6 +267,34 @@ namespace GestorIncidencias.Tests.Controlador
             return (ResultadoOperacion<Incidencia>)firmaConReportadoPor.Invoke(
                 validador,
                 new object[] { titulo, descripcion, responsable, prioridad, reportadoPor });
+        }
+
+        private static ResultadoOperacion<Incidencia> ValidarConResponsableEmpleadoId(
+            string titulo,
+            string descripcion,
+            string responsable,
+            Prioridad prioridad,
+            int? responsableEmpleadoId)
+        {
+            var validador = CrearValidador();
+            var tipoValidador = typeof(IncidenciaValidator);
+            var firmaConResponsableEmpleadoId = tipoValidador.GetMethod(
+                "Validar",
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Prioridad),
+                    typeof(int?)
+                });
+
+            Assert.IsNotNull(firmaConResponsableEmpleadoId,
+                "Se esperaba una sobrecarga pública Validar(..., responsableEmpleadoId) para T098-B1.");
+
+            return (ResultadoOperacion<Incidencia>)firmaConResponsableEmpleadoId.Invoke(
+                validador,
+                new object[] { titulo, descripcion, responsable, prioridad, responsableEmpleadoId });
         }
     }
 }

@@ -142,6 +142,116 @@ namespace GestorIncidencias.Tests.Controlador
         }
 
         [TestMethod]
+        public void GuardarYReabrirConResponsableEmpleadoIdDebePreservarVinculoSinAlterarTextos()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var repositorio = CrearRepositorio(ruta);
+                var guardado = repositorio.Guardar(new[]
+                {
+                    new Incidencia
+                    {
+                        Identificador = 41,
+                        Titulo = "Incidencia vinculada",
+                        Descripcion = "Descripción de incidencia vinculada.",
+                        ReportadoPor = "María",
+                        Responsable = "Luis",
+                        ResponsableEmpleadoId = 7,
+                        Prioridad = Prioridad.Alta,
+                        Estado = EstadoIncidencia.EnProceso,
+                        FechaCreacion = new DateTime(2026, 10, 30, 15, 10, 0)
+                    }
+                });
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsTrue(guardado.Exito);
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.AreEqual(7, recargado.Datos[0].ResponsableEmpleadoId);
+                Assert.AreEqual("María", recargado.Datos[0].ReportadoPor);
+                Assert.AreEqual("Luis", recargado.Datos[0].Responsable);
+            });
+        }
+
+        [TestMethod]
+        public void CargarXmlLegacySinResponsableEmpleadoIdDebeMantenerCompatibilidad()
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var repositorio = CrearRepositorio(ruta);
+                var guardado = repositorio.Guardar(new[]
+                {
+                    new Incidencia
+                    {
+                        Identificador = 42,
+                        Titulo = "Incidencia sin vínculo",
+                        Descripcion = "Descripción legacy sin vínculo.",
+                        ReportadoPor = "María",
+                        Responsable = "Luis",
+                        ResponsableEmpleadoId = 3,
+                        Prioridad = Prioridad.Media,
+                        Estado = EstadoIncidencia.Pendiente,
+                        FechaCreacion = new DateTime(2026, 10, 30, 16, 10, 0)
+                    }
+                });
+
+                Assert.IsTrue(guardado.Exito);
+
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var doc = XDocument.Load(rutaArchivo);
+                doc.Descendants().Where(x => x.Name.LocalName == "ResponsableEmpleadoId").Remove();
+                doc.Save(rutaArchivo);
+
+                var recargado = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsTrue(recargado.Exito);
+                Assert.AreEqual(1, recargado.Datos.Count);
+                Assert.IsNull(recargado.Datos[0].ResponsableEmpleadoId);
+                Assert.AreEqual("María", recargado.Datos[0].ReportadoPor);
+                Assert.AreEqual("Luis", recargado.Datos[0].Responsable);
+            });
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(-8)]
+        public void CargarConResponsableEmpleadoIdInvalidoDebeFallar(int responsableEmpleadoId)
+        {
+            EjecutarEnDirectorioTemporal(ruta =>
+            {
+                var rutaArchivo = ObtenerRutaArchivo(ruta);
+                var guardado = CrearRepositorio(ruta).Guardar(new[]
+                {
+                    new Incidencia
+                    {
+                        Identificador = 43,
+                        Titulo = "Incidencia inválida",
+                        Descripcion = "Descripción válida para corrupción controlada.",
+                        Responsable = "Ana",
+                        ResponsableEmpleadoId = 7,
+                        Prioridad = Prioridad.Media,
+                        Estado = EstadoIncidencia.Pendiente,
+                        FechaCreacion = new DateTime(2026, 10, 30, 17, 10, 0)
+                    }
+                });
+
+                Assert.IsTrue(guardado.Exito);
+
+                var xmlGenerado = File.ReadAllText(rutaArchivo);
+                StringAssert.Contains(xmlGenerado, "ResponsableEmpleadoId");
+
+                CorromperPrimerNodo(rutaArchivo, "ResponsableEmpleadoId", responsableEmpleadoId.ToString());
+
+                var carga = CrearRepositorio(ruta).Cargar();
+
+                Assert.IsFalse(carga.Exito);
+                Assert.IsNotNull(carga.Errores);
+                Assert.AreEqual(0, carga.Datos.Count);
+            });
+        }
+
+        [TestMethod]
         public void GuardarReemplazaColeccionCompletaSinDuplicados()
         {
             EjecutarEnDirectorioTemporal(ruta =>

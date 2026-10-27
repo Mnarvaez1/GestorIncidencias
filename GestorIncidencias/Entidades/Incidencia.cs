@@ -9,6 +9,7 @@ namespace GestorIncidencias.Entidades
         public string Descripcion { get; set; }
         public string ReportadoPor { get; set; }
         public string Responsable { get; set; }
+        public int? ResponsableEmpleadoId { get; set; }
         public Prioridad Prioridad { get; set; }
         public EstadoIncidencia Estado { get; set; }
         public DateTime FechaCreacion { get; set; }

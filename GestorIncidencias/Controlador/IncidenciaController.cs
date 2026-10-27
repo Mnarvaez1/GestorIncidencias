@@ -21,7 +21,7 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            return RegistrarInterno(titulo, descripcion, null, responsable, prioridad, false);
+            return RegistrarInterno(titulo, descripcion, null, responsable, prioridad, false, null);
         }
 
         public ResultadoOperacion<Incidencia> Registrar(
@@ -31,7 +31,18 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            return RegistrarInterno(titulo, descripcion, reportadoPor, responsable, prioridad, true);
+            return RegistrarInterno(titulo, descripcion, reportadoPor, responsable, prioridad, true, null);
+        }
+
+        public ResultadoOperacion<Incidencia> Registrar(
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad,
+            int? responsableEmpleadoId)
+        {
+            return RegistrarInterno(titulo, descripcion, reportadoPor, responsable, prioridad, true, responsableEmpleadoId);
         }
 
         private ResultadoOperacion<Incidencia> RegistrarInterno(
@@ -40,12 +51,13 @@ namespace GestorIncidencias.Controlador
             string reportadoPor,
             string responsable,
             Prioridad prioridad,
-            bool validarReportadoPor)
+            bool validarReportadoPor,
+            int? responsableEmpleadoId)
         {
             var validador = new IncidenciaValidator();
             var validacion = validarReportadoPor
-                ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor)
-                : validador.Validar(titulo, descripcion, responsable, prioridad);
+                ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor, responsableEmpleadoId)
+                : validador.Validar(titulo, descripcion, responsable, prioridad, responsableEmpleadoId);
 
             if (!validacion.Exito)
             {
@@ -81,6 +93,7 @@ namespace GestorIncidencias.Controlador
                 Descripcion = (descripcion ?? string.Empty).Trim(),
                 ReportadoPor = validarReportadoPor ? (reportadoPor ?? string.Empty).Trim() : null,
                 Responsable = (responsable ?? string.Empty).Trim(),
+                ResponsableEmpleadoId = responsableEmpleadoId,
                 Prioridad = prioridad,
                 Estado = EstadoIncidencia.Pendiente,
                 FechaCreacion = DateTime.Now
@@ -131,6 +144,7 @@ namespace GestorIncidencias.Controlador
                         ? ReportadoPorLegacy
                         : i.ReportadoPor,
                     Responsable = i.Responsable,
+                    ResponsableEmpleadoId = i.ResponsableEmpleadoId,
                     Prioridad = i.Prioridad,
                     Estado = i.Estado,
                     FechaCreacion = i.FechaCreacion
@@ -186,7 +200,7 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            return EditarInterno(identificador, titulo, descripcion, null, responsable, prioridad, false);
+            return EditarInterno(identificador, titulo, descripcion, null, responsable, prioridad, false, null, false);
         }
 
         public ResultadoOperacion<Incidencia> Editar(
@@ -197,7 +211,19 @@ namespace GestorIncidencias.Controlador
             string responsable,
             Prioridad prioridad)
         {
-            return EditarInterno(identificador, titulo, descripcion, reportadoPor, responsable, prioridad, true);
+            return EditarInterno(identificador, titulo, descripcion, reportadoPor, responsable, prioridad, true, null, false);
+        }
+
+        public ResultadoOperacion<Incidencia> Editar(
+            int identificador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad,
+            int? responsableEmpleadoId)
+        {
+            return EditarInterno(identificador, titulo, descripcion, reportadoPor, responsable, prioridad, true, responsableEmpleadoId, true);
         }
 
         private ResultadoOperacion<Incidencia> EditarInterno(
@@ -207,7 +233,9 @@ namespace GestorIncidencias.Controlador
             string reportadoPor,
             string responsable,
             Prioridad prioridad,
-            bool validarReportadoPor)
+            bool validarReportadoPor,
+            int? responsableEmpleadoId,
+            bool actualizarResponsableEmpleadoId)
         {
             var carga = repositorio.Cargar();
 
@@ -224,9 +252,12 @@ namespace GestorIncidencias.Controlador
             }
 
             var validador = new IncidenciaValidator();
+            var responsableEmpleadoIdValidacion = actualizarResponsableEmpleadoId
+                ? responsableEmpleadoId
+                : incidencia.ResponsableEmpleadoId;
             var validacion = validarReportadoPor
-                ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor)
-                : validador.Validar(titulo, descripcion, responsable, prioridad);
+                ? validador.Validar(titulo, descripcion, responsable, prioridad, reportadoPor, responsableEmpleadoIdValidacion)
+                : validador.Validar(titulo, descripcion, responsable, prioridad, responsableEmpleadoIdValidacion);
 
             if (!validacion.Exito)
             {
@@ -246,6 +277,11 @@ namespace GestorIncidencias.Controlador
             }
 
             incidencia.Responsable = (responsable ?? string.Empty).Trim();
+            if (actualizarResponsableEmpleadoId)
+            {
+                incidencia.ResponsableEmpleadoId = responsableEmpleadoId;
+            }
+
             incidencia.Prioridad = prioridad;
 
             var guardado = repositorio.Guardar(carga.Datos);

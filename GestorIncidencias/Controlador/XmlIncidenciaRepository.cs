@@ -210,6 +210,7 @@ namespace GestorIncidencias.Controlador
                 Descripcion = incidencia.Descripcion,
                 ReportadoPor = incidencia.ReportadoPor,
                 Responsable = incidencia.Responsable,
+                ResponsableEmpleadoId = incidencia.ResponsableEmpleadoId,
                 Prioridad = incidencia.Prioridad,
                 Estado = incidencia.Estado,
                 FechaCreacion = incidencia.FechaCreacion
@@ -230,6 +231,7 @@ namespace GestorIncidencias.Controlador
                     Descripcion = incidencia.Descripcion,
                     ReportadoPor = NormalizarReportadoPorParaPersistencia(incidencia.ReportadoPor),
                     Responsable = incidencia.Responsable,
+                    ResponsableEmpleadoId = incidencia.ResponsableEmpleadoId,
                     Prioridad = (int)incidencia.Prioridad,
                     Estado = (int)incidencia.Estado,
                     FechaCreacion = incidencia.FechaCreacion
@@ -253,6 +255,7 @@ namespace GestorIncidencias.Controlador
                     Descripcion = incidencia.Descripcion,
                     ReportadoPor = incidencia.ReportadoPor,
                     Responsable = incidencia.Responsable,
+                    ResponsableEmpleadoId = incidencia.ResponsableEmpleadoId,
                     Prioridad = (Prioridad)incidencia.Prioridad,
                     Estado = (EstadoIncidencia)incidencia.Estado,
                     FechaCreacion = incidencia.FechaCreacion
@@ -323,6 +326,11 @@ namespace GestorIncidencias.Controlador
                 {
                     throw new SerializationException("El archivo XML contiene fechas inválidas.");
                 }
+
+                if (incidencia.ResponsableEmpleadoId.HasValue && incidencia.ResponsableEmpleadoId.Value <= 0)
+                {
+                    throw new SerializationException("El archivo XML contiene identificadores de responsable empleado inválidos.");
+                }
             }
 
             if (datos.SiguienteIdentificador <= 0)
@@ -367,13 +375,16 @@ namespace GestorIncidencias.Controlador
             [DataMember(Order = 5, IsRequired = true)]
             public string Responsable { get; set; }
 
-            [DataMember(Order = 6, IsRequired = true)]
-            public int Prioridad { get; set; }
+            [DataMember(Order = 6, IsRequired = false, EmitDefaultValue = false)]
+            public int? ResponsableEmpleadoId { get; set; }
 
             [DataMember(Order = 7, IsRequired = true)]
-            public int Estado { get; set; }
+            public int Prioridad { get; set; }
 
             [DataMember(Order = 8, IsRequired = true)]
+            public int Estado { get; set; }
+
+            [DataMember(Order = 9, IsRequired = true)]
             public DateTime FechaCreacion { get; set; }
         }
     }

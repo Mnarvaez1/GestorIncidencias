@@ -65,6 +65,46 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual("Ana", repositorio.Registros[0].Responsable);
         }
 
+        [TestMethod]
+        public void RegistrarConVinculoResponsableEmpleadoDebeConservarResponsableYReportadoPor()
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio),
+                "Error de conexión",
+                "La conexión falla al iniciar.",
+                "María",
+                "Ana",
+                Prioridad.Alta,
+                25);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(25, resultado.Datos.ResponsableEmpleadoId);
+            Assert.AreEqual("María", resultado.Datos.ReportadoPor);
+            Assert.AreEqual("Ana", resultado.Datos.Responsable);
+            Assert.AreEqual(25, repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
+        [DataTestMethod]
+        [DataRow(0)]
+        [DataRow(-2)]
+        public void RegistrarConVinculoResponsableEmpleadoInvalidoDebeRechazarSinAgregarRegistros(int responsableEmpleadoId)
+        {
+            var repositorio = new IncidenciaRepositoryDoble();
+            var resultado = RegistrarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio),
+                "Error de conexión",
+                "La conexión falla al iniciar.",
+                "María",
+                "Ana",
+                Prioridad.Alta,
+                responsableEmpleadoId);
+
+            Assert.IsFalse(resultado.Exito);
+            Assert.AreEqual(0, repositorio.Registros.Count);
+        }
+
         [DataTestMethod]
         [DataRow(null)]
         [DataRow("")]
@@ -326,6 +366,74 @@ namespace GestorIncidencias.Tests.Controlador
             Assert.AreEqual(10, resultado.Datos.Identificador);
             Assert.AreEqual(fechaOriginal, resultado.Datos.FechaCreacion);
             Assert.AreEqual(EstadoIncidencia.EnProceso, resultado.Datos.Estado);
+        }
+
+        [TestMethod]
+        public void EditarConVinculoResponsableEmpleadoDebeActualizarIdSinAlterarTextos()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Ana",
+                ResponsableEmpleadoId = 4,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = EditarConReportadoPorYResponsableEmpleadoId(
+                CrearControlador(repositorio),
+                10,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Luis",
+                Prioridad.Alta,
+                9);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.IsNotNull(resultado.Datos);
+            Assert.AreEqual(9, resultado.Datos.ResponsableEmpleadoId);
+            Assert.AreEqual("María", resultado.Datos.ReportadoPor);
+            Assert.AreEqual("Luis", resultado.Datos.Responsable);
+            Assert.AreEqual(9, repositorio.Registros[0].ResponsableEmpleadoId);
+        }
+
+        [TestMethod]
+        public void EditarConSobrecargaAnteriorDebeConservarVinculoExistente()
+        {
+            var fechaOriginal = new DateTime(2026, 10, 20, 9, 0, 0);
+            var repositorio = new IncidenciaRepositoryDoble();
+            repositorio.Registros.Add(new Incidencia
+            {
+                Identificador = 10,
+                Titulo = "Titulo inicial",
+                Descripcion = "Descripción inicial válida.",
+                ReportadoPor = "Carlos",
+                Responsable = "Ana",
+                ResponsableEmpleadoId = 17,
+                Prioridad = Prioridad.Media,
+                Estado = EstadoIncidencia.EnProceso,
+                FechaCreacion = fechaOriginal
+            });
+
+            var resultado = EditarConReportadoPor(
+                CrearControlador(repositorio),
+                10,
+                "Titulo actualizado",
+                "Descripción actualizada válida.",
+                "María",
+                "Luis",
+                Prioridad.Alta);
+
+            Assert.IsTrue(resultado.Exito);
+            Assert.AreEqual(17, resultado.Datos.ResponsableEmpleadoId);
+            Assert.AreEqual(17, repositorio.Registros[0].ResponsableEmpleadoId);
         }
 
         [DataTestMethod]
@@ -1095,6 +1203,64 @@ namespace GestorIncidencias.Tests.Controlador
             return (ResultadoOperacion<Incidencia>)metodo.Invoke(
                 controlador,
                 new object[] { identificador, titulo, descripcion, reportadoPor, responsable, prioridad });
+        }
+
+        private static ResultadoOperacion<Incidencia> RegistrarConReportadoPorYResponsableEmpleadoId(
+            IncidenciaController controlador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad,
+            int? responsableEmpleadoId)
+        {
+            var metodo = typeof(IncidenciaController).GetMethod(
+                "Registrar",
+                new[]
+                {
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Prioridad),
+                    typeof(int?)
+                });
+
+            Assert.IsNotNull(metodo, "Falta sobrecarga Registrar con ResponsableEmpleadoId para T098-B1.");
+
+            return (ResultadoOperacion<Incidencia>)metodo.Invoke(
+                controlador,
+                new object[] { titulo, descripcion, reportadoPor, responsable, prioridad, responsableEmpleadoId });
+        }
+
+        private static ResultadoOperacion<Incidencia> EditarConReportadoPorYResponsableEmpleadoId(
+            IncidenciaController controlador,
+            int identificador,
+            string titulo,
+            string descripcion,
+            string reportadoPor,
+            string responsable,
+            Prioridad prioridad,
+            int? responsableEmpleadoId)
+        {
+            var metodo = typeof(IncidenciaController).GetMethod(
+                "Editar",
+                new[]
+                {
+                    typeof(int),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(string),
+                    typeof(Prioridad),
+                    typeof(int?)
+                });
+
+            Assert.IsNotNull(metodo, "Falta sobrecarga Editar con ResponsableEmpleadoId para T098-B1.");
+
+            return (ResultadoOperacion<Incidencia>)metodo.Invoke(
+                controlador,
+                new object[] { identificador, titulo, descripcion, reportadoPor, responsable, prioridad, responsableEmpleadoId });
         }
     }
 }

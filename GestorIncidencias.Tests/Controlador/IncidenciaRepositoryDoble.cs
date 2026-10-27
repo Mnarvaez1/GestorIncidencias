@@ -84,6 +84,7 @@ namespace GestorIncidencias.Tests.Controlador
                     Descripcion = incidencia.Descripcion,
                     ReportadoPor = incidencia.ReportadoPor,
                     Responsable = incidencia.Responsable,
+                    ResponsableEmpleadoId = incidencia.ResponsableEmpleadoId,
                     Prioridad = incidencia.Prioridad,
                     Estado = incidencia.Estado,
                     FechaCreacion = incidencia.FechaCreacion
